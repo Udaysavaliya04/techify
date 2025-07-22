@@ -348,9 +348,15 @@ export default function Dashboard() {
             <p style={{ fontSize: '1.125rem', marginBottom: '0.5rem' }}>
               No interviews yet
             </p>
-            <p style={{ fontSize: '0.875rem', marginBottom: '1.5rem' }}>
-              Start your first interview to see your history here
-            </p>
+            {dashboardData.user.role === 'interviewer' ? (
+              <p style={{ fontSize: '0.875rem', marginBottom: '1.5rem' }}>
+                Start your first interview to see your history here
+              </p>
+            ) : (
+              <p style={{ fontSize: '0.875rem', marginBottom: '1.5rem' }}>
+                Join an interview to see your history here
+              </p>
+            )}
             {dashboardData.user.role === 'interviewer' ? (
               <button 
                 onClick={handleStartInterview}
