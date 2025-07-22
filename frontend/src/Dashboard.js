@@ -374,25 +374,27 @@ export default function Dashboard() {
                           {interview.difficulty}
                         </span>
                       )}
-                      <span style={{
-                        fontSize: '0.75rem',
-                        color: interview.status === 'completed' ? 'hsl(142 76% 36%)' : 
-                              interview.status === 'ongoing' ? 'hsl(32 95% 44%)' : 
-                              'hsl(var(--muted-foreground))',
-                        background: interview.status === 'completed' ? 'hsl(142 76% 36% / 0.1)' : 
-                                   interview.status === 'ongoing' ? 'hsl(32 95% 44% / 0.1)' : 
-                                   'hsl(var(--muted))',
-                        padding: '0.125rem 0.375rem',
-                        borderRadius: 'calc(var(--radius) - 4px)',
-                        textTransform: 'capitalize',
-                        border: `1px solid ${interview.status === 'completed' ? 'hsl(142 76% 36% / 0.2)' : 
-                                             interview.status === 'ongoing' ? 'hsl(32 95% 44% / 0.2)' : 
-                                             'hsl(var(--border))'}`
-                      }}>
-                        {interview.status === 'completed' ? 'Completed' : 
-                         interview.status === 'ongoing' ? 'Ongoing' : 
-                         interview.status}
-                      </span>
+                      {dashboardData.user.role === 'interviewer' && (
+                        <span style={{
+                          fontSize: '0.75rem',
+                          color: interview.status === 'completed' ? 'hsl(142 76% 36%)' : 
+                                interview.status === 'ongoing' ? 'hsl(32 95% 44%)' : 
+                                'hsl(var(--muted-foreground))',
+                          background: interview.status === 'completed' ? 'hsl(142 76% 36% / 0.1)' : 
+                                     interview.status === 'ongoing' ? 'hsl(32 95% 44% / 0.1)' : 
+                                     'hsl(var(--muted))',
+                          padding: '0.125rem 0.375rem',
+                          borderRadius: 'calc(var(--radius) - 4px)',
+                          textTransform: 'capitalize',
+                          border: `1px solid ${interview.status === 'completed' ? 'hsl(142 76% 36% / 0.2)' : 
+                                               interview.status === 'ongoing' ? 'hsl(32 95% 44% / 0.2)' : 
+                                               'hsl(var(--border))'}`
+                        }}>
+                          {interview.status === 'completed' ? 'Completed' : 
+                           interview.status === 'ongoing' ? 'Ongoing' : 
+                           interview.status}
+                        </span>
+                      )}
                     </div>
                     <h4 style={{ 
                       margin: 0, 

@@ -104,6 +104,8 @@ export default function Room() {
   const [joinedUsers, setJoinedUsers] = useState([]);
   const [userAlerts, setUserAlerts] = useState([]);
   const [alertIdCounter, setAlertIdCounter] = useState(0);
+  const [notesSaving, setNotesSaving] = useState(false);
+  const [notesLastSaved, setNotesLastSaved] = useState(null);
 
   useEffect(() => {
     socketRef.current = io(SOCKET_URL);
@@ -137,6 +139,13 @@ export default function Room() {
 
     socketRef.current.on('interviewEnded', () => {
       setEnded(true);
+      
+      // Redirect both interviewers and candidates to dashboard after interview ends
+      if (isAuthenticated()) {
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 2000); // Give 2 seconds for any final save operations
+      }
     });
 
     // Listen for user join events
@@ -157,8 +166,13 @@ export default function Room() {
       });
     });
 
-    socketRef.current.on('userLeft', ({ userId }) => {
+    socketRef.current.on('userLeft', ({ userId, username, role: userRole }) => {
       setJoinedUsers(prev => prev.filter(u => u.userId !== userId));
+      
+      // Show alert when user leaves (for interviewers)
+      if (role === 'interviewer' && userRole === 'candidate') {
+        showUserLeaveAlert(username, userRole);
+      }
     });
 
     // Fetch room timer info
@@ -173,6 +187,47 @@ export default function Room() {
       socketRef.current?.disconnect();
     };
   }, [roomId, role]);
+
+  // Browser navigation protection
+  useEffect(() => {
+    // Prevent browser back button and page refresh during active interview
+    const handleBeforeUnload = (e) => {
+      if (!ended) {
+        const message = 'Are you sure you want to leave the interview? Your progress may be lost.';
+        e.preventDefault();
+        e.returnValue = message;
+        return message;
+      }
+    };
+
+    const handlePopState = (e) => {
+      if (!ended) {
+        const confirmLeave = window.confirm('Are you sure you want to leave the interview? Your progress may be lost.');
+        if (!confirmLeave) {
+          // Push current state back to prevent navigation
+          window.history.pushState(null, '', window.location.href);
+        } else {
+          // Allow navigation but complete interview tracking
+          completeInterviewTracking({
+            status: 'left_early',
+            feedback: 'User navigated away from interview'
+          });
+        }
+      }
+    };
+
+    // Add event listeners
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('popstate', handlePopState);
+
+    // Push initial state to detect back button
+    window.history.pushState(null, '', window.location.href);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [ended]);
 
   // Interview tracking functions
   const startInterviewTracking = async () => {
@@ -232,6 +287,25 @@ export default function Room() {
     }, 5000);
   };
 
+  const showUserLeaveAlert = (username, userRole) => {
+    const alertId = alertIdCounter;
+    setAlertIdCounter(prev => prev + 1);
+    
+    const newAlert = {
+      id: alertId,
+      message: `${userRole === 'candidate' ? 'Candidate' : 'Interviewer'}: ${username} left the interview`,
+      type: 'warning',
+      timestamp: new Date()
+    };
+    
+    setUserAlerts(prev => [...prev, newAlert]);
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+      setUserAlerts(prev => prev.filter(alert => alert.id !== alertId));
+    }, 5000);
+  };
+
   const dismissAlert = (alertId) => {
     setUserAlerts(prev => prev.filter(alert => alert.id !== alertId));
   };
@@ -266,10 +340,14 @@ export default function Room() {
   };
 
   const saveInterviewNotes = async (notes) => {
+    setNotesSaving(true);
     try {
       await axios.put(`http://localhost:5000/api/room/${roomId}/notes`, { notes });
+      setNotesLastSaved(new Date());
     } catch (err) {
       console.error('Failed to save notes:', err);
+    } finally {
+      setNotesSaving(false);
     }
   };
 
@@ -357,6 +435,48 @@ export default function Room() {
         }
       } catch (err) {
         console.error('Failed to end interview:', err);
+      }
+    }
+  };
+
+  const handleLeaveInterview = async () => {
+    if (window.confirm('Are you sure you want to leave the interview? This action cannot be undone and your progress may be lost.')) {
+      try {
+        // Complete interview tracking for authenticated users
+        await completeInterviewTracking({
+          status: 'left_early',
+          feedback: 'Candidate left the interview early'
+        });
+        
+        // Show leave alert
+        const alertId = alertIdCounter;
+        setAlertIdCounter(prev => prev + 1);
+        
+        const leaveAlert = {
+          id: alertId,
+          message: 'You have left the interview. Redirecting to dashboard...',
+          type: 'warning',
+          timestamp: new Date()
+        };
+        
+        setUserAlerts(prev => [...prev, leaveAlert]);
+        
+        // Emit leave event to notify other participants
+        socketRef.current?.emit('userLeave', { 
+          roomId, 
+          username: user?.username || 'Anonymous',
+          role 
+        });
+        
+        // Redirect to dashboard after short delay
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 2000);
+        
+      } catch (err) {
+        console.error('Failed to leave interview:', err);
+        // Still navigate even if API call fails
+        navigate('/dashboard');
       }
     }
   };
@@ -505,63 +625,56 @@ export default function Room() {
         
         <div className="room-controls">
           {role === 'interviewer' && !ended && (
-            <div className="dropdown-menu">
-              <button className="dropdown-trigger" aria-expanded="false">
-                <span>Tools</span>
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="dropdown-icon">
-                  <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+            <>
+              <button 
+                className="action-btn save-btn" 
+                onClick={() => setShowQuestions(true)}
+                title="Browse Questions"
+              >Questions
               </button>
-              <div className="dropdown-content">
-                <div className="dropdown-label">Interview Tools</div>
-                <button 
-                  className="dropdown-item"
-                  onClick={() => setShowQuestions(true)}
-                >
-                  <span>Questions</span>
+              
+              <button 
+                className="action-btn save-btn" 
+                onClick={() => setShowAI(true)}
+                title="AI Assistant"
+              > AI Assistant
+              </button>
+              
+              <button 
+                className="action-btn save-btn" 
+                onClick={() => setShowVideoCall(true)}
+                title="Start Video Call"
+              >Video Call
+              </button>
+
+              <div className="dropdown-menu">
+                <button className="dropdown-trigger" aria-expanded="false">
+                  <span>Evaluation</span>
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="dropdown-icon">
+                    <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                 </button>
-                <button 
-                  className="dropdown-item"
-                  onClick={() => setShowNotes(true)}
-                >
-                  <span>Notes</span>
-                </button>
-                <button 
-                  className="dropdown-item"
-                  onClick={() => setShowAI(true)}
-                >
-                  <span>AI Assistant</span>
-                </button>
-                <div className="dropdown-separator"></div>
-                <div className="dropdown-label">Actions</div>
-                <button 
-                  className="dropdown-item"
-                  onClick={() => setShowHistory(true)}
-                >
-                  <span>History ({executionHistory.length})</span>
-                </button>
-                <button 
-                  className="dropdown-item"
-                  onClick={() => setShowVideoCall(true)}
-                >
-                  <span>Start Call</span>
-                </button>
-                <div className="dropdown-separator"></div>
-                <div className="dropdown-label">Evaluation</div>
-                <button 
-                  className="dropdown-item"
-                  onClick={() => setShowRubricScoring(true)}
-                >
-                  <span>Rubric Scoring</span>
-                </button>
-                <button 
-                  className="dropdown-item"
-                  onClick={() => setShowInterviewReport(true)}
-                >
-                  <span>Generate Report</span>
-                </button>
+                <div className="dropdown-content">
+                  <div className="dropdown-label">Assessment Tools</div>
+                  <button 
+                    className="dropdown-item"
+                    onClick={() => setShowRubricScoring(true)}
+                  ><span>Rubric Scoring</span>
+                  </button>
+                  <button 
+                    className="dropdown-item"
+                    onClick={() => setShowInterviewReport(true)}
+                  ><span>Generate Report</span>
+                  </button>
+                  <div className="dropdown-separator"></div>
+                  <button 
+                    className="dropdown-item"
+                    onClick={() => setShowHistory(true)}
+                  ><span>History ({executionHistory.length})</span>
+                  </button>
+                </div>
               </div>
-            </div>
+            </>
           )}
           
           {role === 'candidate' && !ended && (
@@ -571,6 +684,10 @@ export default function Room() {
                 onClick={() => setShowVideoCall(true)}
                 title="Join Video Call"
               >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="m22 8-6 4 6 4V8Z"/>
+                  <rect width="14" height="12" x="2" y="6" rx="2" ry="2"/>
+                </svg>
                 Join Call
               </button>
             </>
@@ -636,9 +753,10 @@ export default function Room() {
             <button 
               className="action-btn" 
               style={{ 
-                background: '#ef4444', 
+                background: 'transparent', 
                 borderColor: '#ef4444',
-                color: '#fff' 
+                color: '#fff',
+                fontSize: '0.875rem',
               }} 
               onClick={handleEndInterview}
               title="End the interview"
@@ -646,185 +764,238 @@ export default function Room() {
               End Interview
             </button>
           )}
+          
+          {role === 'candidate' && !ended && (
+            <button 
+              className="action-btn" 
+              style={{ 
+                background: 'transparent', 
+                 borderColor: '#ef4444',
+                color: 'white',
+                fontSize: '0.875rem',
+              }} 
+              onClick={handleLeaveInterview}
+              title="Leave the interview"
+            >
+              Leave Interview
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Action buttons row between nav and editor */}
-      <div className="room-action-buttons">
-        <button 
-          className="action-btn save-btn" 
-          onClick={() => setShowHistory(true)}
-          title="View execution history"
-        >
-          History ({executionHistory.length})
-        </button>
-        <button 
-          className={`action-btn run-btn ${loading ? 'loading' : ''}`}
-          onClick={runCode} 
-          disabled={loading}
-          title="Run code"
-        >
-          {loading ? 'Running...' : 'Run Code'}
-        </button>
+      <div className={`room-action-buttons ${role === 'interviewer' ? 'interviewer' : ''}`}>
+        {role === 'candidate' && (
+          <>
+            <button 
+              className="action-btn save-btn" 
+              onClick={() => setShowHistory(true)}
+              title="View execution history"
+            >
+              History ({executionHistory.length})
+            </button>
+            <button 
+              className={`action-btn run-btn ${loading ? 'loading' : ''}`}
+              onClick={runCode} 
+              disabled={loading}
+              title="Run code"
+            >
+              {loading ? 'Running...' : 'Run Code'}
+            </button>
+          </>
+        )}
       </div>
 
-      <div className="editor-container">
-        <MonacoEditor
-          height="55vh"
-          theme={theme}
-          language={
-            language === 'python3' ? 'python' :
-            language === 'nodejs' ? 'javascript' :
-            language === 'cpp17' ? 'cpp' :
-            language === 'c' ? 'c' :
-            language === 'java' ? 'java' :
-            language === 'csharp' ? 'csharp' :
-            language === 'php' ? 'php' :
-            language === 'swift' ? 'swift' :
-            language === 'kotlin' ? 'kotlin' :
-            language
-          }
-          value={code}
-          onChange={handleCodeChange}
-          options={{
-            minimap: { enabled: false },
-            wordWrap: 'on',
-            contextmenu: true,
-            lineNumbers: 'on',
-            folding: true,
-            renderLineHighlight: 'line',
-            scrollBeyondLastLine: false,
-            automaticLayout: true,
-            formatOnType: true,
-            formatOnPaste: true,
-            suggestOnTriggerCharacters: true,
-            tabCompletion: 'on',
-            quickSuggestions: true,
-            codeLens: true,
-            lightbulb: { enabled: true },
-            links: true,
-            mouseWheelZoom: true,
-            renderWhitespace: 'selection',
-            smoothScrolling: true,
-            bracketPairColorization: { enabled: true },
-            inlineSuggest: { enabled: true },
-            // Additional features
-            find: {
-              seedSearchStringFromSelection: 'always',
-              autoFindInSelection: 'multiline'
-            },
-            gotoLine: { enabled: true },
-            quickSuggestionsDelay: 100,
-            parameterHints: { enabled: true },
-            hover: { enabled: true, delay: 300 },
-            matchBrackets: 'always',
-            selectOnLineNumbers: true,
-            roundedSelection: false,
-            readOnly: false,
-            cursorStyle: 'line',
-            cursorBlinking: 'blink',
-            hideCursorInOverviewRuler: false,
-            overviewRulerLanes: 2,
-            renderControlCharacters: false,
-            renderIndentGuides: true,
-            renderValidationDecorations: 'on',
-            rulers: [],
-            dragAndDrop: true,
-            multiCursorModifier: 'alt',
-            accessibilitySupport: 'auto',
-            fontSize: 14,
-            fontFamily: "'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace",
-            padding: { top: 16, bottom: 16 },
-            scrollbar: {
-              vertical: 'visible',
-              horizontal: 'visible',
-              useShadows: false,
-              verticalScrollbarSize: 8,
-              horizontalScrollbarSize: 8,
-            },
-          }}
-        />
-      </div>
+      {/* Main content with split layout */}
+      <div className="main-content-container">
+        {/* Editor section */}
+        <div className="editor-section">
+          <div className="editor-container">
+            <MonacoEditor
+              height="65vh"
+              theme={theme}
+              language={
+                language === 'python3' ? 'python' :
+                language === 'nodejs' ? 'javascript' :
+                language === 'cpp17' ? 'cpp' :
+                language === 'c' ? 'c' :
+                language === 'java' ? 'java' :
+                language === 'csharp' ? 'csharp' :
+                language === 'php' ? 'php' :
+                language === 'swift' ? 'swift' :
+                language === 'kotlin' ? 'kotlin' :
+                language
+              }
+              value={code}
+              onChange={handleCodeChange}
+              options={{
+                minimap: { enabled: true },
+                wordWrap: 'on',
+                contextmenu: true,
+                lineNumbers: 'on',
+                folding: true,
+                renderLineHighlight: 'line',
+                scrollBeyondLastLine: false,
+                automaticLayout: true,
+                formatOnType: true,
+                formatOnPaste: true,
+                suggestOnTriggerCharacters: true,
+                tabCompletion: 'on',
+                quickSuggestions: true,
+                codeLens: true,
+                lightbulb: { enabled: true },
+                links: true,
+                mouseWheelZoom: true,
+                renderWhitespace: 'selection',
+                smoothScrolling: true,
+                bracketPairColorization: { enabled: true },
+                inlineSuggest: { enabled: true },
+                find: {
+                  seedSearchStringFromSelection: 'always',
+                  autoFindInSelection: 'multiline'
+                },
+                gotoLine: { enabled: true },
+                parameterHints: { enabled: true },
+                hover: { enabled: true, delay: 300 },
+                matchBrackets: 'always',
+                selectOnLineNumbers: true,
+                roundedSelection: false,
+                readOnly: false,
+                cursorStyle: 'line thin',
+                cursorBlinking: 'expand',
+                hideCursorInOverviewRuler: false,
+                overviewRulerLanes: 2,
+                renderControlCharacters: false,
+                renderIndentGuides: true,
+                renderValidationDecorations: 'on',
+                rulers: [],
+                dragAndDrop: true,
+                multiCursorModifier: 'alt',
+                accessibilitySupport: 'auto',
+                fontSize: 14,
+                fontFamily: "'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace",
+                padding: { top: 16, bottom: 16 },
+                scrollbar: {
+                  vertical: 'visible',
+                  horizontal: 'visible',
+                  useShadows: true,
+                  verticalScrollbarSize: 10,
+                  horizontalScrollbarSize: 8,
+                },
+              }}
+            />
+          </div>
 
-      <div className="output-container">
-        <span className="output-label">Output</span>
-        <pre className="output-area">{output || 'No output yet. Run your code to see results here.'}</pre>
+          {role === 'interviewer' && !ended && (
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'left',
+              marginBottom: '2rem',
+              paddingRight: '0.5rem'
+            }}>
+              <button 
+                className={`action-btn run-btn ${loading ? 'loading' : ''}`}
+                onClick={runCode} 
+                disabled={loading}
+                title="Run code"
+                style={{
+                  fontSize: '0.875rem',
+                  padding: '0.5rem 1.25rem',
+                  minHeight: '2.5rem'
+                }}
+              >
+                {loading ? 'Running...' : 'Run Code'}
+              </button>
+            </div>
+          )}
+
+          <div className="output-container">
+            <span className="output-label">Output</span>
+            <pre className="output-area">{output || 'No output yet. Run your code to see results here.'}</pre>
+          </div>
+        </div>
+
+        {/* Notes sidebar for interviewer */}
+        {role === 'interviewer' && !ended && (
+          <div className="notes-sidebar">
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              marginBottom: '1rem',
+              paddingBottom: '0.75rem',
+              borderBottom: '1px solid hsl(var(--border))'
+            }}>
+              <h3 style={{ margin: 0 }}>Interview Notes</h3>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button 
+                  className="action-btn save-btn"
+                  onClick={() => setShowHistory(true)}
+                  title="View Execution History"
+                  style={{ 
+                    padding: '0.25rem 0.5rem', 
+                    fontSize: '0.75rem',
+                    minHeight: '1.75rem'
+                  }}
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                    <path d="M3 3v5h5"/>
+                    <path d="M12 7v5l4 2"/>
+                  </svg>
+                  {executionHistory.length}
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Assessment Buttons */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: '1fr 1fr',
+              gap: '0.5rem',
+              marginBottom: '1rem'
+            }}>
+              <button 
+                className="action-btn save-btn"
+                onClick={() => setShowRubricScoring(true)}
+                style={{ 
+                  padding: '0.5rem', 
+                  fontSize: '0.7rem',
+                  textAlign: 'center',
+                  gap: '0.25rem',
+                  flexDirection: 'column'
+                }}
+              >
+                Scoring
+              </button>
+              <button 
+                className="action-btn save-btn"
+                onClick={() => setShowInterviewReport(true)}
+                style={{ 
+                  padding: '0.5rem', 
+                  fontSize: '0.7rem',
+                  textAlign: 'center',
+                  gap: '0.25rem',
+                  flexDirection: 'column'
+                }}
+              >
+                Report
+              </button>
+            </div>
+            <textarea
+              className="notes-textarea"
+              value={interviewNotes}
+              onChange={(e) => handleNotesChange(e.target.value)}
+              placeholder="Enter your interview notes here..."
+              style={{ minHeight: '290px' }}
+            />
+          </div>
+        )}
       </div>
 
      {showQuestions && role === 'interviewer' && (
         <div className="modal-overlay" onClick={() => setShowQuestions(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <Questions onSelect={handleSelectQuestion} onClose={() => setShowQuestions(false)} />
-          </div>
-        </div>
-      )}
-
-      {showNotes && role === 'interviewer' && (
-        <div className="modal-overlay" onClick={() => setShowNotes(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div style={{
-              width: '100%',
-              maxWidth: '500px',
-              position: 'relative',
-            }}>
-              <button
-                onClick={() => setShowNotes(false)}
-                className="modal-close"
-                aria-label="Close modal"
-              >
-                ×
-              </button>
-              
-              <h3 style={{ 
-                margin: '0 0 2rem 0',
-                fontSize: '1.5rem',
-                fontWeight: '600',
-                color: '#fff',
-                textAlign: 'center'
-              }}>
-                Interview Notes
-              </h3>
-              
-              <div style={{
-                background: 'rgba(0, 112, 243, 0.1)',
-                border: '1px solid rgba(0, 112, 243, 0.3)',
-                borderRadius: '8px',
-                padding: '1rem',
-                marginBottom: '2rem',
-                textAlign: 'center',
-                fontSize: '0.875rem',
-                color: '#0070f3'
-              }}>
-                <strong>Tip:</strong> Notes are automatically saved as you type!
-              </div>
-
-              <textarea
-                value={interviewNotes}
-                onChange={(e) => handleNotesChange(e.target.value)}
-                placeholder="Enter your interview notes here..."
-                style={{
-                  width: '100%',
-                  height: '300px',
-                  padding: '1rem',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  color: '#fff',
-                  fontSize: '0.875rem',
-                  fontFamily: 'inherit',
-                  resize: 'vertical',
-                  outline: 'none'
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#0070f3';
-                  e.target.style.background = 'rgba(255, 255, 255, 0.08)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                  e.target.style.background = 'rgba(255, 255, 255, 0.05)';
-                }}
-              />
-            </div>
           </div>
         </div>
       )}
@@ -1003,7 +1174,9 @@ export default function Room() {
               key={alert.id}
               className="user-join-alert"
               style={{
-                background: alert.type === 'success' ? 'hsl(142 76% 36%)' : 'hsl(var(--primary))',
+                background: alert.type === 'success' ? 'hsl(142 76% 36%)' : 
+                           alert.type === 'warning' ? 'hsl(32 95% 44%)' : 
+                           'hsl(var(--primary))',
                 color: '#ffffff',
                 padding: '0.75rem 1rem',
                 borderRadius: 'var(--radius)',
@@ -1019,7 +1192,9 @@ export default function Room() {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <div style={{ fontSize: '1rem' }}>
-                  {alert.type === 'success' ? '✅' : 'ℹ️'}
+                  {alert.type === 'success' ? '✅' : 
+                   alert.type === 'warning' ? '⚠️' : 
+                   'ℹ️'}
                 </div>
                 <span>{alert.message}</span>
               </div>

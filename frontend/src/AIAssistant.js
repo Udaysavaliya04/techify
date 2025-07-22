@@ -193,7 +193,7 @@ const AIAssistant = ({ roomId, code, language, onClose }) => {
                 width: '100%',
                 height: '270px',
                 padding: '12px',
-                border: '2px solid rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
                 borderRadius: '12px',
                 background: 'rgba(255, 255, 255, 0.08)',
                 color: '#fff',
@@ -224,7 +224,7 @@ const AIAssistant = ({ roomId, code, language, onClose }) => {
             {analysis && (
               <div style={{
                 background: 'rgba(255, 255, 255, 0.05)',
-                border: '2px solid rgba(180, 180, 180, 0.3)',
+                border: '1px solid rgba(180, 180, 180, 0.3)',
                 borderRadius: '12px',
                 padding: '20px',
                 fontSize: '0.8rem',
@@ -250,7 +250,7 @@ const AIAssistant = ({ roomId, code, language, onClose }) => {
                 width: '100%',
                 height: '270px',
                 padding: '12px',
-                border: '2px solid rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
                 borderRadius: '12px',
                 background: 'rgba(255, 255, 255, 0.08)',
                 color: '#fff',
@@ -283,13 +283,12 @@ const AIAssistant = ({ roomId, code, language, onClose }) => {
             {aiResponse && (
               <div style={{
                background: 'rgba(255, 255, 255, 0.05)',
-                border: '2px solid rgba(176, 176, 176, 0.3)',
+                border: '1px solid rgba(176, 176, 176, 0.3)',
                 borderRadius: '12px',
                 padding: '20px',
                 fontSize: '0.8rem',
                 lineHeight: '1.5',
                 color: 'white',
-                minHeight: '160px',
                 backdropFilter: 'blur(15px)',
                 boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
               }}>

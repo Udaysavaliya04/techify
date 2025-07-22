@@ -167,8 +167,8 @@ export default function Questions({ onSelect, onClose }) {
           onChange={e => setText(e.target.value)}
           disabled={loading}
         />
-        
-        <div className="dropdown-menu" style={{ width: '100%'}}>
+
+        <div className="dropdown-menu" style={{ width: '100%', minWidth: '100px' }}>
           <button className="dropdown-trigger" aria-expanded="false" disabled={loading}>
             <span>{addDiff.charAt(0).toUpperCase() + addDiff.slice(1)}</span>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="dropdown-icon">
