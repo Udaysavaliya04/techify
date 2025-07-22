@@ -1,0 +1,956 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from './components/AuthWrapper';
+import MonacoEditor from '@monaco-editor/react';
+import io from 'socket.io-client';
+import axios from 'axios';
+import Questions from './Questions';
+import AIAssistant from './AIAssistant';
+import WebRTCVideoCall from './components/WebRTCVideoCall';
+import RubricScoring from './components/RubricScoring';
+import InterviewReport from './components/InterviewReport';
+import './App.css';
+
+const SOCKET_URL = 'http://localhost:5000';
+
+const languages = [
+  { label: 'Python', value: 'python3' },
+  { label: 'JavaScript', value: 'nodejs' },
+  { label: 'Java', value: 'java' },
+  { label: 'C', value: 'c' },
+  { label: 'C++', value: 'cpp17' },
+  { label: 'C#', value: 'csharp' },
+  { label: 'PHP', value: 'php' },
+  { label: 'Swift', value: 'swift' },
+  { label: 'Kotlin', value: 'kotlin' },
+];
+
+const themes = [
+  { label: 'Dark', value: 'vs-dark' },
+  { label: 'Light', value: 'light' },
+  { label: 'High Contrast', value: 'hc-black' }
+];
+
+export default function Room() {
+  const { roomId } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
+  
+  // Authentication guard - redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate('/login', { 
+        state: { 
+          from: `/room/${roomId}`,
+          message: 'Please sign in to access the interview room'
+        }
+      });
+    }
+  }, [isAuthenticated, navigate, roomId]);
+  
+  // If not authenticated, show loading state while redirect happens
+  if (!isAuthenticated()) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%)',
+        color: 'hsl(var(--foreground))'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ 
+            fontSize: '1.125rem', 
+            marginBottom: '0.5rem',
+            fontWeight: '500'
+          }}>
+            Authentication Required
+          </div>
+          <div style={{ 
+            fontSize: '0.875rem', 
+            color: 'hsl(var(--muted-foreground))'
+          }}>
+            Redirecting to sign in...
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  const role = location.state?.role || 'candidate';
+  const [code, setCode] = useState();
+  const [output, setOutput] = useState('');
+  const [language, setLanguage] = useState('nodejs');
+  const [theme, setTheme] = useState('vs-dark');
+  const socketRef = useRef();
+  const [showQuestions, setShowQuestions] = useState(false);
+  const [ended, setEnded] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [interviewNotes, setInterviewNotes] = useState('');
+  const [startTime, setStartTime] = useState(null);
+  const [currentTime, setCurrentTime] = useState(Date.now());
+  const [showNotes, setShowNotes] = useState(false);
+  const [interviewStarted, setInterviewStarted] = useState(false);
+  const [showAI, setShowAI] = useState(false);
+  const [showVideoCall, setShowVideoCall] = useState(false);
+  const [executionHistory, setExecutionHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [showRubricScoring, setShowRubricScoring] = useState(false);
+  const [showInterviewReport, setShowInterviewReport] = useState(false);
+  const [activeInterviewerTab, setActiveInterviewerTab] = useState('notes');
+  const [joinedUsers, setJoinedUsers] = useState([]);
+  const [userAlerts, setUserAlerts] = useState([]);
+  const [alertIdCounter, setAlertIdCounter] = useState(0);
+
+  useEffect(() => {
+    socketRef.current = io(SOCKET_URL);
+    
+    socketRef.current.on('connect', () => {
+      setIsConnected(true);
+      socketRef.current.emit('joinRoom', { 
+        roomId, 
+        role, 
+        username: user?.username || 'Anonymous' 
+      });
+      
+      // Start interview tracking for authenticated users
+      startInterviewTracking();
+    });
+
+    socketRef.current.on('disconnect', () => {
+      setIsConnected(false);
+    });
+
+    socketRef.current.on('init', ({ code }) => {
+      setCode(code || '');
+    });
+
+    socketRef.current.on('codeChange', setCode);
+
+    socketRef.current.on('outputChange', (outputData) => {
+      const displayOutput = outputData.error || outputData.output || 'Code executed successfully.';
+      setOutput(`[${outputData.executedBy}] ${displayOutput}`);
+    });
+
+    socketRef.current.on('interviewEnded', () => {
+      setEnded(true);
+    });
+
+    // Listen for user join events
+    socketRef.current.on('userJoined', ({ username, role: userRole, userId }) => {
+      // Add user to joined users list if not already present
+      setJoinedUsers(prev => {
+        if (!prev.find(u => u.userId === userId)) {
+          const newUser = { username, role: userRole, userId, joinedAt: new Date() };
+          
+          // Show alert for candidate joins (only for interviewers)
+          if (userRole === 'candidate' && role === 'interviewer') {
+            showUserJoinAlert(username, userRole);
+          }
+          
+          return [...prev, newUser];
+        }
+        return prev;
+      });
+    });
+
+    socketRef.current.on('userLeft', ({ userId }) => {
+      setJoinedUsers(prev => prev.filter(u => u.userId !== userId));
+    });
+
+    // Fetch room timer info
+    fetchTimerInfo();
+    
+    // Fetch interview notes if interviewer
+    if (role === 'interviewer') {
+      fetchInterviewNotes();
+    }
+
+    return () => {
+      socketRef.current?.disconnect();
+    };
+  }, [roomId, role]);
+
+  // Interview tracking functions
+  const startInterviewTracking = async () => {
+    if (isAuthenticated() && !interviewStarted) {
+      try {
+        const token = localStorage.getItem('token');
+        await axios.post('http://localhost:5000/api/auth/interview', {
+          roomId,
+          role,
+          language
+        }, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setInterviewStarted(true);
+      } catch (error) {
+        console.error('Failed to start interview tracking:', error);
+      }
+    }
+  };
+
+  const completeInterviewTracking = async (additionalData = {}) => {
+    if (isAuthenticated() && interviewStarted) {
+      try {
+        const token = localStorage.getItem('token');
+        const duration = startTime ? Math.round((Date.now() - new Date(startTime).getTime()) / 60000) : 0;
+        
+        await axios.put(`http://localhost:5000/api/auth/interview/${roomId}/complete`, {
+          duration,
+          codeSubmitted: code,
+          ...additionalData
+        }, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      } catch (error) {
+        console.error('Failed to complete interview tracking:', error);
+      }
+    }
+  };
+
+  // User join alert functions
+  const showUserJoinAlert = (username, userRole) => {
+    const alertId = alertIdCounter;
+    setAlertIdCounter(prev => prev + 1);
+    
+    const newAlert = {
+      id: alertId,
+      message: `${userRole === 'candidate' ? 'Candidate' : 'Interviewer'}: ${username} joined the room`,
+      type: 'success',
+      timestamp: new Date()
+    };
+    
+    setUserAlerts(prev => [...prev, newAlert]);
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+      setUserAlerts(prev => prev.filter(alert => alert.id !== alertId));
+    }, 5000);
+  };
+
+  const dismissAlert = (alertId) => {
+    setUserAlerts(prev => prev.filter(alert => alert.id !== alertId));
+  };
+
+  // Timer effect
+  useEffect(() => {
+    if (!ended && startTime) {
+      const interval = setInterval(() => {
+        setCurrentTime(Date.now());
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [ended, startTime]);
+
+  const fetchTimerInfo = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/room/${roomId}/timer`);
+      setStartTime(new Date(res.data.startTime));
+      setEnded(!res.data.isActive);
+    } catch (err) {
+      console.error('Failed to fetch timer info:', err);
+    }
+  };
+
+  const fetchInterviewNotes = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/room/${roomId}/notes`);
+      setInterviewNotes(res.data.notes || '');
+    } catch (err) {
+      console.error('Failed to fetch notes:', err);
+    }
+  };
+
+  const saveInterviewNotes = async (notes) => {
+    try {
+      await axios.put(`http://localhost:5000/api/room/${roomId}/notes`, { notes });
+    } catch (err) {
+      console.error('Failed to save notes:', err);
+    }
+  };
+
+  const handleCodeChange = (value) => {
+    setCode(value || '');
+    socketRef.current?.emit('codeChange', value);
+  };
+
+  const runCode = async () => {
+    setLoading(true);
+    setOutput(`[${role}] Running code...`);
+    
+    const startTime = performance.now();
+    const timestamp = new Date();
+    
+    try {
+      const res = await axios.post('http://localhost:5000/api/code/execute', { 
+        code, 
+        language,
+        roomId,
+        executedBy: role
+      });
+      
+      const endTime = performance.now();
+      const executionTime = endTime - startTime;
+      
+      // Add to execution history
+      const historyEntry = {
+        id: Date.now(),
+        timestamp,
+        code: code.substring(0, 200) + (code.length > 200 ? '...' : ''),
+        language,
+        output: res.data.output || res.data.error || 'Code executed successfully.',
+        success: !res.data.error,
+        executedBy: role,
+        executionTime: Math.round(executionTime)
+      };
+      
+      setExecutionHistory(prev => [historyEntry, ...prev.slice(0, 19)]); // Keep last 20 runs
+      
+      // Note: Output will be updated via socket event, but we'll set it here as fallback
+      if (!socketRef.current?.connected) {
+        setOutput(`[${role}] ${res.data.output || res.data.error || 'Code executed successfully.'}`);
+      }
+    } catch (err) {
+      const endTime = performance.now();
+      const executionTime = endTime - startTime;
+      
+      // Add failed execution to history
+      const historyEntry = {
+        id: Date.now(),
+        timestamp,
+        code: code.substring(0, 200) + (code.length > 200 ? '...' : ''),
+        language,
+        output: 'Error: Could not execute code. Please check your connection and try again.',
+        success: false,
+        executedBy: role,
+        executionTime: Math.round(executionTime)
+      };
+      
+      setExecutionHistory(prev => [historyEntry, ...prev.slice(0, 19)]);
+      setOutput(`[${role}] Error: Could not execute code. Please check your connection and try again.`);
+    }
+    setLoading(false);
+  };
+
+  const handleEndInterview = async () => {
+    if (window.confirm('Are you sure you want to end the interview?')) {
+      try {
+        await axios.put(`http://localhost:5000/api/room/${roomId}/end`);
+        
+        // Complete interview tracking for authenticated users
+        await completeInterviewTracking({
+          feedback: interviewNotes // Include any notes as feedback
+        });
+        
+        setEnded(true);
+        socketRef.current?.emit('endInterview');
+        
+        // Redirect authenticated users to dashboard after interview
+        if (isAuthenticated()) {
+          setTimeout(() => {
+            navigate('/dashboard');
+          }, 2000); // Give 2 seconds for any final save operations
+        }
+      } catch (err) {
+        console.error('Failed to end interview:', err);
+      }
+    }
+  };
+
+  const handleNotesChange = (notes) => {
+    setInterviewNotes(notes);
+    saveInterviewNotes(notes);
+  };
+
+  const formatTime = (milliseconds) => {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const handleSelectQuestion = (formattedQuestion) => {
+    setShowQuestions(false);
+    // Paste the formatted question directly into the code editor
+    setCode(formattedQuestion);
+    socketRef.current?.emit('codeChange', formattedQuestion);
+  };
+
+  return (
+    <div className="app-root">
+      <div className="editor-header">
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div className="room-question">
+            {ended ? (
+              <span style={{ color: '#ef4444' }}>Interview Ended</span>
+            ) : (
+              <span>Interview</span>
+            )}
+          </div>
+          <div style={{ 
+            fontSize: '0.75rem', 
+            color: 'rgba(255, 255, 255, 0.5)',
+            marginTop: '0.25rem'
+          }}>
+            Room: <strong>{roomId}</strong> • {isConnected ? 'Connected' : 'Disconnected'}
+            {startTime && (
+              <span> • Timer: <strong>{formatTime(currentTime - startTime.getTime())}</strong></span>
+            )}
+          </div>
+        </div>
+        
+        <div className="room-controls">
+          {role === 'interviewer' && !ended && (
+            <div className="dropdown-menu">
+              <button className="dropdown-trigger" aria-expanded="false">
+                <span>Tools</span>
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="dropdown-icon">
+                  <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              <div className="dropdown-content">
+                <div className="dropdown-label">Interview Tools</div>
+                <button 
+                  className="dropdown-item"
+                  onClick={() => setShowQuestions(true)}
+                >
+                  <span>Questions</span>
+                </button>
+                <button 
+                  className="dropdown-item"
+                  onClick={() => setShowNotes(true)}
+                >
+                  <span>Notes</span>
+                </button>
+                <button 
+                  className="dropdown-item"
+                  onClick={() => setShowAI(true)}
+                >
+                  <span>AI Assistant</span>
+                </button>
+                <div className="dropdown-separator"></div>
+                <div className="dropdown-label">Actions</div>
+                <button 
+                  className="dropdown-item"
+                  onClick={() => setShowHistory(true)}
+                >
+                  <span>History ({executionHistory.length})</span>
+                </button>
+                <button 
+                  className="dropdown-item"
+                  onClick={() => setShowVideoCall(true)}
+                >
+                  <span>Start Call</span>
+                </button>
+                <div className="dropdown-separator"></div>
+                <div className="dropdown-label">Evaluation</div>
+                <button 
+                  className="dropdown-item"
+                  onClick={() => setShowRubricScoring(true)}
+                >
+                  <span>Rubric Scoring</span>
+                </button>
+                <button 
+                  className="dropdown-item"
+                  onClick={() => setShowInterviewReport(true)}
+                >
+                  <span>Generate Report</span>
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {role === 'candidate' && !ended && (
+            <>
+              <button 
+                className="action-btn save-btn" 
+                onClick={() => setShowVideoCall(true)}
+                title="Join Video Call"
+              >
+                Join Call
+              </button>
+            </>
+          )}
+          
+          <div className="dropdown-menu">
+            <button className="dropdown-trigger" aria-expanded="false">
+              <span>{languages.find(l => l.value === language)?.label || 'Language'}</span>
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="dropdown-icon">
+                <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <div className="dropdown-content">
+              <div className="dropdown-label">Select Language</div>
+              {languages.map(l => (
+                <button
+                  key={l.value}
+                  className={`dropdown-item ${language === l.value ? 'dropdown-item-active' : ''}`}
+                  onClick={() => setLanguage(l.value)}
+                >
+                  <span>{l.label}</span>
+                  {language === l.value && (
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          <div className="dropdown-menu">
+            <button className="dropdown-trigger" aria-expanded="false">
+              <span>{themes.find(t => t.value === theme)?.label || 'Theme'}</span>
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="dropdown-icon">
+                <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <div className="dropdown-content">
+              <div className="dropdown-label">Select Theme</div>
+              {themes.map(t => (
+                <button
+                  key={t.value}
+                  className={`dropdown-item ${theme === t.value ? 'dropdown-item-active' : ''}`}
+                  onClick={() => setTheme(t.value)}
+                >
+                  <span>{t.label}</span>
+                  {theme === t.value && (
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          <div className="role-badge">
+            {role === 'interviewer' ? ' ' : ''} {role}
+          </div>
+          
+          {role === 'interviewer' && !ended && (
+            <button 
+              className="action-btn" 
+              style={{ 
+                background: '#ef4444', 
+                borderColor: '#ef4444',
+                color: '#fff' 
+              }} 
+              onClick={handleEndInterview}
+              title="End the interview"
+            >
+              End Interview
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Action buttons row between nav and editor */}
+      <div className="room-action-buttons">
+        <button 
+          className="action-btn save-btn" 
+          onClick={() => setShowHistory(true)}
+          title="View execution history"
+        >
+          History ({executionHistory.length})
+        </button>
+        <button 
+          className={`action-btn run-btn ${loading ? 'loading' : ''}`}
+          onClick={runCode} 
+          disabled={loading}
+          title="Run code"
+        >
+          {loading ? 'Running...' : 'Run Code'}
+        </button>
+      </div>
+
+      <div className="editor-container">
+        <MonacoEditor
+          height="55vh"
+          theme={theme}
+          language={
+            language === 'python3' ? 'python' :
+            language === 'nodejs' ? 'javascript' :
+            language === 'cpp17' ? 'cpp' :
+            language === 'c' ? 'c' :
+            language === 'java' ? 'java' :
+            language === 'csharp' ? 'csharp' :
+            language === 'php' ? 'php' :
+            language === 'swift' ? 'swift' :
+            language === 'kotlin' ? 'kotlin' :
+            language
+          }
+          value={code}
+          onChange={handleCodeChange}
+          options={{
+            minimap: { enabled: false },
+            wordWrap: 'on',
+            contextmenu: true,
+            lineNumbers: 'on',
+            folding: true,
+            renderLineHighlight: 'line',
+            scrollBeyondLastLine: false,
+            automaticLayout: true,
+            formatOnType: true,
+            formatOnPaste: true,
+            suggestOnTriggerCharacters: true,
+            tabCompletion: 'on',
+            quickSuggestions: true,
+            codeLens: true,
+            lightbulb: { enabled: true },
+            links: true,
+            mouseWheelZoom: true,
+            renderWhitespace: 'selection',
+            smoothScrolling: true,
+            bracketPairColorization: { enabled: true },
+            inlineSuggest: { enabled: true },
+            // Additional features
+            find: {
+              seedSearchStringFromSelection: 'always',
+              autoFindInSelection: 'multiline'
+            },
+            gotoLine: { enabled: true },
+            quickSuggestionsDelay: 100,
+            parameterHints: { enabled: true },
+            hover: { enabled: true, delay: 300 },
+            matchBrackets: 'always',
+            selectOnLineNumbers: true,
+            roundedSelection: false,
+            readOnly: false,
+            cursorStyle: 'line',
+            cursorBlinking: 'blink',
+            hideCursorInOverviewRuler: false,
+            overviewRulerLanes: 2,
+            renderControlCharacters: false,
+            renderIndentGuides: true,
+            renderValidationDecorations: 'on',
+            rulers: [],
+            dragAndDrop: true,
+            multiCursorModifier: 'alt',
+            accessibilitySupport: 'auto',
+            fontSize: 14,
+            fontFamily: "'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace",
+            padding: { top: 16, bottom: 16 },
+            scrollbar: {
+              vertical: 'visible',
+              horizontal: 'visible',
+              useShadows: false,
+              verticalScrollbarSize: 8,
+              horizontalScrollbarSize: 8,
+            },
+          }}
+        />
+      </div>
+
+      <div className="output-container">
+        <span className="output-label">Output</span>
+        <pre className="output-area">{output || 'No output yet. Run your code to see results here.'}</pre>
+      </div>
+
+     {showQuestions && role === 'interviewer' && (
+        <div className="modal-overlay" onClick={() => setShowQuestions(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <Questions onSelect={handleSelectQuestion} onClose={() => setShowQuestions(false)} />
+          </div>
+        </div>
+      )}
+
+      {showNotes && role === 'interviewer' && (
+        <div className="modal-overlay" onClick={() => setShowNotes(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div style={{
+              width: '100%',
+              maxWidth: '500px',
+              position: 'relative',
+            }}>
+              <button
+                onClick={() => setShowNotes(false)}
+                className="modal-close"
+                aria-label="Close modal"
+              >
+                ×
+              </button>
+              
+              <h3 style={{ 
+                margin: '0 0 2rem 0',
+                fontSize: '1.5rem',
+                fontWeight: '600',
+                color: '#fff',
+                textAlign: 'center'
+              }}>
+                Interview Notes
+              </h3>
+              
+              <div style={{
+                background: 'rgba(0, 112, 243, 0.1)',
+                border: '1px solid rgba(0, 112, 243, 0.3)',
+                borderRadius: '8px',
+                padding: '1rem',
+                marginBottom: '2rem',
+                textAlign: 'center',
+                fontSize: '0.875rem',
+                color: '#0070f3'
+              }}>
+                <strong>Tip:</strong> Notes are automatically saved as you type!
+              </div>
+
+              <textarea
+                value={interviewNotes}
+                onChange={(e) => handleNotesChange(e.target.value)}
+                placeholder="Enter your interview notes here..."
+                style={{
+                  width: '100%',
+                  height: '300px',
+                  padding: '1rem',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  color: '#fff',
+                  fontSize: '0.875rem',
+                  fontFamily: 'inherit',
+                  resize: 'vertical',
+                  outline: 'none'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#0070f3';
+                  e.target.style.background = 'rgba(255, 255, 255, 0.08)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                  e.target.style.background = 'rgba(255, 255, 255, 0.05)';
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAI && role === 'interviewer' && (
+        <div className="modal-overlay" onClick={() => setShowAI(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <AIAssistant 
+              roomId={roomId}
+              code={code}
+              language={language}
+              onClose={() => setShowAI(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {showVideoCall && (
+        <WebRTCVideoCall 
+          roomId={roomId}
+          role={role}
+          isOpen={showVideoCall}
+          onClose={() => setShowVideoCall(false)}
+        />
+      )}
+
+      {showHistory && (
+        <div className="modal-overlay" onClick={() => setShowHistory(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div style={{
+              width: '100%',
+              maxWidth: '800px',
+              maxHeight: '85vh',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              borderRadius: '12px',
+              border: '1px solid rgba(171, 171, 171, 0.2)',
+              backdropFilter: 'blur(30px)',
+            }}>
+              <button
+                onClick={() => setShowHistory(false)}
+                className="modal-close"
+                aria-label="Close History"
+              >
+                ×
+              </button>
+              
+              <div style={{
+                padding: '24px 32px 20px 32px',
+                borderBottom: '1px solid rgba(170, 170, 170, 0.2)'
+              }}>
+                <h3 style={{ 
+                  margin: '0',
+                  fontSize: '1.3rem',
+                  fontWeight: '600',
+                  color: '#fff',
+                  textAlign: 'center',
+                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)'
+                }}>
+                  Execution History
+                </h3>
+              </div>
+
+              <div style={{ 
+                flex: 1, 
+                overflow: 'auto',
+                padding: '24px'
+              }}>
+                {executionHistory.length === 0 ? (
+                  <div style={{
+                    textAlign: 'center',
+                    color: '#9ca3af',
+                    fontSize: '0.9rem',
+                    padding: '40px',
+                    letterSpacing: '-0.5px',
+                  }}>
+                    No execution history yet. Run some code to see it here!
+                  </div>
+                ) : (
+                  executionHistory.map((entry) => (
+                    <div key={entry.id} style={{
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: `1px solid rgba(${entry.success ? '16, 185, 129' : '239, 68, 68'}, 0.3)`,
+                      borderRadius: '12px',
+                      padding: '16px',
+                      marginBottom: '16px',
+                      fontSize: '0.85rem'
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '8px',
+                        color: entry.success ? '#ffffffff' : '#ffffffff',
+                        fontWeight: '600'
+                      }}>
+                        <span>{entry.success ? '✅' : '❌'} {entry.language}</span>
+                        <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
+                          {entry.timestamp.toLocaleTimeString()} • {entry.executionTime}ms
+                        </span>
+                      </div>
+                      <div style={{
+
+                        background: 'rgba(0, 0, 0, 0.3)',
+                        padding: '8px',
+                        borderRadius: '6px',
+                        marginBottom: '8px',
+                        fontFamily: 'monospace',
+                        fontSize: '0.8rem',
+                        color: '#d1d5db',
+                        whiteSpace: 'pre-wrap',
+                        overflow: 'auto'
+
+                      }}>
+                        {entry.code}
+                      </div>
+                      <div style={{
+                        background: 'rgba(0, 0, 0, 0.3)',
+                        padding: '8px',
+                        borderRadius: '6px',
+                        fontFamily: 'monospace',
+                        fontSize: '0.8rem',
+                        color: entry.success ? '#d1d5db' : '#fca5a5',
+                        maxHeight: '100px',
+                        overflow: 'auto',
+                      }}>
+                        {entry.output}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Rubric Scoring Modal */}
+      {showRubricScoring && (
+        <div className="modal-overlay" onClick={() => setShowRubricScoring(false)}>
+          <div onClick={(e) => e.stopPropagation()}>
+            <RubricScoring
+              roomId={roomId}
+              onClose={() => setShowRubricScoring(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Interview Report Modal */}
+      {showInterviewReport && (
+        <div className="modal-overlay" onClick={() => setShowInterviewReport(false)}>
+          <div onClick={(e) => e.stopPropagation()}>
+            <InterviewReport
+              roomId={roomId}
+              onClose={() => setShowInterviewReport(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* User Join Alerts */}
+      {userAlerts.length > 0 && (
+        <div style={{
+          position: 'fixed',
+          top: '1rem',
+          right: '1rem',
+          zIndex: 1000,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.5rem'
+        }}>
+          {userAlerts.map(alert => (
+            <div
+              key={alert.id}
+              className="user-join-alert"
+              style={{
+                background: alert.type === 'success' ? 'hsl(142 76% 36%)' : 'hsl(var(--primary))',
+                color: '#ffffff',
+                padding: '0.75rem 1rem',
+                borderRadius: 'var(--radius)',
+                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                maxWidth: '300px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '0.75rem'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ fontSize: '1rem' }}>
+                  {alert.type === 'success' ? '✅' : 'ℹ️'}
+                </div>
+                <span>{alert.message}</span>
+              </div>
+              <button
+                onClick={() => dismissAlert(alert.id)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  padding: '0.25rem',
+                  fontSize: '1rem',
+                  lineHeight: '1',
+                  opacity: 0.8,
+                  borderRadius: '2px'
+                }}
+                onMouseEnter={(e) => e.target.style.opacity = '1'}
+                onMouseLeave={(e) => e.target.style.opacity = '0.8'}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+    </div>
+  );
+} 
