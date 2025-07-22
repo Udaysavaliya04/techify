@@ -187,7 +187,8 @@ export default function Dashboard() {
               background: 'linear-gradient(135deg, #ffffff, #cacacaff, #ffffffff)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
+              backgroundClip: 'text',
+              letterSpacing: '-0.05em',
             }}>Dashboard</h2>
             <p style={{
               color: 'hsl(var(--muted-foreground))',
@@ -209,7 +210,7 @@ export default function Dashboard() {
           <Link 
             to="/join" 
             className="action-btn run-btn"
-            style={{ textDecoration: 'none' }}
+            style={{ textDecoration: 'none', letterSpacing: '0.01em' }}
           >
             Join Interview
           </Link>
@@ -230,54 +231,31 @@ export default function Dashboard() {
           gap: 0,
           marginBottom: '2rem'
         }}>
-          {/* Total Interviews */}
-        <div className="join-container" style={{ margin: 0, padding: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-            <div style={{
-              width: '2.5rem',
-              height: '2.5rem',
-              background: 'hsl(var(--primary) / 0.1)',
-              borderRadius: 'calc(var(--radius) - 2px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="hsl(var(--primary))" strokeWidth="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-            </div>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontSize: '0.875rem', color: 'hsl(var(--muted-foreground))', margin: 0, marginBottom: '0.25rem' }}>
-                {dashboardData.user.role === 'interviewer' ? 'Interviews Conducted' : 'Interviews Taken'}
-              </p>
-              <p style={{ fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))', margin: 0 }}>
-                +{stats.thisMonthInterviews} this month
+
+            <div className="join-container" style={{ margin: 0, padding: '1.5rem', paddingLeft: '2rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: '0.875rem', color: 'hsl(var(--muted-foreground))', margin: 0, marginBottom: '0.25rem' }}>
+              {dashboardData.user.role === 'interviewer' ? 'Interviews Conducted' : 'Interviews Taken'}
+                  </p>
+                  <p style={{ fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))', margin: 0 }}>
+              +{stats.thisMonthInterviews} this month
+                  </p>
+                </div>
+              </div>
+              <p style={{ fontSize: '2rem', fontWeight: '700', margin: 0, color: 'hsl(var(--foreground))', textAlign: 'center', gap: '0.5rem' ,}}>
+                {stats.totalInterviews}
               </p>
             </div>
-          </div>
-          <p style={{ fontSize: '2rem', fontWeight: '700', margin: 0, color: 'hsl(var(--foreground))', textAlign: 'center' }}>
-            {stats.totalInterviews}
-          </p>
-        </div>
 
 
-        {/* Average Score - Only for Candidates */}
+            {/* Average Score - Only for Candidates */}
         {dashboardData.user.role === 'candidate' && (
           <div className="join-container" style={{ margin: 0, padding: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
               <div style={{
-                width: '2.5rem',
-                height: '2.5rem',
-                background: 'hsl(32 95% 44% / 0.1)',
-                borderRadius: 'calc(var(--radius) - 2px)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
               }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="hsl(32 95% 44%)" strokeWidth="2">
-                  <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
-                </svg>
               </div>
               <div style={{ flex: 1 }}>
                 <p style={{ fontSize: '0.875rem', color: 'hsl(var(--muted-foreground))', margin: 0, marginBottom: '0.25rem' }}>

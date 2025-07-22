@@ -136,7 +136,8 @@ export default function Join() {
                   textDecoration: 'none',
                   fontSize: '0.875rem',
                   fontWeight: '500',
-                  transition: 'color 0.2s ease'
+                  transition: 'color 0.2s ease',
+                  background: 'transparent'
                 }}
            
               >
@@ -347,7 +348,8 @@ export default function Join() {
                   display: 'inline-block',
                   textDecoration: 'none',
                   fontSize: '1rem',
-                  padding: '0.875rem 2rem'
+                  padding: '0.875rem 2rem',
+                  background: 'transparent',
                 }}
               >
                 Sign In
