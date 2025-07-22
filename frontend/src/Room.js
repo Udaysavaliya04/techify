@@ -393,7 +393,102 @@ export default function Room() {
             {ended ? (
               <span style={{ color: '#ef4444' }}>Interview Ended</span>
             ) : (
-              <span>Interview</span>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.75rem',
+                flexWrap: 'wrap'
+              }}>
+                {joinedUsers.length > 0 ? (
+                  <>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '0.5rem' 
+                    }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(var(--primary))" strokeWidth="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="m22 21-3-3m0 0-3-3m3 3 3 3m-3-3 3-3"></path>
+                      </svg>
+                      <span style={{ 
+                        fontSize: '0.875rem',
+                        fontWeight: '500',
+                        color: 'hsl(var(--foreground))'
+                      }}>
+                        Participants:
+                      </span>
+                    </div>
+                    <div style={{ 
+                      display: 'flex', 
+                      gap: '0.5rem',
+                      flexWrap: 'wrap'
+                    }}>
+                      {/* Current user */}
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.375rem',
+                        background: 'hsl(var(--primary) / 0.1)',
+                        color: 'hsl(var(--primary))',
+                        padding: '0.25rem 0.5rem',
+                        borderRadius: 'calc(var(--radius) - 2px)',
+                        fontSize: '0.75rem',
+                        fontWeight: '500',
+                      }}>
+                        <div style={{
+                          width: '6px',
+                          height: '6px',
+                          borderRadius: '50%',
+                          background: 'hsl(142 76% 36%)'
+                        }}></div>
+                        {user?.username || 'You'} ({role})
+                      </div>
+                      
+                      {/* Other joined users */}
+                      {joinedUsers.map((joinedUser) => (
+                        <div key={joinedUser.userId} style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.375rem',
+                          background: 'hsl(var(--secondary) / 0.8)',
+                          color: 'hsl(var(--secondary-foreground))',
+                          padding: '0.25rem 0.5rem',
+                          borderRadius: 'calc(var(--radius) - 2px)',
+                          fontSize: '0.75rem',
+                          fontWeight: '500',
+                        }}>
+                          <div style={{
+                            width: '6px',
+                            height: '6px',
+                            borderRadius: '50%',
+                            background: joinedUser.role === 'interviewer' ? 'hsl(32 95% 44%)' : 'hsl(262 83% 58%)'
+                          }}></div>
+                          {joinedUser.username} ({joinedUser.role})
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '0.5rem',
+                    color: 'hsl(var(--muted-foreground))'
+                  }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span style={{ 
+                      fontSize: '0.875rem',
+                      fontWeight: '500'
+                    }}>
+                      Waiting for participants...
+                    </span>
+                  </div>
+                )}
+              </div>
             )}
           </div>
           <div style={{ 
@@ -403,7 +498,7 @@ export default function Room() {
           }}>
             Room: <strong>{roomId}</strong> • {isConnected ? 'Connected' : 'Disconnected'}
             {startTime && (
-              <span> • Timer: <strong>{formatTime(currentTime - startTime.getTime())}</strong></span>
+              <span> • <strong>{formatTime(currentTime - startTime.getTime())}</strong></span>
             )}
           </div>
         </div>
