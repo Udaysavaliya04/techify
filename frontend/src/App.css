@@ -326,7 +326,7 @@ body, html, #root {
   padding: 0 1rem;
 }
 
-/* Room action buttons row - between nav and editor */
+/* Room action buttons */
 .room-action-buttons {
   width: 100%;
   max-width: 1200px;
@@ -337,7 +337,6 @@ body, html, #root {
   padding: 0 1rem;
 }
 
-/* Reduced margin for interviewer */
 .room-action-buttons.interviewer {
   margin-bottom: 0.75rem;
 }
@@ -450,7 +449,6 @@ body, html, #root {
   border: 1px solid hsl(var(--border));
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
   .app-root {
     padding: 1rem 0.5rem;
@@ -488,7 +486,6 @@ body, html, #root {
     justify-content: center;
   }
 
-  /* Enhanced room controls responsive */
   .room-controls {
     flex-direction: column;
     gap: 0.5rem;
@@ -610,7 +607,6 @@ body, html, #root {
   margin-bottom: 1.5rem;
 }
 
-/* OTP Input Styles */
 .otp-container {
   display: flex;
   flex-direction: column;
@@ -880,7 +876,6 @@ body, html, #root {
   color: hsl(var(--muted-foreground));
 }
 
-/* Error state for inputs */
 .input.error {
   border-color: hsl(var(--destructive));
 }
@@ -1156,7 +1151,6 @@ body, html, #root {
   font-weight: 500;
 }
 
-/* Loading states */
 .loading {
   opacity: 0.6;
   cursor: not-allowed;
@@ -1180,7 +1174,7 @@ body, html, #root {
   }
 }
 
-/* WebRTC Video Call Styles - Picture-in-Picture Mode */
+/* WebRTC Video Call Styles */
 .video-call-modal {
   position: fixed;
   bottom: 1rem;
@@ -1254,7 +1248,6 @@ body, html, #root {
   min-height: 160px;
 }
 
-/* Remote video (main video in corner view) */
 .remote-video-container {
   width: 100%;
   height: 100%;
@@ -1287,7 +1280,6 @@ body, html, #root {
   margin: 0;
 }
 
-/* Local video (smaller picture-in-picture within the corner view) */
 .local-video-container {
   position: absolute;
   top: 0.5rem;
@@ -1305,7 +1297,7 @@ body, html, #root {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scaleX(-1); /* Mirror effect for local video */
+  transform: scaleX(-1); 
 }
 
 .video-label {
@@ -1413,7 +1405,6 @@ body, html, #root {
   margin: 0 auto 0.5rem;
 }
 
-/* Responsive design for corner video */
 @media (max-width: 768px) {
   .video-call-modal {
     width: 280px;
@@ -1445,7 +1436,6 @@ body, html, #root {
   }
 }
 
-/* Draggable video call (optional enhancement) */
 .video-call-modal:hover {
   cursor: move;
 }
@@ -1454,7 +1444,6 @@ body, html, #root {
   opacity: 0.8;
 }
 
-/* Spin animation for loading icons */
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -1464,7 +1453,6 @@ body, html, #root {
   }
 }
 
-/* User join alert animation */
 @keyframes slideIn {
   from {
     transform: translateX(100%);
