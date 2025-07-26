@@ -1,6 +1,6 @@
 # Techify - Real-Time Technical Interview Platform
 
-Techify is a comprehensive web-based platform designed for conducting technical interviews with real-time collaboration features. It provides a seamless experience for both interviewers and candidates with live code editing, execution, and assessment tools.
+Techify is a comprehensive web-based platform designed for conducting technical interviews with real-time collaboration features. It provides a seamless experience for both interviewers and candidates with code editing, execution, and assessment tools.
 
 ## Features
 
@@ -35,21 +35,14 @@ Techify is a comprehensive web-based platform designed for conducting technical 
 ## Technology Stack
 
 ### Frontend
-- **React.js**: Modern JavaScript framework for UI
-- **React Router**: Client-side routing
-- **Monaco Editor**: VS Code-like code editor
-- **Socket.io Client**: Real-time communication
-- **Axios**: HTTP client for API requests
-- **CSS3**: Custom styling with CSS variables
+- **React.js**
+- **Monaco Editor**
+- **CSS3**
 
 ### Backend
-- **Node.js**: Server runtime environment
-- **Express.js**: Web application framework
-- **Socket.io**: Real-time bidirectional communication
-- **MongoDB**: NoSQL database for data storage
-- **Mongoose**: MongoDB object modeling
-- **JWT**: JSON Web Tokens for authentication
-- **bcrypt**: Password hashing
+- **Node.js**
+- **Express.js**
+- **MongoDB**
 
 ## Project Structure
 
@@ -60,14 +53,12 @@ techify/
 │   │   ├── User.js
 │   │   ├── Room.js
 │   │   ├── Question.js
-│   │   └── CodeSnippet.js
 │   ├── routes/
 │   │   ├── auth.js
 │   │   ├── room.js
 │   │   ├── code.js
 │   │   ├── questions.js
 │   │   └── ai.js
-│   ├── package.json
 │   └── server.js
 ├── frontend/
 │   ├── src/
@@ -90,8 +81,6 @@ techify/
 │   │   └── index.js
 │   ├── public/
 │   │   ├── index.html
-│   │   └── logo.png
-│   └── package.json
 └── README.md
 ```
 
