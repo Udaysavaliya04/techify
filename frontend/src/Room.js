@@ -36,8 +36,7 @@ export default function Room() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
-  
-  // Authentication guard - redirect to login if not authenticated
+
   useEffect(() => {
     if (!isAuthenticated()) {
       navigate('/login', { 
@@ -48,8 +47,7 @@ export default function Room() {
       });
     }
   }, [isAuthenticated, navigate, roomId]);
-  
-  // If not authenticated, show loading state while redirect happens
+ 
   if (!isAuthenticated()) {
     return (
       <div style={{
@@ -118,7 +116,7 @@ export default function Room() {
         username: user?.username || 'Anonymous' 
       });
       
-      // Start interview tracking for authenticated users
+      // Start interview tracking 
       startInterviewTracking();
     });
 
@@ -139,23 +137,20 @@ export default function Room() {
 
     socketRef.current.on('interviewEnded', () => {
       setEnded(true);
-      
-      // Redirect both interviewers and candidates to dashboard after interview ends
+
       if (isAuthenticated()) {
         setTimeout(() => {
           navigate('/dashboard');
-        }, 2000); // Give 2 seconds for any final save operations
+        }, 2000); 
       }
     });
 
     // Listen for user join events
     socketRef.current.on('userJoined', ({ username, role: userRole, userId }) => {
-      // Add user to joined users list if not already present
       setJoinedUsers(prev => {
         if (!prev.find(u => u.userId === userId)) {
           const newUser = { username, role: userRole, userId, joinedAt: new Date() };
-          
-          // Show alert for candidate joins (only for interviewers)
+   
           if (userRole === 'candidate' && role === 'interviewer') {
             showUserJoinAlert(username, userRole);
           }
@@ -175,10 +170,8 @@ export default function Room() {
       }
     });
 
-    // Fetch room timer info
     fetchTimerInfo();
     
-    // Fetch interview notes if interviewer
     if (role === 'interviewer') {
       fetchInterviewNotes();
     }
@@ -190,7 +183,6 @@ export default function Room() {
 
   // Browser navigation protection
   useEffect(() => {
-    // Prevent browser back button and page refresh during active interview
     const handleBeforeUnload = (e) => {
       if (!ended) {
         const message = 'Are you sure you want to leave the interview? Your progress may be lost.';
@@ -207,7 +199,6 @@ export default function Room() {
           // Push current state back to prevent navigation
           window.history.pushState(null, '', window.location.href);
         } else {
-          // Allow navigation but complete interview tracking
           completeInterviewTracking({
             status: 'left_early',
             feedback: 'User navigated away from interview'
@@ -216,7 +207,6 @@ export default function Room() {
       }
     };
 
-    // Add event listeners
     window.addEventListener('beforeunload', handleBeforeUnload);
     window.addEventListener('popstate', handlePopState);
 
@@ -280,8 +270,7 @@ export default function Room() {
     };
     
     setUserAlerts(prev => [...prev, newAlert]);
-    
-    // Auto-dismiss after 5 seconds
+
     setTimeout(() => {
       setUserAlerts(prev => prev.filter(alert => alert.id !== alertId));
     }, 5000);
@@ -299,8 +288,7 @@ export default function Room() {
     };
     
     setUserAlerts(prev => [...prev, newAlert]);
-    
-    // Auto-dismiss after 5 seconds
+
     setTimeout(() => {
       setUserAlerts(prev => prev.filter(alert => alert.id !== alertId));
     }, 5000);
@@ -310,7 +298,6 @@ export default function Room() {
     setUserAlerts(prev => prev.filter(alert => alert.id !== alertId));
   };
 
-  // Timer effect
   useEffect(() => {
     if (!ended && startTime) {
       const interval = setInterval(() => {
@@ -388,7 +375,6 @@ export default function Room() {
       
       setExecutionHistory(prev => [historyEntry, ...prev.slice(0, 19)]); // Keep last 20 runs
       
-      // Note: Output will be updated via socket event, but we'll set it here as fallback
       if (!socketRef.current?.connected) {
         setOutput(`[${role}] ${res.data.output || res.data.error || 'Code executed successfully.'}`);
       }
@@ -419,19 +405,18 @@ export default function Room() {
       try {
         await axios.put(`http://localhost:5000/api/room/${roomId}/end`);
         
-        // Complete interview tracking for authenticated users
+        // Complete interview tracking
         await completeInterviewTracking({
-          feedback: interviewNotes // Include any notes as feedback
+          feedback: interviewNotes 
         });
         
         setEnded(true);
         socketRef.current?.emit('endInterview');
         
-        // Redirect authenticated users to dashboard after interview
         if (isAuthenticated()) {
           setTimeout(() => {
             navigate('/dashboard');
-          }, 2000); // Give 2 seconds for any final save operations
+          }, 2000);
         }
       } catch (err) {
         console.error('Failed to end interview:', err);
@@ -442,13 +427,11 @@ export default function Room() {
   const handleLeaveInterview = async () => {
     if (window.confirm('Are you sure you want to leave the interview? This action cannot be undone and your progress may be lost.')) {
       try {
-        // Complete interview tracking for authenticated users
         await completeInterviewTracking({
           status: 'left_early',
           feedback: 'Candidate left the interview early'
         });
         
-        // Show leave alert
         const alertId = alertIdCounter;
         setAlertIdCounter(prev => prev + 1);
         
@@ -461,21 +444,18 @@ export default function Room() {
         
         setUserAlerts(prev => [...prev, leaveAlert]);
         
-        // Emit leave event to notify other participants
         socketRef.current?.emit('userLeave', { 
           roomId, 
           username: user?.username || 'Anonymous',
           role 
         });
         
-        // Redirect to dashboard after short delay
         setTimeout(() => {
           navigate('/dashboard');
         }, 2000);
         
       } catch (err) {
         console.error('Failed to leave interview:', err);
-        // Still navigate even if API call fails
         navigate('/dashboard');
       }
     }
@@ -500,7 +480,6 @@ export default function Room() {
 
   const handleSelectQuestion = (formattedQuestion) => {
     setShowQuestions(false);
-    // Paste the formatted question directly into the code editor
     setCode(formattedQuestion);
     socketRef.current?.emit('codeChange', formattedQuestion);
   };
