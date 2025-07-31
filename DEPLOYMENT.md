@@ -38,6 +38,7 @@ You'll need to set these environment variables in Render dashboard:
    - Connect your GitHub repo
    - Build Command: `cd frontend && npm install && REACT_APP_API_URL=https://your-backend-url.onrender.com npm run build`
    - Publish Directory: `frontend/build`
+   - **Important**: Make sure the API URL does NOT have a trailing slash
 
 ## Step 3: Configure Database
 
@@ -56,10 +57,27 @@ If using MongoDB Atlas:
 
 ## Troubleshooting
 
-- Check Render logs for both services
-- Ensure all environment variables are set correctly
-- Make sure MongoDB is accessible from Render
-- Verify API URLs are correctly configured
+### Common Issues:
+
+1. **404 Errors on API calls**:
+   - Check that the `REACT_APP_API_URL` environment variable is set correctly in Render
+   - Ensure the backend URL does not have a trailing slash
+   - Verify the backend service is running by visiting `https://your-backend-url.onrender.com/`
+
+2. **Double slash (//) in API URLs**:
+   - This happens when the API URL has a trailing slash
+   - Make sure `REACT_APP_API_URL` is set to `https://your-backend-url.onrender.com` (no trailing slash)
+
+3. **CORS errors**:
+   - The backend is configured to allow all origins (`cors()` with no restrictions)
+   - If you still get CORS errors, check if the backend service is actually running
+
+4. **General debugging steps**:
+   - Check Render logs for both services
+   - Ensure all environment variables are set correctly
+   - Make sure MongoDB is accessible from Render
+   - Verify API URLs are correctly configured
+   - Test the backend health endpoint at `https://your-backend-url.onrender.com/`
 
 ## Notes
 

@@ -22,7 +22,7 @@ services:
     name: techify-frontend
     region: oregon
     plan: free
-    buildCommand: cd frontend && npm install && REACT_APP_API_URL=$TECHIFY_BACKEND_URL npm run build
+    buildCommand: cd frontend && npm install && REACT_APP_API_URL=https://$TECHIFY_BACKEND_URL npm run build
     staticPublishPath: frontend/build
     pullRequestPreviewsEnabled: false
     envVars:

@@ -25,6 +25,12 @@ import authRouter from './routes/auth.js';
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+// Health check route
+app.get('/', (req, res) => {
+  res.json({ message: 'Techify Backend API is running!', timestamp: new Date().toISOString() });
+});
+
 app.use('/api/code', codeRouter);
 app.use('/api/room', roomRouter);
 app.use('/api/ai', aiRouter);
