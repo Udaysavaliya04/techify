@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './components/AuthWrapper';
 import axios from 'axios';
+import config from './config';
 import './App.css';
 
 export default function Register() {
@@ -72,7 +73,7 @@ export default function Register() {
 
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', {
+      const response = await axios.post(`${config.API_BASE_URL}/api/auth/register`, {
         username: formData.username.trim(),
         email: formData.email.trim(),
         password: formData.password,

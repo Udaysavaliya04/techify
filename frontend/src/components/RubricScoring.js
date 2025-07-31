@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import config from '../config';
 
 const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
   const [scores, setScores] = useState({});
@@ -83,7 +84,7 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
 
   const fetchExistingScores = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/room/${roomId}/rubric`);
+      const res = await axios.get(`${config.API_BASE_URL}/api/room/${roomId}/rubric`);
       if (res.data) {
         setScores(res.data.scores || {});
         setOverallNotes(res.data.overallNotes || '');
@@ -149,7 +150,7 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
       const weightedScore = parseFloat(calculateWeightedScore());
       const autoRecommendation = getRecommendationFromScore(weightedScore);
       
-      await axios.put(`http://localhost:5000/api/room/${roomId}/rubric`, {
+      await axios.put(`${config.API_BASE_URL}/api/room/${roomId}/rubric`, {
         scores,
         overallNotes,
         recommendation: recommendation || autoRecommendation,

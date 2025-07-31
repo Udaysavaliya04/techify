@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from './components/AuthWrapper';
 import axios from 'axios';
+import config from './config';
 import './App.css';
 
 export default function Login() {
@@ -58,7 +59,7 @@ export default function Login() {
 
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', formData);
+      const response = await axios.post(`${config.API_BASE_URL}/api/auth/login`, formData);
       
       // Store token and user data
       login(response.data.user, response.data.token);

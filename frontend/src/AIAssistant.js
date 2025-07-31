@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import config from './config';
 
 const AIAssistant = ({ roomId, code, language, onClose }) => {
   const [analysis, setAnalysis] = useState('');
@@ -16,7 +17,7 @@ const AIAssistant = ({ roomId, code, language, onClose }) => {
 
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/ai/analyze-code', {
+      const res = await axios.post(`${config.API_BASE_URL}/api/ai/analyze-code`, {
         code,
         language,
         roomId
@@ -38,7 +39,7 @@ const AIAssistant = ({ roomId, code, language, onClose }) => {
 
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/ai/ask-question', {
+      const res = await axios.post(`${config.API_BASE_URL}/api/ai/ask-question`, {
         question,
         code,
         language,

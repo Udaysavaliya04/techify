@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import config from '../config';
 
 const InterviewReport = ({ roomId, onClose }) => {
   const [reportData, setReportData] = useState(null);
@@ -13,7 +14,7 @@ const InterviewReport = ({ roomId, onClose }) => {
   const fetchReportData = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5000/api/room/${roomId}/report`);
+      const res = await axios.get(`${config.API_BASE_URL}/api/room/${roomId}/report`);
       setReportData(res.data);
     } catch (err) {
       console.error('Failed to fetch report data:', err);
@@ -25,7 +26,7 @@ const InterviewReport = ({ roomId, onClose }) => {
   const exportReport = async (format = 'pdf') => {
     setExportLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5000/api/room/${roomId}/report/export?format=${format}`, {
+      const res = await axios.get(`${config.API_BASE_URL}/api/room/${roomId}/report/export?format=${format}`, {
         responseType: 'blob'
       });
       

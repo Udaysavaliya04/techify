@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './components/AuthWrapper';
 import axios from 'axios';
+import config from './config';
 import './App.css';
 
 export default function Dashboard() {
@@ -30,7 +31,7 @@ export default function Dashboard() {
         return;
       }
 
-      const response = await axios.get('http://localhost:5000/api/auth/dashboard', {
+      const response = await axios.get(`${config.API_BASE_URL}/api/auth/dashboard`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -53,7 +54,7 @@ export default function Dashboard() {
   const handleLogout = async () => {
     try {
       // Call logout endpoint
-      await axios.post('http://localhost:5000/api/auth/logout');
+      await axios.post(`${config.API_BASE_URL}/api/auth/logout`);
     } catch (error) {
       // Ignore logout errors
       console.error('Logout error:', error);
@@ -93,7 +94,7 @@ export default function Dashboard() {
     try {
       // Create interview record in database only when entering room
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/auth/interview', {
+      await axios.post(`${config.API_BASE_URL}/api/auth/interview`, {
         roomId: generatedRoomId,
         role: 'interviewer'
       }, {

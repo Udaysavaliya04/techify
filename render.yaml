@@ -1,0 +1,35 @@
+services:
+  # Backend API Service
+  - type: web
+    name: techify-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    # Add your environment variables in Render dashboard:
+    # - MONGO_URI (your MongoDB connection string)
+    # - GEMINI_API_KEY (your Google Gemini API key)
+    # - JDOODLE_CLIENT_ID (your JDoodle client ID)
+    # - JDOODLE_CLIENT_SECRET (your JDoodle client secret)
+    # - JWT_SECRET (a secure random string)
+
+  # Frontend Static Site
+  - type: static
+    name: techify-frontend
+    region: oregon
+    plan: free
+    buildCommand: cd frontend && npm install && REACT_APP_API_URL=$TECHIFY_BACKEND_URL npm run build
+    staticPublishPath: frontend/build
+    pullRequestPreviewsEnabled: false
+    envVars:
+      - key: CI
+        value: false
+      - key: TECHIFY_BACKEND_URL
+        fromService:
+          type: web
+          name: techify-backend
+          property: host

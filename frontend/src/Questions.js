@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import config from './config';
 import './App.css';
 
 export default function Questions({ onSelect, onClose }) {
@@ -16,7 +17,7 @@ export default function Questions({ onSelect, onClose }) {
   const fetchQuestions = async (diff = '') => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/questions', diff ? { params: { difficulty: diff } } : {});
+      const res = await axios.get(`${config.API_BASE_URL}/api/questions`, diff ? { params: { difficulty: diff } } : {});
       setQuestions(res.data);
     } catch (error) {
       console.error('Failed to fetch questions:', error);
@@ -35,7 +36,7 @@ export default function Questions({ onSelect, onClose }) {
     
     setLoading(true);
     try {
-      await axios.post('http://localhost:5000/api/questions/add', { 
+      await axios.post(`${config.API_BASE_URL}/api/questions/add`, { 
         text: text.trim(), 
         difficulty: addDiff
       });
@@ -59,7 +60,7 @@ export default function Questions({ onSelect, onClose }) {
     
     setLoading(true);
     try {
-      await axios.delete(`http://localhost:5000/api/questions/${questionId}`);
+      await axios.delete(`${config.API_BASE_URL}/api/questions/${questionId}`);
       fetchQuestions(difficulty);
     } catch (error) {
       console.error('Failed to delete question:', error);
@@ -85,7 +86,7 @@ export default function Questions({ onSelect, onClose }) {
     
     setLoading(true);
     try {
-      await axios.put(`http://localhost:5000/api/questions/${questionId}`, {
+      await axios.put(`${config.API_BASE_URL}/api/questions/${questionId}`, {
         text: editText.trim(),
         difficulty: editDiff
       });

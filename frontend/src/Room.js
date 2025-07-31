@@ -9,9 +9,10 @@ import AIAssistant from './AIAssistant';
 import WebRTCVideoCall from './components/WebRTCVideoCall';
 import RubricScoring from './components/RubricScoring';
 import InterviewReport from './components/InterviewReport';
+import config from './config';
 import './App.css';
 
-const SOCKET_URL = 'http://localhost:5000';
+const SOCKET_URL = config.SOCKET_URL;
 
 const languages = [
   { label: 'Python', value: 'python3' },
@@ -224,7 +225,7 @@ export default function Room() {
     if (isAuthenticated() && !interviewStarted) {
       try {
         const token = localStorage.getItem('token');
-        await axios.post('http://localhost:5000/api/auth/interview', {
+        await axios.post(`${config.API_BASE_URL}/api/auth/interview`, {
           roomId,
           role,
           language
@@ -244,7 +245,7 @@ export default function Room() {
         const token = localStorage.getItem('token');
         const duration = startTime ? Math.round((Date.now() - new Date(startTime).getTime()) / 60000) : 0;
         
-        await axios.put(`http://localhost:5000/api/auth/interview/${roomId}/complete`, {
+        await axios.put(`${config.API_BASE_URL}/api/auth/interview/${roomId}/complete`, {
           duration,
           codeSubmitted: code,
           ...additionalData
@@ -309,7 +310,7 @@ export default function Room() {
 
   const fetchTimerInfo = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/room/${roomId}/timer`);
+      const res = await axios.get(`${config.API_BASE_URL}/api/room/${roomId}/timer`);
       setStartTime(new Date(res.data.startTime));
       setEnded(!res.data.isActive);
     } catch (err) {
@@ -319,7 +320,7 @@ export default function Room() {
 
   const fetchInterviewNotes = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/room/${roomId}/notes`);
+      const res = await axios.get(`${config.API_BASE_URL}/api/room/${roomId}/notes`);
       setInterviewNotes(res.data.notes || '');
     } catch (err) {
       console.error('Failed to fetch notes:', err);
@@ -329,7 +330,7 @@ export default function Room() {
   const saveInterviewNotes = async (notes) => {
     setNotesSaving(true);
     try {
-      await axios.put(`http://localhost:5000/api/room/${roomId}/notes`, { notes });
+      await axios.put(`${config.API_BASE_URL}/api/room/${roomId}/notes`, { notes });
       setNotesLastSaved(new Date());
     } catch (err) {
       console.error('Failed to save notes:', err);
@@ -351,7 +352,7 @@ export default function Room() {
     const timestamp = new Date();
     
     try {
-      const res = await axios.post('http://localhost:5000/api/code/execute', { 
+      const res = await axios.post(`${config.API_BASE_URL}/api/code/execute`, { 
         code, 
         language,
         roomId,
@@ -403,7 +404,7 @@ export default function Room() {
   const handleEndInterview = async () => {
     if (window.confirm('Are you sure you want to end the interview?')) {
       try {
-        await axios.put(`http://localhost:5000/api/room/${roomId}/end`);
+        await axios.put(`${config.API_BASE_URL}/api/room/${roomId}/end`);
         
         // Complete interview tracking
         await completeInterviewTracking({

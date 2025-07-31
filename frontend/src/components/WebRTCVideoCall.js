@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
+import config from '../config';
 
 const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
   const [isConnected, setIsConnected] = useState(false);
@@ -26,7 +27,7 @@ const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
     if (!isOpen) return;
 
     // Initialize socket connection
-    socketRef.current = io('http://localhost:5000');
+    socketRef.current = io(config.SOCKET_URL);
     
     // Socket event listeners
     socketRef.current.on('user-joined-video', ({ userId, userRole }) => {

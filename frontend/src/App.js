@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import MonacoEditor from '@monaco-editor/react';
 import axios from 'axios';
+import config from './config';
 import './App.css';
 
 const languages = [
@@ -22,7 +23,7 @@ function App() {
     setOutput('');
     try {
       const res = await axios.post(
-        'http://localhost:5000/api/code/execute',
+        `${config.API_BASE_URL}/api/code/execute`,
         { code, language }
       );
       setOutput(res.data.output || res.data.error || 'Code executed successfully.');
@@ -35,7 +36,7 @@ function App() {
   const saveSnippet = async () => {
     try {
       await axios.post(
-        'http://localhost:5000/api/code/save',
+        `${config.API_BASE_URL}/api/code/save`,
         { code, language, output }
       );
       alert('✅ Code snippet saved successfully!');
