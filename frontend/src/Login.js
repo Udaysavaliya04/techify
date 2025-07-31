@@ -123,7 +123,7 @@ export default function Login() {
         marginBottom: '2rem'
       }}>
         <img 
-          src="/logo.png" 
+          src="/logo.webp" 
           alt="Techify Logo" 
           style={{ 
             height: '60px', 
