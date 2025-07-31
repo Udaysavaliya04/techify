@@ -1467,3 +1467,47 @@ body, html, #root {
 .user-join-alert {
   animation: slideIn 0.3s ease-out;
 } 
+
+/* Mobile Notice Styles */
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.mobile-notice {
+  animation: slideDown 0.5s ease-out;
+}
+
+/* Show mobile notice only on mobile devices */
+@media (max-width: 768px) {
+  .mobile-notice {
+    display: block !important;
+  }
+}
+
+/* Hide mobile notice on desktop */
+@media (min-width: 769px) {
+  .mobile-notice {
+    display: none !important;
+  }
+}
+
+/* Additional mobile responsiveness for better UX */
+@media (max-width: 480px) {
+  .mobile-notice {
+    left: 0.5rem;
+    right: 0.5rem;
+    padding: 0.875rem 1.25rem;
+    font-size: 0.8rem;
+  }
+  
+  .mobile-notice div[style*="fontSize: 1.5rem"] {
+    font-size: 1.25rem !important;
+  }
+}

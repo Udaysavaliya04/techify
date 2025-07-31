@@ -159,6 +159,45 @@ export default function Join() {
         </nav>
       </header>
 
+      {/* Mobile Notice Banner */}
+      <div style={{
+        position: 'fixed',
+        top: '6rem',
+        left: '1rem',
+        right: '1rem',
+        zIndex: 60,
+        background: 'linear-gradient(135deg, rgba(30, 30, 30, 0.95), rgba(20, 20, 20, 0.9))',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '16px',
+        padding: '1rem 1.5rem',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+        display: 'none',
+        animation: 'slideDown 0.5s ease-out'
+      }}
+      className="mobile-notice"
+      >
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem',
+          color: '#ffffff',
+          fontSize: '0.875rem',
+          fontWeight: '500',
+          lineHeight: '1.4'
+        }}>
+          <div style={{ fontSize: '1.5rem' }}>💻</div>
+          <div>
+            <div style={{ fontWeight: '600', marginBottom: '0.25rem', color: '#ffffff' }}>
+              Desktop Experience Recommended
+            </div>
+            <div style={{ opacity: 0.85, color: '#e5e5e5' }}>
+              This platform shines brightest on desktop! For the ultimate coding interview experience, please grab your laptop ✨
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Main Content */}
       <main style={{
         paddingTop: '4rem',

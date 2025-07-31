@@ -126,7 +126,16 @@ export default function Room() {
     });
 
     socketRef.current.on('init', ({ code }) => {
-      setCode(code || '');
+      setCode(code || `/* 
+- Friendly request from your dev buddy 👋
+- JDoodle(API i am using to execute code) credits are super limited (Just 22 per day for a free plan)🪫
+- Please stick to just 1 to 2 runs, so next curious souls can also test the platform 😇
+- If the code is not running, that means the daily limit is reached.
+- Thanks for trying out Techify and Thanks for understanding! 
+*/
+
+// Start coding below this line
+`);
     });
 
     socketRef.current.on('codeChange', setCode);
@@ -965,7 +974,7 @@ export default function Room() {
               className="notes-textarea"
               value={interviewNotes}
               onChange={(e) => handleNotesChange(e.target.value)}
-              placeholder="Enter your interview notes here..."
+              placeholder="Enter your interview notes here... Saved as you type..."
               style={{ minHeight: '290px' }}
             />
           </div>
