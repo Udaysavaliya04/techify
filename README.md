@@ -1,5 +1,7 @@
 # Techify - Real-Time Technical Interview Platform
 
+**Try Now here - https://techify-platform.onrender.com/**
+
 Techify is a comprehensive web-based platform designed for conducting technical interviews with real-time collaboration features. It provides a seamless experience for both interviewers and candidates with code editing, execution, and assessment tools.
 
 ## Features
