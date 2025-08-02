@@ -350,12 +350,12 @@ export default function Join() {
           // Interviewer Dashboard CTA
           <div
             className="auth-card"
-            style={{
+              style={{
+              paddingTop: '10px',
               textAlign: "center",
               maxWidth: "500px",
               width: "100%",
-              background: "hsl(var(--card) / 0.5)",
-              backdropFilter: "blur(20px)",
+              backdropFilter: "blur(30px)",
               border: "1px solid hsl(var(--border) / 0.5)",
               borderRadius: "calc(var(--radius) * 1.5)",
               padding: window.innerWidth <= 768 ? "2rem 1.5rem" : "3rem",
@@ -389,7 +389,8 @@ export default function Join() {
                     : "1.125rem",
                 color: "hsl(var(--muted-foreground))",
                 marginBottom: "3rem",
-                lineHeight: "1.6",
+                  lineHeight: "1.6",
+                letterSpacing: '-0.1em',
               }}
             >
               Ready to conduct technical interviews? Head to your dashboard to
