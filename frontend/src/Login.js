@@ -81,9 +81,25 @@ export default function Login() {
   };
 
   return (
-    <div className="app-root">
-      {/* Homepage Button - Top Right */}
-      <div style={{
+    <div style={{
+      minHeight: '100vh',
+      background: `
+        linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)),
+        url('/backgroundhd.webp')
+      `,
+      backgroundSize: '150%',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      backgroundAttachment: 'fixed',
+      position: 'relative',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '1rem'
+    }}>
+      {/* Homepage Button */}
+      <div className="top-nav-button" style={{
         position: 'absolute',
         top: '1.5rem',
         right: '1.5rem',
@@ -118,7 +134,7 @@ export default function Login() {
       </div>
 
       {/* Logo Section */}
-      <div style={{ 
+      <div className="logo-section" style={{ 
         textAlign: 'center',
         marginBottom: '2rem'
       }}>
@@ -133,16 +149,17 @@ export default function Login() {
       </div>
 
       {/* Auth Card */}
-      <div style={{
+      <div className="auth-card" style={{
         width: '100%',
         maxWidth: '400px',
-        background: 'hsl(var(--card))',
+       
+        backdropFilter: 'blur(30px)',
         border: '1px solid hsl(var(--border))',
         borderRadius: 'var(--radius)',
         padding: '2rem',
-        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)'
+        boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)'
       }}>
-        <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
+        <div className="form-header" style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
           <h2 style={{ 
             fontSize: '1.25rem', 
             fontWeight: '600',
@@ -175,7 +192,7 @@ export default function Login() {
           )}
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <form className="form-fields" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {/* Email Field */}
           <div>
             <label htmlFor="email" style={{ 
@@ -230,9 +247,10 @@ export default function Login() {
               autoComplete="current-password"
             />
             {errors.password && (
-              <p style={{ 
-                fontSize: '0.75rem', 
+              <p style={{
+                fontSize: '0.75rem',
                 color: 'hsl(var(--destructive))',
+                background: 'red',
                 margin: '0.25rem 0 0 0'
               }}>
                 {errors.password}
@@ -243,10 +261,10 @@ export default function Login() {
           {/* Submit Error */}
           {errors.submit && (
             <div style={{
-              background: 'hsl(var(--destructive) / 0.1)',
-              color: 'hsl(var(--destructive))',
+              background: 'red',
+              color: 'white',
               padding: '0.75rem',
-              borderRadius: '6px',
+              borderRadius: '12px',
               fontSize: '0.875rem',
               textAlign: 'center',
               border: '1px solid hsl(var(--destructive))'
@@ -267,7 +285,7 @@ export default function Login() {
         </form>
 
         {/* Register Link */}
-        <div style={{
+        <div className="footer-section" style={{
           marginTop: '1.5rem',
           textAlign: 'center',
           paddingTop: '1.5rem',

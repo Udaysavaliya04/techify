@@ -96,96 +96,135 @@ export default function Register() {
   };
 
   return (
-    <div className="app-root">
+    <div
+      style={{
+        minHeight: "100vh",
+        background: `
+        linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)),
+        url('/backgroundhd.webp')
+      `,
+        backgroundSize: "150%",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "1rem",
+      }}
+    >
       {/* Homepage Button - Top Right */}
-      <div style={{
-        position: 'absolute',
-        top: '1.5rem',
-        right: '1.5rem',
-        zIndex: 10
-      }}>
+      <div
+        className="top-nav-button"
+        style={{
+          position: "absolute",
+          top: "1.5rem",
+          right: "1.5rem",
+          zIndex: 10,
+        }}
+      >
         <button
           type="button"
-          onClick={() => navigate('/join')}
+          onClick={() => navigate("/join")}
           className="action-btn save-btn"
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.5rem 1rem',
-            fontSize: '0.875rem'
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            padding: "0.5rem 1rem",
+            fontSize: "0.875rem",
           }}
         >
           Homepage
-          <svg 
-            width="16" 
-            height="16" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <path d="m9 18 6-6-6-6"/>
+            <path d="m9 18 6-6-6-6" />
           </svg>
         </button>
       </div>
 
       {/* Logo Section */}
-      <div style={{ 
-        textAlign: 'center',
-        marginBottom: '2rem'
-      }}>
-        <img 
-          src="/logo.webp" 
-          alt="Techify Logo" 
-          style={{ 
-            height: '60px', 
-            width: 'auto'
-          }} 
+      <div
+        className="logo-section"
+        style={{
+          textAlign: "center",
+          marginBottom: "2rem",
+        }}
+      >
+        <img
+          src="/logo.webp"
+          alt="Techify Logo"
+          style={{
+            height: "60px",
+            width: "auto",
+          }}
         />
       </div>
 
       {/* Auth Card */}
-      <div style={{
-        width: '100%',
-        maxWidth: '400px',
-        background: 'hsl(var(--card))',
-        border: '1px solid hsl(var(--border))',
-        borderRadius: 'var(--radius)',
-        padding: '2rem',
-        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)'
-      }}>
-        <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
-          <h2 style={{ 
-            fontSize: '1.25rem', 
-            fontWeight: '600',
-            color: 'hsl(var(--foreground))',
-            margin: '0 0 0.5rem 0',
-            letterSpacing: '-0.05em'
-          }}>
+      <div
+        className="auth-card"
+        style={{
+          width: "100%",
+          maxWidth: "400px",
+          backdropFilter: "blur(30px)",
+          border: "1px solid hsl(var(--border))",
+          borderRadius: "var(--radius)",
+          padding: "2rem",
+          boxShadow:
+            "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)",
+        }}
+      >
+        <div className="form-header" style={{ marginBottom: "1.5rem", textAlign: "center" }}>
+          <h2
+            style={{
+              fontSize: "1.25rem",
+              fontWeight: "600",
+              color: "hsl(var(--foreground))",
+              margin: "0 0 0.5rem 0",
+              letterSpacing: "-0.05em",
+            }}
+          >
             Create Account
           </h2>
-          <p style={{ 
-            fontSize: '0.875rem',
-            color: 'hsl(var(--muted-foreground))',
-            margin: '0'
-          }}>
+          <p
+            style={{
+              fontSize: "0.875rem",
+              color: "hsl(var(--muted-foreground))",
+              margin: "0",
+            }}
+          >
             Enter your details to get started
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <form
+          className="form-fields"
+          onSubmit={handleSubmit}
+          style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+        >
           {/* Username Field */}
           <div>
-            <label htmlFor="username" style={{ 
-              display: 'block',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              color: 'hsl(var(--foreground))',
-              marginBottom: '0.5rem'
-            }}>
+            <label
+              htmlFor="username"
+              style={{
+                display: "block",
+                fontSize: "0.875rem",
+                fontWeight: "500",
+                color: "hsl(var(--foreground))",
+                marginBottom: "0.5rem",
+              }}
+            >
               Username
             </label>
             <input
@@ -195,16 +234,18 @@ export default function Register() {
               value={formData.username}
               onChange={handleChange}
               placeholder="Enter your username"
-              className={`input ${errors.username ? 'error' : ''}`}
+              className={`input ${errors.username ? "error" : ""}`}
               autoComplete="username"
             />
             {errors.username && (
-              <p style={{ 
-                color: 'hsl(var(--destructive))', 
-                fontSize: '0.75rem', 
-                marginTop: '0.25rem',
-                margin: '0.25rem 0 0 0'
-              }}>
+              <p
+                style={{
+                  color: "hsl(var(--destructive))",
+                  fontSize: "0.75rem",
+                  marginTop: "0.25rem",
+                  margin: "0.25rem 0 0 0",
+                }}
+              >
                 {errors.username}
               </p>
             )}
@@ -212,13 +253,16 @@ export default function Register() {
 
           {/* Email Field */}
           <div>
-            <label htmlFor="email" style={{ 
-              display: 'block',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              color: 'hsl(var(--foreground))',
-              marginBottom: '0.5rem'
-            }}>
+            <label
+              htmlFor="email"
+              style={{
+                display: "block",
+                fontSize: "0.875rem",
+                fontWeight: "500",
+                color: "hsl(var(--foreground))",
+                marginBottom: "0.5rem",
+              }}
+            >
               Email
             </label>
             <input
@@ -228,16 +272,18 @@ export default function Register() {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter your email"
-              className={`input ${errors.email ? 'error' : ''}`}
+              className={`input ${errors.email ? "error" : ""}`}
               autoComplete="email"
             />
             {errors.email && (
-              <p style={{ 
-                color: 'hsl(var(--destructive))', 
-                fontSize: '0.75rem', 
-                marginTop: '0.25rem',
-                margin: '0.25rem 0 0 0'
-              }}>
+              <p
+                style={{
+                  color: "hsl(var(--destructive))",
+                  fontSize: "0.75rem",
+                  marginTop: "0.25rem",
+                  margin: "0.25rem 0 0 0",
+                }}
+              >
                 {errors.email}
               </p>
             )}
@@ -245,66 +291,87 @@ export default function Register() {
 
           {/* Role Selection */}
           <div>
-            <label style={{ 
-              display: 'block',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              color: 'hsl(var(--foreground))',
-              marginBottom: '0.5rem'
-            }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "0.875rem",
+                fontWeight: "500",
+                color: "hsl(var(--foreground))",
+                marginBottom: "0.5rem",
+              }}
+            >
               Role
             </label>
-            <div style={{ 
-              display: 'flex', 
-              gap: '1rem',
-              padding: '0.5rem 0'
-            }}>
-              <label style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '0.5rem',
-                fontSize: '0.875rem',
-                cursor: 'pointer'
-              }}>
-                <input
-                  type="radio"
-                  name="role"
-                  value="candidate"
-                  checked={formData.role === 'candidate'}
-                  onChange={handleChange}
-                  style={{ margin: '0' }}
-                />
-                <span>Candidate</span>
-              </label>
-              <label style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '0.5rem',
-                fontSize: '0.875rem',
-                cursor: 'pointer'
-              }}>
+            <div
+              style={{
+                display: "flex",
+                gap: "1rem",
+                padding: "0.5rem 0",
+              }}
+            >
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  fontSize: "0.875rem",
+                  cursor: "pointer",
+                }}
+              >
                 <input
                   type="radio"
                   name="role"
                   value="interviewer"
-                  checked={formData.role === 'interviewer'}
+                  checked={formData.role === "interviewer"}
                   onChange={handleChange}
-                  style={{ margin: '0' }}
+                  style={{
+                    margin: "0",
+                    borderRadius: "50%",
+                    width: "1rem",
+                    height: "1rem",
+                  }}
                 />
                 <span>Interviewer</span>
+              </label>
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  fontSize: "0.875rem",
+                  cursor: "pointer",
+                }}
+              >
+                <input
+                  type="radio"
+                  name="role"
+                  value="candidate"
+                  checked={formData.role === "candidate"}
+                  onChange={handleChange}
+                  style={{
+                    margin: "0",
+                    borderRadius: "50%",
+                    width: "1rem",
+                    height: "1rem",
+                  }}
+                />
+                <span>Candidate</span>
               </label>
             </div>
           </div>
 
           {/* Password Field */}
           <div>
-            <label htmlFor="password" style={{ 
-              display: 'block',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              color: 'hsl(var(--foreground))',
-              marginBottom: '0.5rem'
-            }}>
+            <label
+              htmlFor="password"
+              style={{
+                display: "block",
+                fontSize: "0.875rem",
+                fontWeight: "500",
+                color: "hsl(var(--foreground))",
+                marginBottom: "0.5rem",
+              }}
+            >
               Password
             </label>
             <input
@@ -314,16 +381,18 @@ export default function Register() {
               value={formData.password}
               onChange={handleChange}
               placeholder="Create a password"
-              className={`input ${errors.password ? 'error' : ''}`}
+              className={`input ${errors.password ? "error" : ""}`}
               autoComplete="new-password"
             />
             {errors.password && (
-              <p style={{ 
-                color: 'hsl(var(--destructive))', 
-                fontSize: '0.75rem', 
-                marginTop: '0.25rem',
-                margin: '0.25rem 0 0 0'
-              }}>
+              <p
+                style={{
+                  color: "hsl(var(--destructive))",
+                  fontSize: "0.75rem",
+                  marginTop: "0.25rem",
+                  margin: "0.25rem 0 0 0",
+                }}
+              >
                 {errors.password}
               </p>
             )}
@@ -331,13 +400,16 @@ export default function Register() {
 
           {/* Confirm Password Field */}
           <div>
-            <label htmlFor="confirmPassword" style={{ 
-              display: 'block',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              color: 'hsl(var(--foreground))',
-              marginBottom: '0.5rem'
-            }}>
+            <label
+              htmlFor="confirmPassword"
+              style={{
+                display: "block",
+                fontSize: "0.875rem",
+                fontWeight: "500",
+                color: "hsl(var(--foreground))",
+                marginBottom: "0.5rem",
+              }}
+            >
               Confirm Password
             </label>
             <input
@@ -347,16 +419,18 @@ export default function Register() {
               value={formData.confirmPassword}
               onChange={handleChange}
               placeholder="Confirm your password"
-              className={`input ${errors.confirmPassword ? 'error' : ''}`}
+              className={`input ${errors.confirmPassword ? "error" : ""}`}
               autoComplete="new-password"
             />
             {errors.confirmPassword && (
-              <p style={{ 
-                color: 'hsl(var(--destructive))', 
-                fontSize: '0.75rem', 
-                marginTop: '0.25rem',
-                margin: '0.25rem 0 0 0'
-              }}>
+              <p
+                style={{
+                  color: "hsl(var(--destructive))",
+                  fontSize: "0.75rem",
+                  marginTop: "0.25rem",
+                  margin: "0.25rem 0 0 0",
+                }}
+              >
                 {errors.confirmPassword}
               </p>
             )}
@@ -364,15 +438,17 @@ export default function Register() {
 
           {/* Submit Error */}
           {errors.submit && (
-            <div style={{
-              padding: '0.75rem',
-              background: 'hsl(var(--destructive) / 0.1)',
-              border: '1px solid hsl(var(--destructive))',
-              borderRadius: '6px',
-              color: 'hsl(var(--destructive))',
-              fontSize: '0.875rem',
-              textAlign: 'center'
-            }}>
+            <div
+              style={{
+                padding: "0.75rem",
+                background: "red",
+                border: "1px solid hsl(var(--destructive))",
+                borderRadius: "12px",
+                color: "white",
+                fontSize: "0.875rem",
+                textAlign: "center",
+              }}
+            >
               {errors.submit}
             </div>
           )}
@@ -381,32 +457,37 @@ export default function Register() {
           <button
             type="submit"
             disabled={loading}
-            className={`action-btn run-btn ${loading ? 'loading' : ''}`}
-            style={{ width: '100%' }}
+            className={`action-btn run-btn ${loading ? "loading" : ""}`}
+            style={{ width: "100%" }}
           >
-            {loading ? 'Creating Account...' : 'Create Account'}
+            {loading ? "Creating Account..." : "Create Account"}
           </button>
         </form>
 
         {/* Login Link */}
-        <div style={{ 
-          marginTop: '1.5rem', 
-          textAlign: 'center',
-          paddingTop: '1.5rem',
-          borderTop: '1px solid hsl(var(--border))'
-        }}>
-          <p style={{ 
-            fontSize: '0.875rem',
-            color: 'hsl(var(--muted-foreground))',
-            margin: '0'
-          }}>
-            Already have an account?{' '}
-            <Link 
-              to="/login" 
-              style={{ 
-                color: 'hsl(var(--primary))',
-                textDecoration: 'none',
-                fontWeight: '500'
+        <div
+          className="footer-section"
+          style={{
+            marginTop: "1.5rem",
+            textAlign: "center",
+            paddingTop: "1.5rem",
+            borderTop: "1px solid hsl(var(--border))",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "0.875rem",
+              color: "hsl(var(--muted-foreground))",
+              margin: "0",
+            }}
+          >
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              style={{
+                color: "hsl(var(--primary))",
+                textDecoration: "none",
+                fontWeight: "500",
               }}
             >
               Sign In
