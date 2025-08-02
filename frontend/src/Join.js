@@ -351,7 +351,7 @@ export default function Join() {
           <div
             className="auth-card"
               style={{
-              paddingTop: '10px',
+              paddingTop: '20px',
               textAlign: "center",
               maxWidth: "500px",
               width: "100%",
