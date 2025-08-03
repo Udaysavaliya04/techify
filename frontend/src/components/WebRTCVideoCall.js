@@ -264,7 +264,7 @@ const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
               muted
               className="local-video"
             />
-            <div className="video-label">You ({role})</div>
+            <div className="video-label">You </div>
           </div>
         </div>
 
