@@ -107,7 +107,7 @@ export default function Login() {
       }}>
         <button
           type="button"
-          onClick={() => navigate('/join')}
+          onClick={() => navigate('/')}
           className="action-btn save-btn"
           style={{
             display: 'flex',

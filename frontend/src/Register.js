@@ -127,7 +127,7 @@ export default function Register() {
       >
         <button
           type="button"
-          onClick={() => navigate("/join")}
+          onClick={() => navigate("/")}
           className="action-btn save-btn"
           style={{
             display: "flex",
