@@ -1389,6 +1389,19 @@ body, html, #root {
   overflow: hidden;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+/* Maximized state - full screen */
+.video-call-modal.maximized {
+  top: 2rem;
+  left: 2rem;
+  right: 2rem;
+  bottom: 2rem;
+  width: auto;
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
 }
 
 .video-call-container {
@@ -1414,6 +1427,32 @@ body, html, #root {
   margin: 0;
   font-size: 0.8rem;
   font-weight: 600;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.video-maximize-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0.2rem;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-maximize-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .video-close-btn {
@@ -1445,6 +1484,21 @@ body, html, #root {
   align-items: center;
   justify-content: center;
   min-height: 160px;
+}
+
+/* Maximized video layout styles */
+.video-call-modal.maximized .video-layout {
+  min-height: 500px;
+}
+
+.video-call-modal.maximized .video-call-header {
+  padding: 1rem 1.5rem;
+  min-height: 60px;
+}
+
+.video-call-modal.maximized .video-call-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 .remote-video-container {
@@ -1492,6 +1546,16 @@ body, html, #root {
   z-index: 20;
 }
 
+/* Maximized local video - larger picture-in-picture */
+.video-call-modal.maximized .local-video-container {
+  width: 240px;
+  height: 180px;
+  top: 1rem;
+  right: 1rem;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
 .local-video {
   width: 100%;
   height: 100%;
@@ -1523,6 +1587,13 @@ body, html, #root {
   min-height: 50px;
 }
 
+/* Maximized call controls */
+.video-call-modal.maximized .call-controls {
+  padding: 1rem;
+  gap: 1rem;
+  min-height: 70px;
+}
+
 .control-btn {
   width: 28px;
   height: 28px;
@@ -1536,6 +1607,13 @@ body, html, #root {
   justify-content: center;
   background: rgba(255, 255, 255, 0.05);
   color: rgba(255, 255, 255, 0.8);
+}
+
+/* Maximized control buttons */
+.video-call-modal.maximized .control-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
 }
 
 .control-btn.active {
@@ -1609,6 +1687,20 @@ body, html, #root {
     width: 280px;
     height: 220px;
     bottom: 0.5rem;
+    right: 0.5rem;
+  }
+  
+  .video-call-modal.maximized {
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+  }
+  
+  .video-call-modal.maximized .local-video-container {
+    width: 120px;
+    height: 90px;
+    top: 0.5rem;
     right: 0.5rem;
   }
   
