@@ -8,7 +8,7 @@ const router = express.Router();
 router.put('/:roomId/notes', async (req, res) => {
   const { roomId } = req.params;
   const { notes } = req.body;
-  
+
   try {
     await RoomModel.updateOne(
       { roomId },
@@ -23,7 +23,7 @@ router.put('/:roomId/notes', async (req, res) => {
 // Get interview notes
 router.get('/:roomId/notes', async (req, res) => {
   const { roomId } = req.params;
-  
+
   try {
     const room = await RoomModel.findOne({ roomId });
     if (!room) {
@@ -38,13 +38,13 @@ router.get('/:roomId/notes', async (req, res) => {
 // End interview
 router.put('/:roomId/end', async (req, res) => {
   const { roomId } = req.params;
-  
+
   try {
     await RoomModel.updateOne(
       { roomId },
-      { 
+      {
         endTime: new Date(),
-        isActive: false 
+        isActive: false
       }
     );
     res.json({ message: 'Interview ended successfully' });
@@ -56,20 +56,20 @@ router.put('/:roomId/end', async (req, res) => {
 // Get room timer info
 router.get('/:roomId/timer', async (req, res) => {
   const { roomId } = req.params;
-  
+
   try {
     const room = await RoomModel.findOne({ roomId });
     if (!room) {
       return res.status(404).json({ error: 'Room not found' });
     }
-    
+
     const startTime = room.startTime;
     const endTime = room.endTime;
     const isActive = room.isActive;
-    
-    res.json({ 
-      startTime, 
-      endTime, 
+
+    res.json({
+      startTime,
+      endTime,
       isActive,
       duration: endTime ? endTime.getTime() - startTime.getTime() : Date.now() - startTime.getTime()
     });
@@ -82,11 +82,11 @@ router.get('/:roomId/timer', async (req, res) => {
 router.put('/:roomId/rubric', async (req, res) => {
   const { roomId } = req.params;
   const { scores, weightedScore, recommendation, overallNotes } = req.body;
-  
+
   try {
     await RoomModel.updateOne(
       { roomId },
-      { 
+      {
         rubricScores: {
           scores,
           weightedScore,
@@ -105,7 +105,7 @@ router.put('/:roomId/rubric', async (req, res) => {
 // Get rubric scores
 router.get('/:roomId/rubric', async (req, res) => {
   const { roomId } = req.params;
-  
+
   try {
     const room = await RoomModel.findOne({ roomId });
     if (!room) {
@@ -120,7 +120,7 @@ router.get('/:roomId/rubric', async (req, res) => {
 // Generate interview report
 router.get('/:roomId/report', async (req, res) => {
   const { roomId } = req.params;
-  
+
   try {
     const room = await RoomModel.findOne({ roomId });
     if (!room) {
@@ -132,13 +132,13 @@ router.get('/:roomId/report', async (req, res) => {
     try {
       // Import User model to query user data
       const User = (await import('../models/User.js')).default;
-      
+
       // Look for users who have this room in their interview history
       const usersWithThisRoom = await User.find({
         'interviewHistory.roomId': roomId,
         'interviewHistory.role': 'candidate'
       }).select('username');
-      
+
       if (usersWithThisRoom.length > 0) {
         candidateName = usersWithThisRoom[0].username;
       }
@@ -171,7 +171,7 @@ router.get('/:roomId/report', async (req, res) => {
 router.get('/:roomId/report/export', async (req, res) => {
   const { roomId } = req.params;
   const { format = 'pdf' } = req.query;
-  
+
   try {
     const room = await RoomModel.findOne({ roomId });
     if (!room) {
@@ -181,25 +181,25 @@ router.get('/:roomId/report/export', async (req, res) => {
     if (format === 'pdf') {
       // Create PDF document
       const doc = new PDFDocument();
-      
+
       // Set response headers for PDF
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="interview-report-${roomId}.pdf"`);
-      
+
       // Pipe the PDF to the response
       doc.pipe(res);
-      
+
       // Add content to PDF
       doc.fontSize(20).text('Interview Report', { align: 'center' });
       doc.moveDown();
-      
+
       // Basic info
       doc.fontSize(14).text(`Room ID: ${room.roomId}`);
       doc.text(`Date: ${new Date().toLocaleDateString()}`);
       doc.text(`Duration: ${room.endTime ? Math.round((room.endTime.getTime() - room.startTime.getTime()) / 60000) + ' minutes' : 'In progress'}`);
       doc.text(`Language: ${room.language || 'JavaScript'}`);
       doc.moveDown();
-      
+
       // Evaluation Summary
       if (room.rubricScores) {
         doc.fontSize(16).text('Evaluation Summary', { underline: true });
@@ -208,26 +208,28 @@ router.get('/:roomId/report/export', async (req, res) => {
         doc.text(`Overall Score: ${room.rubricScores.weightedScore}/10`);
         doc.text(`Recommendation: ${room.rubricScores.recommendation}`);
         doc.moveDown();
-        
+
         if (room.rubricScores.scores) {
           doc.text('Detailed Scores:', { underline: true });
           Object.entries(room.rubricScores.scores).forEach(([criteria, data]) => {
-            const criteriaName = criteria.replace(/_/g, ' ').toUpperCase();
-            doc.text(`${criteriaName}: ${data.score}/10`);
-            if (data.notes) {
-              doc.text(`  Notes: ${data.notes}`);
+            if (data && typeof data.score !== 'undefined') {
+              const criteriaName = criteria.replace(/_/g, ' ').toUpperCase();
+              doc.text(`${criteriaName}: ${data.score}/10`);
+              if (data.notes) {
+                doc.text(`  Notes: ${data.notes}`);
+              }
             }
           });
           doc.moveDown();
         }
-        
+
         if (room.rubricScores.overallNotes) {
           doc.text('Overall Notes:', { underline: true });
           doc.text(room.rubricScores.overallNotes);
           doc.moveDown();
         }
       }
-      
+
       // Interview Notes
       if (room.interviewNotes) {
         doc.fontSize(16).text('Interview Notes', { underline: true });
@@ -235,7 +237,7 @@ router.get('/:roomId/report/export', async (req, res) => {
         doc.fontSize(12).text(room.interviewNotes);
         doc.moveDown();
       }
-      
+
       // Code Execution Summary
       doc.fontSize(16).text('Code Execution Summary', { underline: true });
       doc.moveDown(0.5);
@@ -245,7 +247,7 @@ router.get('/:roomId/report/export', async (req, res) => {
       doc.text(`Successful: ${executions.filter(e => e.success).length}`);
       doc.text(`Failed: ${executions.filter(e => !e.success).length}`);
       doc.moveDown();
-      
+
       // Final Code
       if (room.code) {
         doc.fontSize(16).text('Final Code', { underline: true });
@@ -256,7 +258,7 @@ router.get('/:roomId/report/export', async (req, res) => {
           doc.text(line);
         });
       }
-      
+
       // Finalize the PDF
       doc.end();
     } else {
@@ -277,9 +279,9 @@ Overall Score: ${room.rubricScores.weightedScore}/10
 Recommendation: ${room.rubricScores.recommendation}
 
 DETAILED SCORES:
-${Object.entries(room.rubricScores.scores || {}).map(([criteria, data]) => 
-  `${criteria.replace(/_/g, ' ').toUpperCase()}: ${data.score}/10${data.notes ? '\n  Notes: ' + data.notes : ''}`
-).join('\n')}
+${Object.entries(room.rubricScores.scores || {}).map(([criteria, data]) =>
+        `${criteria.replace(/_/g, ' ').toUpperCase()}: ${data.score}/10${data.notes ? '\n  Notes: ' + data.notes : ''}`
+      ).join('\n')}
 
 ${room.rubricScores.overallNotes ? 'OVERALL NOTES:\n' + room.rubricScores.overallNotes : ''}
 ` : 'No evaluation scores available.'}

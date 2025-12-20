@@ -60,62 +60,36 @@ const AIAssistant = ({ roomId, code, language, onClose }) => {
       // Handle headers (lines that start with **text**: or numbered points)
       if (line.match(/^\*\*(.*?)\*\*:/) || line.match(/^\d+\.\s*\*\*(.*?)\*\*:/)) {
         return (
-          <div key={index} style={{ 
-            color: '#0070f3', 
-            margin: '0.5rem 0 0.2rem 0',
-            fontSize: '0.75rem',
-            fontWeight: '600'
-          }}>
+          <div key={index} className="ai-analysis-header">
             {line.replace(/\*\*(.*?)\*\*/, '$1')}
           </div>
         );
       }
-      
+
       // Handle bullet points and regular content
       if (line.match(/^[-•]/)) {
         return (
-          <div key={index} style={{ 
-            margin: '0.2rem 0', 
-            paddingLeft: '0.8rem',
-            color: '#d1d5db',
-            fontSize: '0.75rem'
-          }}>
+          <div key={index} className="ai-analysis-bullet">
             {line}
           </div>
         );
       }
-      
+
       // Regular paragraphs
       if (line.trim()) {
         return (
-          <div key={index} style={{ 
-            margin: '0.2rem 0', 
-            color: '#f3f4f6',
-            lineHeight: '1.3',
-            fontSize: '0.75rem'
-          }}>
+          <div key={index} className="ai-analysis-text">
             {line}
           </div>
         );
       }
-      
+
       return <br key={index} />;
     });
   };
 
   return (
-    <div style={{
-      width: '100%',
-      maxWidth: '1000px',
-      position: 'relative',
-      maxHeight: '85vh',
-      overflow: 'hidden',
-      display: 'flex',
-      flexDirection: 'column',
-      borderRadius: '12px',
-      border: '1px solid rgba(108, 108, 108, 0.3)',
-      backdropFilter: 'blur(30px)',
-    }}>
+    <div className="modal-content" style={{ maxWidth: '1000px' }}>
       <button
         onClick={onClose}
         className="modal-close"
@@ -123,55 +97,31 @@ const AIAssistant = ({ roomId, code, language, onClose }) => {
       >
         ×
       </button>
-      
-      <div style={{
-        padding: '24px 32px 20px 32px',
-        borderBottom: '2px solid rgba(0, 0, 0, 0.2)'
-      }}>
-        <h3 style={{ 
-          margin: '0',
-          fontSize: '1.5rem',
-          fontWeight: '600',
-          color: '#fff',
-          textAlign: 'center',
-          textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
-          letterSpacing: '-0.03em',
-        }}>
+
+      <div className="modal-header">
+        <h3 className="modal-title" style={{ fontSize: '1.5rem' }}>
           AI Assistant
         </h3>
       </div>
 
       {/* Tab Navigation */}
-      <div style={{
-        display: 'flex',
-        background: 'rgba(0, 0, 0, 0.1)',
-        gap: '8px',
-        padding: '8px'
-      }}>
+      <div className="ai-tab-container">
         <button
           onClick={() => setActiveTab('analyze')}
-          className="action-btn"
+          className="action-btn ai-tab-btn"
           style={{
-            flex: 1,
-            fontSize: '0.875rem',
-            background: activeTab === 'analyze' ? 'hsl(var(--primary))' : 'rgba(255, 255, 255, 0.05)',
-            color: activeTab === 'analyze' ? 'hsl(var(--primary-foreground))' : '#fff',
-            border: activeTab === 'analyze' ? '1px solid hsl(var(--primary))' : '1px solid rgba(255, 255, 255, 0.1)',
-            boxShadow: activeTab === 'analyze' ? '0 1px 2px 0 rgb(0 0 0 / 0.05)' : 'none',
+            background: activeTab === 'analyze' ? 'hsl(var(--primary))' : 'hsl(var(--secondary))',
+            color: activeTab === 'analyze' ? 'hsl(var(--primary-foreground))' : 'hsl(var(--secondary-foreground))',
           }}
         >
           Code Analysis
         </button>
         <button
           onClick={() => setActiveTab('question')}
-          className="action-btn"
+          className="action-btn ai-tab-btn"
           style={{
-            flex: 1,
-            fontSize: '0.875rem',
-            background: activeTab === 'question' ? 'hsl(var(--primary))' : 'rgba(255, 255, 255, 0.05)',
-            color: activeTab === 'question' ? 'hsl(var(--primary-foreground))' : '#fff',
-            border: activeTab === 'question' ? '1px solid hsl(var(--primary))' : '1px solid rgba(255, 255, 255, 0.1)',
-            boxShadow: activeTab === 'question' ? '0 1px 2px 0 rgb(0 0 0 / 0.05)' : 'none',
+            background: activeTab === 'question' ? 'hsl(var(--primary))' : 'hsl(var(--secondary))',
+            color: activeTab === 'question' ? 'hsl(var(--primary-foreground))' : 'hsl(var(--secondary-foreground))',
           }}
         >
           Ask Anything
@@ -179,62 +129,28 @@ const AIAssistant = ({ roomId, code, language, onClose }) => {
       </div>
 
       {/* Content Area */}
-      <div style={{ 
-        flex: 1, 
-        overflow: 'auto',
-        padding: '10px'
-      }}>
+      <div className="ai-content-area">
         {activeTab === 'analyze' && (
           <div>
             <textarea
               value={code}
               readOnly
               placeholder="Current code from the editor will appear here..."
-              style={{
-                width: '100%',
-                height: '270px',
-                padding: '12px',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                borderRadius: '12px',
-                background: 'rgba(255, 255, 255, 0.08)',
-                color: '#fff',
-                fontSize: '0.8rem',
-                fontFamily: 'monospace',
-                resize: 'vertical',
-                outline: 'none',
-                marginBottom: '16px',
-                lineHeight: '1.4',
-                backdropFilter: 'blur(10px)',
-                boxShadow: 'inset 0 2px 8px rgba(0, 0, 0, 0.2)',
-                transition: 'all 0.3s ease'
-              }}
+              className="ai-textarea"
+              style={{ fontFamily: 'monospace' }}
             />
 
             <button
               onClick={analyzeCode}
               disabled={loading}
               className="action-btn run-btn"
-              style={{
-                width: '100%',
-                marginBottom: '20px'
-              }}
+              style={{ width: '100%', marginBottom: '1.25rem' }}
             >
               {loading ? 'Analyzing...' : 'Analyze Code'}
             </button>
 
             {analysis && (
-              <div style={{
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(180, 180, 180, 0.3)',
-                borderRadius: '12px',
-                padding: '20px',
-                fontSize: '0.8rem',
-                lineHeight: '1.5',
-                color: 'white',
-                minHeight: '160px',
-                backdropFilter: 'blur(15px)',
-                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
-              }}>
+              <div className="output-container" style={{ minHeight: '160px' }}>
                 {formatAnalysis(analysis)}
               </div>
             )}
@@ -247,52 +163,20 @@ const AIAssistant = ({ roomId, code, language, onClose }) => {
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="Ask anything... "
-              style={{
-                width: '100%',
-                height: '270px',
-                padding: '12px',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                borderRadius: '12px',
-                background: 'rgba(255, 255, 255, 0.08)',
-                color: '#fff',
-                fontSize: '0.8rem',
-                fontFamily: 'inherit',
-                resize: 'vertical',
-                outline: 'none',
-                marginBottom: '16px',
-                lineHeight: '1.4',
-                backdropFilter: 'blur(10px)',
-                boxShadow: 'inset 0 2px 8px rgba(0, 0, 0, 0.2)',
-                transition: 'all 0.3s ease'
-              }}
+              className="ai-textarea"
             />
 
             <button
               onClick={askQuestion}
               disabled={loading || !question.trim()}
-              className="action-btn"
-              style={{
-                width: '100%',
-                background: 'white',
-                border: 'none',
-                marginBottom: '20px'
-              }}
+              className="action-btn run-btn"
+              style={{ width: '100%', marginBottom: '1.25rem' }}
             >
               {loading ? 'Getting Response...' : 'Ask AI'}
             </button>
 
             {aiResponse && (
-              <div style={{
-               background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(176, 176, 176, 0.3)',
-                borderRadius: '12px',
-                padding: '20px',
-                fontSize: '0.8rem',
-                lineHeight: '1.5',
-                color: 'white',
-                backdropFilter: 'blur(15px)',
-                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
-              }}>
+              <div className="output-container">
                 {formatAnalysis(aiResponse)}
               </div>
             )}

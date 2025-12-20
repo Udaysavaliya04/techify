@@ -29,7 +29,9 @@
   --radius: 0.75rem;
 }
 
-body, html, #root {
+body,
+html,
+#root {
   height: 100%;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   background: hsl(var(--background));
@@ -46,7 +48,7 @@ body, html, #root {
   body {
     font-size: 14px;
   }
-  
+
   .mobile-notice {
     display: block !important;
   }
@@ -73,15 +75,18 @@ body, html, #root {
   .app-root {
     padding: 0.5rem;
   }
-  
+
   /* Improve touch targets */
-  button, .action-btn {
+  button,
+  .action-btn {
     min-height: 44px !important;
     padding: 0.75rem 1rem !important;
   }
-  
+
   /* Better text readability */
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     line-height: 1.2 !important;
   }
 }
@@ -187,8 +192,8 @@ body, html, #root {
   border: 1px solid hsl(var(--border));
   background: hsl(var(--popover));
   color: hsl(var(--popover-foreground));
-  box-shadow: 
-    0 4px 6px -1px rgb(0 0 0 / 0.1), 
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
     0 2px 4px -2px rgb(0 0 0 / 0.1);
   opacity: 0;
   visibility: hidden;
@@ -493,34 +498,34 @@ body, html, #root {
   .app-root {
     padding: 1rem 0.5rem;
   }
-  
+
   .editor-header {
     flex-direction: column;
     gap: 1rem;
     align-items: flex-start;
     margin-bottom: 2rem;
   }
-  
+
   .editor-header h2 {
     font-size: 2rem;
   }
-  
+
   .button-row {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .room-action-buttons {
     flex-direction: column;
     gap: 0.5rem;
     margin-bottom: 1rem;
   }
-  
+
   .action-btn {
     width: 100%;
     justify-content: center;
   }
-  
+
   .room-action-buttons .action-btn {
     width: 100%;
     justify-content: center;
@@ -588,6 +593,7 @@ body, html, #root {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -599,6 +605,7 @@ body, html, #root {
     opacity: 0;
     transform: translateX(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -610,6 +617,7 @@ body, html, #root {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -621,6 +629,7 @@ body, html, #root {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -632,6 +641,7 @@ body, html, #root {
     opacity: 0;
     transform: translateX(-30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -643,6 +653,7 @@ body, html, #root {
     opacity: 0;
     transform: translateX(30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -654,13 +665,16 @@ body, html, #root {
     opacity: 0;
     transform: scale(0.3);
   }
+
   50% {
     opacity: 1;
     transform: scale(1.05);
   }
+
   70% {
     transform: scale(0.98);
   }
+
   100% {
     opacity: 1;
     transform: scale(1);
@@ -671,9 +685,11 @@ body, html, #root {
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
@@ -684,13 +700,14 @@ body, html, #root {
     opacity: 0;
     transform: translateY(-100%);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.app-root > * {
+.app-root>* {
   animation: fadeIn 0.6s ease-out;
 }
 
@@ -818,7 +835,7 @@ body, html, #root {
   .otp-inputs {
     gap: 0.375rem;
   }
-  
+
   .otp-input {
     width: 2.25rem;
     height: 2.25rem;
@@ -830,7 +847,7 @@ body, html, #root {
   .otp-inputs {
     gap: 0.25rem;
   }
-  
+
   .otp-input {
     width: 2rem;
     height: 2rem;
@@ -1133,8 +1150,8 @@ body, html, #root {
   width: 100%;
   max-height: 85vh;
   overflow-y: auto;
-  box-shadow: 
-    0 10px 15px -3px rgb(0 0 0 / 0.1), 
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
     0 4px 6px -4px rgb(0 0 0 / 0.1);
   animation: slideIn 0.2s ease-out;
 }
@@ -1211,6 +1228,66 @@ body, html, #root {
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid hsl(var(--border));
+}
+
+/* AI Assistant specific styles */
+.ai-tab-container {
+  display: flex;
+  background: rgba(0, 0, 0, 0.1);
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.ai-tab-btn {
+  flex: 1;
+  font-size: 0.875rem;
+}
+
+.ai-content-area {
+  flex: 1;
+  overflow: auto;
+  padding: 1rem;
+}
+
+.ai-textarea {
+  width: 100%;
+  height: 270px;
+  padding: 0.75rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
+  fontSize: 0.8rem;
+  fontFamily: monospace;
+  resize: vertical;
+  outline: none;
+  margin-bottom: 1rem;
+}
+
+.ai-textarea:focus {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+}
+
+.ai-analysis-header {
+  color: hsl(var(--primary));
+  margin: 0.5rem 0 0.2rem 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.ai-analysis-bullet {
+  margin: 0.2rem 0;
+  padding-left: 0.8rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+}
+
+.ai-analysis-text {
+  margin: 0.2rem 0;
+  color: hsl(var(--foreground));
+  line-height: 1.3;
+  font-size: 0.75rem;
 }
 
 .questions-form label {
@@ -1560,7 +1637,7 @@ body, html, #root {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scaleX(-1); 
+  transform: scaleX(-1);
 }
 
 .video-label {
@@ -1689,33 +1766,33 @@ body, html, #root {
     bottom: 0.5rem;
     right: 0.5rem;
   }
-  
+
   .video-call-modal.maximized {
     top: 1rem;
     left: 1rem;
     right: 1rem;
     bottom: 1rem;
   }
-  
+
   .video-call-modal.maximized .local-video-container {
     width: 120px;
     height: 90px;
     top: 0.5rem;
     right: 0.5rem;
   }
-  
+
   .local-video-container {
     width: 60px;
     height: 45px;
     top: 0.3rem;
     right: 0.3rem;
   }
-  
+
   .call-controls {
     padding: 0.3rem;
     gap: 0.3rem;
   }
-  
+
   .control-btn {
     width: 24px;
     height: 24px;
@@ -1739,6 +1816,7 @@ body, html, #root {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -1749,6 +1827,7 @@ body, html, #root {
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -1757,7 +1836,7 @@ body, html, #root {
 
 .user-join-alert {
   animation: slideIn 0.3s ease-out;
-} 
+}
 
 /* Mobile Notice Styles */
 @keyframes slideDown {
@@ -1765,6 +1844,7 @@ body, html, #root {
     transform: translateY(-100%);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -1797,7 +1877,7 @@ body, html, #root {
     padding: 0.875rem 1.25rem;
     font-size: 0.8rem;
   }
-  
+
   .mobile-notice div[style*="fontSize: 1.5rem"] {
     font-size: 1.25rem !important;
   }

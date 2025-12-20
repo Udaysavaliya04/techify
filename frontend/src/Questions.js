@@ -13,7 +13,6 @@ export default function Questions({ onSelect, onClose }) {
   const [editText, setEditText] = useState('');
   const [editDiff, setEditDiff] = useState('easy');
   const [searchTerm, setSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
   const fetchQuestions = async (diff = '') => {
     setLoading(true);
     try {
@@ -26,21 +25,21 @@ export default function Questions({ onSelect, onClose }) {
     setLoading(false);
   };
 
-  useEffect(() => { 
-    fetchQuestions(difficulty); 
+  useEffect(() => {
+    fetchQuestions(difficulty);
   }, [difficulty]);
 
   const addQuestion = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
-    
+
     setLoading(true);
     try {
-      await axios.post(`${config.API_BASE_URL}/api/questions/add`, { 
-        text: text.trim(), 
+      await axios.post(`${config.API_BASE_URL}/api/questions/add`, {
+        text: text.trim(),
         difficulty: addDiff
       });
-      setText(''); 
+      setText('');
       setAddDiff('easy');
       fetchQuestions(difficulty);
     } catch (error) {
@@ -57,7 +56,7 @@ export default function Questions({ onSelect, onClose }) {
 
   const deleteQuestion = async (questionId) => {
     if (!window.confirm('Are you sure you want to delete this question?')) return;
-    
+
     setLoading(true);
     try {
       await axios.delete(`${config.API_BASE_URL}/api/questions/${questionId}`);
@@ -83,7 +82,7 @@ export default function Questions({ onSelect, onClose }) {
 
   const saveEdit = async (questionId) => {
     if (!editText.trim()) return;
-    
+
     setLoading(true);
     try {
       await axios.put(`${config.API_BASE_URL}/api/questions/${questionId}`, {
@@ -102,7 +101,7 @@ export default function Questions({ onSelect, onClose }) {
   };
 
   const getDifficultyColor = (diff) => {
-    switch(diff) {
+    switch (diff) {
       case 'easy': return '#10b981';
       case 'medium': return '#f59e0b';
       case 'hard': return '#ef4444';
@@ -114,7 +113,7 @@ export default function Questions({ onSelect, onClose }) {
   const filteredQuestions = questions.filter(question => {
     const searchLower = searchTerm.toLowerCase();
     const textMatch = question.text.toLowerCase().includes(searchLower);
-    const tagsMatch = question.tags && question.tags.some(tag => 
+    const tagsMatch = question.tags && question.tags.some(tag =>
       tag.toLowerCase().includes(searchLower)
     );
     return textMatch || tagsMatch;
@@ -133,17 +132,11 @@ export default function Questions({ onSelect, onClose }) {
       >
         ×
       </button>
-      
-      <h3 style={{ 
-        margin: '0 0 2rem 0',
-        fontSize: '1.5rem',
-        fontWeight: '600',
-        color: '#fff',
-        textAlign: 'center'
-      }}>
+
+      <h3 className="modal-title" style={{ fontSize: '1.5rem', marginBottom: '2rem', textAlign: 'center' }}>
         Question Bank
       </h3>
-      
+
       <div style={{
         background: 'rgba(0, 112, 243, 0.1)',
         border: '1px solid rgba(0, 112, 243, 0.3)',
@@ -158,25 +151,25 @@ export default function Questions({ onSelect, onClose }) {
       </div>
 
       <form onSubmit={addQuestion} className="questions-form">
-        <input 
-          className="input" 
-          style={{ 
+        <input
+          className="input"
+          style={{
             width: '100%'
-          }} 
-          placeholder="Enter a new question..." 
-          value={text} 
+          }}
+          placeholder="Enter a new question..."
+          value={text}
           onChange={e => setText(e.target.value)}
           disabled={loading}
         />
 
-        <div className="dropdown-menu" style={{ width: '100%', minWidth: '100px' }}>
-          <button className="dropdown-trigger" aria-expanded="false" disabled={loading}>
+        <div className="dropdown-menu" style={{ width: '100%' }}>
+          <button className="dropdown-trigger" aria-expanded="false" disabled={loading} style={{ width: '100%' }}>
             <span>{addDiff.charAt(0).toUpperCase() + addDiff.slice(1)}</span>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="dropdown-icon">
-              <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <div className="dropdown-content">
+          <div className="dropdown-content" style={{ width: '100%' }}>
             <div className="dropdown-label">Select Difficulty</div>
             <button
               className={`dropdown-item ${addDiff === 'easy' ? 'dropdown-item-active' : ''}`}
@@ -213,10 +206,10 @@ export default function Questions({ onSelect, onClose }) {
             </button>
           </div>
         </div>
-        
-        <button 
+
+        <button
           className={`action-btn run-btn ${loading ? 'loading' : ''}`}
-          type="submit" 
+          type="submit"
           disabled={loading || !text.trim()}
           style={{ width: '100%' }}
         >
@@ -229,10 +222,10 @@ export default function Questions({ onSelect, onClose }) {
           <button className="dropdown-trigger" aria-expanded="false" disabled={loading} style={{ width: '100%' }}>
             <span>{difficulty ? difficulty.charAt(0).toUpperCase() + difficulty.slice(1) : 'All Difficulties'}</span>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="dropdown-icon">
-              <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <div className="dropdown-content">
+          <div className="dropdown-content" style={{ width: '100%' }}>
             <div className="dropdown-label">Filter by Difficulty</div>
             <button
               className={`dropdown-item ${difficulty === '' ? 'dropdown-item-active' : ''}`}
@@ -282,112 +275,58 @@ export default function Questions({ onSelect, onClose }) {
         </div>
       </div>
 
-      {/* Search and View Controls */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '1rem', 
-        marginBottom: '1rem',
-        alignItems: 'center',
-        flexWrap: 'wrap'
-      }}>
+      {/* Search */}
+      <div style={{ marginBottom: '1rem' }}>
         <input
           className="input"
           type="text"
-          placeholder="Search questions or tags..."
+          placeholder="Search questions..."
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
-          style={{ 
-            flex: 1,
-            minWidth: '200px'
-          }}
+          style={{ width: '100%' }}
         />
-        
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button
-            className={`action-btn ${viewMode === 'list' ? 'run-btn' : 'save-btn'}`}
-            onClick={() => setViewMode('list')}
-            style={{
-              padding: '0.375rem 0.75rem',
-              fontSize: '0.75rem',
-              minHeight: 'auto',
-              height: '2.25rem'
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="8" y1="6" x2="21" y2="6"></line>
-              <line x1="8" y1="12" x2="21" y2="12"></line>
-              <line x1="8" y1="18" x2="21" y2="18"></line>
-              <line x1="3" y1="6" x2="3.01" y2="6"></line>
-              <line x1="3" y1="12" x2="3.01" y2="12"></line>
-              <line x1="3" y1="18" x2="3.01" y2="18"></line>
-            </svg>
-          </button>
-          <button
-            className={`action-btn ${viewMode === 'grid' ? 'run-btn' : 'save-btn'}`}
-            onClick={() => setViewMode('grid')}
-            style={{
-              padding: '0.375rem 0.75rem',
-              fontSize: '0.75rem',
-              minHeight: 'auto',
-              height: '2.25rem'
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-            </svg>
-          </button>
-        </div>
       </div>
 
       <div className="questions-list">
         {loading && questions.length === 0 ? (
-          <div style={{ 
-            textAlign: 'center', 
+          <div style={{
+            textAlign: 'center',
             padding: '2rem',
-            color: 'rgba(255, 255, 255, 0.6)',
+            color: 'hsl(var(--muted-foreground))',
             fontSize: '0.875rem'
           }}>
             Loading questions...
           </div>
         ) : filteredQuestions.length === 0 ? (
-          <div style={{ 
-            textAlign: 'center', 
+          <div style={{
+            textAlign: 'center',
             padding: '2rem',
-            color: 'rgba(255, 255, 255, 0.6)',
+            color: 'hsl(var(--muted-foreground))',
             fontSize: '0.875rem'
           }}>
             {searchTerm ? `No questions found matching "${searchTerm}"` : 'No questions found. Add one above!'}
           </div>
         ) : (
           <div style={{
-            display: viewMode === 'grid' ? 'grid' : 'block',
-            gridTemplateColumns: viewMode === 'grid' ? 'repeat(auto-fill, minmax(240px, 1fr))' : 'none',
-            gap: viewMode === 'grid' ? '1rem' : '0',
             maxHeight: '310px',
             overflowY: 'auto',
-            border: viewMode === 'list' ? '1px solid hsl(var(--border))' : 'none',
-            borderRadius: viewMode === 'list' ? 'calc(var(--radius) - 2px)' : '0'
+            border: '1px solid hsl(var(--border))',
+            borderRadius: 'calc(var(--radius) - 2px)'
           }}>
             {filteredQuestions.map(q => (
               <div
                 key={q._id}
                 className="question-item"
-                style={{ 
+                style={{
                   cursor: editingQuestion === q._id ? 'default' : 'pointer',
-                  border: viewMode === 'grid' ? '1px solid hsl(var(--border))' : 'none',
-                  borderRadius: viewMode === 'grid' ? 'calc(var(--radius) - 2px)' : '0',
-                  borderBottom: viewMode === 'list' ? '1px solid hsl(var(--border))' : 'none',
-                  marginBottom: viewMode === 'grid' ? '0' : '0'
+                  borderBottom: '1px solid hsl(var(--border))'
                 }}
               >
                 {editingQuestion === q._id ? (
                   <div style={{ padding: '1rem' }}>
                     <input
                       className="input"
-                      style={{ 
+                      style={{
                         marginBottom: '1rem'
                       }}
                       value={editText}
@@ -398,7 +337,7 @@ export default function Questions({ onSelect, onClose }) {
                       <button className="dropdown-trigger" aria-expanded="false" style={{ width: '100%' }}>
                         <span>{editDiff.charAt(0).toUpperCase() + editDiff.slice(1)}</span>
                         <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="dropdown-icon">
-                          <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       </button>
                       <div className="dropdown-content">
@@ -443,7 +382,7 @@ export default function Questions({ onSelect, onClose }) {
                         className="action-btn run-btn"
                         onClick={() => saveEdit(q._id)}
                         disabled={loading || !editText.trim()}
-                        style={{ 
+                        style={{
                           flex: 1
                         }}
                       >
@@ -453,7 +392,7 @@ export default function Questions({ onSelect, onClose }) {
                         className="action-btn save-btn"
                         onClick={cancelEdit}
                         disabled={loading}
-                        style={{ 
+                        style={{
                           flex: 1
                         }}
                       >
@@ -463,14 +402,14 @@ export default function Questions({ onSelect, onClose }) {
                   </div>
                 ) : (
                   <div onClick={() => handleQuestionSelect(q)}>
-                    <div style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
                       alignItems: 'flex-start',
                       marginBottom: '0.5rem'
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                        <div className="question-difficulty" style={{ 
+                        <div className="question-difficulty" style={{
                           color: getDifficultyColor(q.difficulty),
                           fontSize: '0.75rem',
                           fontWeight: '600',
@@ -542,15 +481,11 @@ export default function Questions({ onSelect, onClose }) {
                         </button>
                       </div>
                     </div>
-                    <div style={{ 
-                      color: '#fff',
+                    <div style={{
+                      color: 'hsl(var(--foreground))',
                       fontSize: '0.875rem',
                       lineHeight: '1.5',
-                      marginBottom: '0.5rem',
-                      display: '-webkit-box',
-                      WebkitLineClamp: viewMode === 'grid' ? 4 : 'none',
-                      WebkitBoxOrient: 'vertical',
-                      overflow: viewMode === 'grid' ? 'hidden' : 'visible'
+                      marginBottom: '0.5rem'
                     }}>
                       {q.text}
                     </div>

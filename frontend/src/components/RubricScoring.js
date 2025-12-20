@@ -8,6 +8,7 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
   const [recommendation, setRecommendation] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Rubric criteria with weights
   const rubricCriteria = [
@@ -64,16 +65,16 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
       ]
     },
     {
-      id: 'debugging',
-      title: 'Debugging & Testing',
-      description: 'Identifying and fixing issues, testing approaches',
+      id: 'code_optimization',
+      title: 'Code Optimization',
+      description: 'Ability to optimize code for performance and efficiency',
       weight: 10,
       maxScore: 10,
       subcriteria: [
-        'Error identification skills',
-        'Systematic debugging approach',
-        'Test case development',
-        'Code verification methods'
+        'Time complexity optimization',
+        'Space complexity optimization',
+        'Performance considerations',
+        'Best practices implementation'
       ]
     }
   ];
@@ -149,7 +150,7 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
     try {
       const weightedScore = parseFloat(calculateWeightedScore());
       const autoRecommendation = getRecommendationFromScore(weightedScore);
-      
+
       await axios.put(`${config.API_BASE_URL}/api/room/${roomId}/rubric`, {
         scores,
         overallNotes,
@@ -157,7 +158,7 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
         weightedScore,
         timestamp: new Date().toISOString()
       });
-      
+
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
@@ -169,17 +170,12 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
   const weightedScore = calculateWeightedScore();
 
   return (
-    <div style={{
-      width: '100%',
+    <div className="modal-content" style={{
       maxWidth: '900px',
       maxHeight: '90vh',
       overflow: 'hidden',
       display: 'flex',
-      flexDirection: 'column',
-      background: 'hsl(var(--card))',
-      borderRadius: 'var(--radius)',
-      border: '1px solid hsl(var(--border))',
-      boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)'
+      flexDirection: 'column'
     }}>
       <button
         onClick={onClose}
@@ -188,37 +184,25 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
       >
         ×
       </button>
-      
-      <div style={{
-        padding: '1.5rem 2rem 1rem 2rem',
-        borderBottom: '1px solid hsl(var(--border))'
-      }}>
-        <h2 style={{ 
-          margin: '0 0 0.5rem 0',
-          fontSize: '1.5rem',
-          fontWeight: '600',
-          color: 'hsl(var(--foreground))'
-        }}>
+
+      <div className="modal-header" style={{ borderBottom: '1px solid hsl(var(--border))', textAlign: 'left' }}>
+        <h2 className="modal-title" style={{ fontSize: '1.5rem' }}>
           Interview Evaluation Rubric
         </h2>
-        <p style={{
-          margin: '0',
-          fontSize: '0.875rem',
-          color: 'hsl(var(--muted-foreground))'
-        }}>
+        <p className="modal-description">
           Score each criterion from 1-10. Weighted total: <strong style={{ color: getScoreColor(weightedScore) }}>{weightedScore}/10</strong>
         </p>
       </div>
 
-      <div style={{ 
-        flex: 1, 
+      <div style={{
+        flex: 1,
         overflow: 'auto',
         padding: '1.5rem'
       }}>
         {rubricCriteria.map(criteria => {
           const currentScore = scores[criteria.id]?.score || 0;
           const currentNotes = scores[criteria.id]?.notes || '';
-          
+
           return (
             <div key={criteria.id} style={{
               background: 'hsl(var(--card))',
@@ -263,7 +247,7 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
                     <strong>Key areas:</strong> {criteria.subcriteria.join(' • ')}
                   </div>
                 </div>
-                
+
                 <div style={{
                   display: 'flex',
                   flexDirection: 'column',
@@ -317,32 +301,13 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
                   </div>
                 </div>
               </div>
-              
+
               <textarea
                 value={currentNotes}
                 onChange={(e) => handleNotesChange(criteria.id, e.target.value)}
                 placeholder={`Notes for ${criteria.title.toLowerCase()}...`}
-                style={{
-                  width: '100%',
-                  minHeight: '60px',
-                  padding: '0.75rem',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: 'calc(var(--radius) - 2px)',
-                  background: 'hsl(var(--background))',
-                  color: 'hsl(var(--foreground))',
-                  fontSize: '0.875rem',
-                  fontFamily: 'inherit',
-                  resize: 'vertical',
-                  outline: 'none'
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = 'hsl(var(--ring))';
-                  e.target.style.boxShadow = '0 0 0 2px hsl(var(--ring) / 0.2)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'hsl(var(--border))';
-                  e.target.style.boxShadow = 'none';
-                }}
+                className="ai-textarea"
+                style={{ minHeight: '60px', height: 'auto' }}
               />
             </div>
           );
@@ -350,8 +315,9 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
 
         {/* Overall Assessment */}
         <div style={{
-          background: 'hsl(var(--muted) / 0.5)',
-          border: '1px solid hsl(var(--border))',
+          background: 'hsl(var(--background) / 0.5)',
+          border: '3px solid hsl(var(--border))',
+          borderStyle: 'dashed',
           borderRadius: 'var(--radius)',
           padding: '1.5rem',
           marginBottom: '1rem'
@@ -364,7 +330,7 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
           }}>
             Overall Assessment
           </h3>
-          
+
           <div style={{ marginBottom: '1rem' }}>
             <label style={{
               display: 'block',
@@ -401,39 +367,13 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
             value={overallNotes}
             onChange={(e) => setOverallNotes(e.target.value)}
             placeholder="Overall interview notes, strengths, areas for improvement..."
-            style={{
-              width: '100%',
-              minHeight: '100px',
-              padding: '0.75rem',
-              border: '1px solid hsl(var(--border))',
-              borderRadius: 'calc(var(--radius) - 2px)',
-              background: 'hsl(var(--background))',
-              color: 'hsl(var(--foreground))',
-              fontSize: '0.875rem',
-              fontFamily: 'inherit',
-              resize: 'vertical',
-              outline: 'none'
-            }}
-            onFocus={(e) => {
-              e.target.style.borderColor = 'hsl(var(--ring))';
-              e.target.style.boxShadow = '0 0 0 2px hsl(var(--ring) / 0.2)';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = 'hsl(var(--border))';
-              e.target.style.boxShadow = 'none';
-            }}
+            className="ai-textarea"
+            style={{ minHeight: '100px', height: 'auto' }}
           />
         </div>
       </div>
 
-      <div style={{
-        padding: '1rem 1.5rem',
-        borderTop: '1px solid hsl(var(--border))',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        gap: '1rem'
-      }}>
+      <div className="modal-footer" style={{ justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid hsl(var(--border))', padding: '1rem 1.5rem' }}>
         <div style={{
           fontSize: '0.875rem',
           color: 'hsl(var(--muted-foreground))'
@@ -442,7 +382,7 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
             {weightedScore}/10
           </strong>
         </div>
-        
+
         <div style={{ display: 'flex', gap: '0.75rem' }}>
           <button
             onClick={onClose}

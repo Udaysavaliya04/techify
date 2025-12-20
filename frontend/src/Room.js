@@ -127,9 +127,9 @@ export default function Room() {
 
     socketRef.current.on('init', ({ code }) => {
       setCode(code || `/* 
-- Friendly request from your dev buddy 👋
-- JDoodle(API i am using to execute code) credits are super limited (Just 22 per day for a free plan)🪫
-- Please stick to just 1 to 2 runs, so next curious souls can also test the platform 😇
+- Friendly request from your dev buddy :)
+- JDoodle(API i am using to execute code) credits are super limited (Just 22 per day for a free plan).
+- So please stick to just 1 to 2 runs, so next curious souls can also test the platform.
 - If the code is not running, that means the daily limit is reached.
 - Thanks for trying out Techify and Thanks for understanding! 
 */

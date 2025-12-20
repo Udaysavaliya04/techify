@@ -10,9 +10,9 @@ let initializationAttempted = false;
 
 const initializeGemini = () => {
   if (initializationAttempted) return model;
-  
+
   initializationAttempted = true;
-  
+
   try {
     if (!process.env.GEMINI_API_KEY) {
       console.error('GEMINI_API_KEY is not set in environment variables');
@@ -21,8 +21,8 @@ const initializeGemini = () => {
       console.log('Initializing Gemini AI...');
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
       // Use the current available model name
-      model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      console.log('Gemini AI initialized successfully with gemini-1.5-flash');
+      model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      console.log('Gemini AI initialized successfully with gemini-2.5-flash');
       return model;
     }
   } catch (error) {
@@ -34,24 +34,24 @@ const initializeGemini = () => {
 // Analyze code with Gemini AI
 router.post('/analyze-code', async (req, res) => {
   const { code, language, roomId, question } = req.body;
-  
+
   try {
     // Initialize Gemini AI if not already done
     const geminiModel = initializeGemini();
-    
+
     // Check if model is initialized
     if (!geminiModel) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'AI service not available',
-        details: 'Gemini AI is not properly initialized. Please check API key configuration.' 
+        details: 'Gemini AI is not properly initialized. Please check API key configuration.'
       });
     }
 
     // Validate required fields
     if (!code || !code.trim()) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Missing required field',
-        details: 'Code is required for analysis' 
+        details: 'Code is required for analysis'
       });
     }
 
@@ -87,8 +87,8 @@ Keep it short and actionable for the interviewer.
       try {
         await RoomModel.updateOne(
           { roomId },
-          { 
-            $push: { 
+          {
+            $push: {
               aiAnalyses: {
                 code,
                 language: language || '',
@@ -108,9 +108,9 @@ Keep it short and actionable for the interviewer.
     res.json({ analysis });
   } catch (error) {
     console.error('Gemini AI analysis error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to analyze code with AI',
-      details: error.message 
+      details: error.message
     });
   }
 });
@@ -118,24 +118,24 @@ Keep it short and actionable for the interviewer.
 // Ask a question to Gemini about the code or interview
 router.post('/ask-question', async (req, res) => {
   const { question, code, language, roomId, context } = req.body;
-  
+
   try {
     // Initialize Gemini AI if not already done
     const geminiModel = initializeGemini();
-    
+
     // Check if model is initialized
     if (!geminiModel) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'AI service not available',
-        details: 'Gemini AI is not properly initialized. Please check API key configuration.' 
+        details: 'Gemini AI is not properly initialized. Please check API key configuration.'
       });
     }
 
     // Validate required fields
     if (!question || !question.trim()) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Missing required field',
-        details: 'Question is required' 
+        details: 'Question is required'
       });
     }
 
@@ -164,8 +164,8 @@ Provide a helpful, accurate response.
       try {
         await RoomModel.updateOne(
           { roomId },
-          { 
-            $push: { 
+          {
+            $push: {
               aiQuestions: {
                 question,
                 response,
@@ -186,9 +186,9 @@ Provide a helpful, accurate response.
     res.json({ response });
   } catch (error) {
     console.error('Gemini AI question error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to get AI response',
-      details: error.message 
+      details: error.message
     });
   }
 });
@@ -196,13 +196,13 @@ Provide a helpful, accurate response.
 // Get AI analysis history for a room
 router.get('/room/:roomId/analyses', async (req, res) => {
   const { roomId } = req.params;
-  
+
   try {
     const room = await RoomModel.findOne({ roomId });
     if (!room) {
       return res.status(404).json({ error: 'Room not found' });
     }
-    
+
     res.json({
       analyses: room.aiAnalyses || [],
       questions: room.aiQuestions || []
@@ -215,16 +215,16 @@ router.get('/room/:roomId/analyses', async (req, res) => {
 // Generate interview questions based on role/topic
 router.post('/generate-questions', async (req, res) => {
   const { topic, difficulty, language, count = 3 } = req.body;
-  
+
   try {
     // Initialize Gemini AI if not already done
     const geminiModel = initializeGemini();
-    
+
     // Check if model is initialized
     if (!geminiModel) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'AI service not available',
-        details: 'Gemini AI is not properly initialized. Please check API key configuration.' 
+        details: 'Gemini AI is not properly initialized. Please check API key configuration.'
       });
     }
 
@@ -249,9 +249,9 @@ Format as a structured list that an interviewer can easily use.
     res.json({ questions });
   } catch (error) {
     console.error('Gemini AI question generation error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to generate questions',
-      details: error.message 
+      details: error.message
     });
   }
 });

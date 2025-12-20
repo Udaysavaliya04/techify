@@ -11,14 +11,14 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
 export const verifyToken = async (req, res, next) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
-    
+
     if (!token) {
       return res.status(401).json({ error: 'Access denied. No token provided.' });
     }
 
     const decoded = jwt.verify(token, JWT_SECRET);
     const user = await User.findById(decoded.userId).select('-password');
-    
+
     if (!user) {
       return res.status(401).json({ error: 'Invalid token.' });
     }
@@ -37,14 +37,14 @@ router.post('/register', async (req, res) => {
 
     // Validation
     if (!username || !email || !password) {
-      return res.status(400).json({ 
-        error: 'Please provide all required fields: username, email, password' 
+      return res.status(400).json({
+        error: 'Please provide all required fields: username, email, password'
       });
     }
 
     if (password.length < 6) {
-      return res.status(400).json({ 
-        error: 'Password must be at least 6 characters long' 
+      return res.status(400).json({
+        error: 'Password must be at least 6 characters long'
       });
     }
 
@@ -54,10 +54,10 @@ router.post('/register', async (req, res) => {
     });
 
     if (existingUser) {
-      return res.status(400).json({ 
-        error: existingUser.email === email.toLowerCase() 
-          ? 'Email already registered' 
-          : 'Username already taken' 
+      return res.status(400).json({
+        error: existingUser.email === email.toLowerCase()
+          ? 'Email already registered'
+          : 'Username already taken'
       });
     }
 
@@ -207,24 +207,20 @@ router.put('/profile', verifyToken, async (req, res) => {
 router.get('/dashboard', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('-password');
-    
-    // Clean up any duplicate interviews
-    user.cleanupDuplicateInterviews();
-    await user.save();
-    
+
     // Get recent interviews (last 10), properly filtered
     const uniqueInterviews = new Map();
-    
+
     // Group by roomId and keep only the most recent/relevant interview
     user.interviewHistory.forEach(interview => {
       const roomId = interview.roomId;
-      if (!uniqueInterviews.has(roomId) || 
-          interview.createdAt > uniqueInterviews.get(roomId).createdAt ||
-          (interview.status === 'completed' && uniqueInterviews.get(roomId).status !== 'completed')) {
+      if (!uniqueInterviews.has(roomId) ||
+        interview.createdAt > uniqueInterviews.get(roomId).createdAt ||
+        (interview.status === 'completed' && uniqueInterviews.get(roomId).status !== 'completed')) {
         uniqueInterviews.set(roomId, interview);
       }
     });
-    
+
     const recentInterviews = Array.from(uniqueInterviews.values())
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 10);
@@ -233,7 +229,7 @@ router.get('/dashboard', verifyToken, async (req, res) => {
     const thisMonth = new Date();
     thisMonth.setDate(1);
     thisMonth.setHours(0, 0, 0, 0);
-    
+
     const thisMonthInterviews = Array.from(uniqueInterviews.values()).filter(
       interview => new Date(interview.createdAt) >= thisMonth
     );
@@ -270,16 +266,16 @@ router.get('/dashboard', verifyToken, async (req, res) => {
 router.post('/interview', verifyToken, async (req, res) => {
   try {
     const { roomId, role, questionTitle, difficulty, language } = req.body;
-    
+
     if (!roomId || !role) {
       return res.status(400).json({ error: 'Room ID and role are required' });
     }
 
     const user = await User.findById(req.user._id);
-    
+
     // Check if interview already exists for this room
     const existingInterview = user.interviewHistory.find(i => i.roomId === roomId);
-    
+
     if (existingInterview) {
       return res.json({
         message: 'Interview already exists for this room',
@@ -287,7 +283,7 @@ router.post('/interview', verifyToken, async (req, res) => {
         status: existingInterview.status
       });
     }
-    
+
     user.addInterview({
       roomId,
       role,
@@ -316,7 +312,7 @@ router.put('/interview/:roomId/complete', verifyToken, async (req, res) => {
     const { score, feedback, duration, codeSubmitted } = req.body;
 
     const user = await User.findById(req.user._id);
-    
+
     user.completeInterview(roomId, {
       score,
       feedback,
@@ -355,7 +351,7 @@ router.post('/logout', verifyToken, async (req, res) => {
     const user = await User.findById(req.user._id);
     user.lastActive = new Date();
     await user.save();
-    
+
     res.json({ message: 'Logged out successfully' });
   } catch (error) {
     res.json({ message: 'Logged out successfully' }); // Still return success
