@@ -10,7 +10,6 @@ Techify is a comprehensive web-based platform designed for conducting technical 
 - **Real-time Code Editor**: Monaco Editor with syntax highlighting and auto-completion
 - **Multi-language Support**: Python, JavaScript, Java, C, C++, C#, PHP, Swift, Kotlin
 - **Live Code Execution**: Execute code in real-time with output display
-- **Real-time Collaboration**: Multiple users can edit code simultaneously
 - **Video Calling**: Integrated WebRTC video communication
 - **Interview Notes**: Side-by-side note-taking for interviewers
 - **Question Bank**: Pre-built coding questions with difficulty levels
@@ -20,7 +19,6 @@ Techify is a comprehensive web-based platform designed for conducting technical 
 - **Role-based Access**: Separate interfaces for interviewers and candidates
 - **User Authentication**: Secure login/registration system
 - **Dashboard**: Personalized dashboards with interview history and statistics
-- **Session Management**: Automatic session handling and cleanup
 
 ### Assessment Tools
 - **Rubric Scoring**: Structured scoring system for evaluations
@@ -31,8 +29,6 @@ Techify is a comprehensive web-based platform designed for conducting technical 
 ### Security & UX
 - **Browser Protection**: Prevents accidental navigation during interviews
 - **Auto-save**: Automatic saving of notes and progress
-- **Responsive Design**: Works across different screen sizes
-- **Real-time Notifications**: Alerts for user joins/leaves and status updates
 
 ## Technology Stack
 
