@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Header from './components/Header';
 import './App.css';
 
 export default function Homepage() {
@@ -13,60 +14,8 @@ export default function Homepage() {
       `,
       position: 'relative'
     }}>
-      
-      <header style={{
-        position: 'fixed',
-        top: '1rem',
-        left: '1rem',
-        right: '1rem',
-        zIndex: 50,
-        background: 'hsl(var(--background) / 0.8)',
-        backdropFilter: 'blur(20px)',
-        border: '1px solid hsl(var(--border))',
-        borderRadius: '12px',
-        padding: '1rem 2rem',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <img 
-            src="/logo.webp" 
-            alt="Techify Logo" 
-            style={{ 
-              height: '40px',
-              width: 'auto'
-            }}
-          />
-        </div>
-        
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <Link 
-            to="/login" 
-            className="action-btn save-btn"
-            style={{ 
-              textDecoration: 'none',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              transition: 'color 0.2s ease'
-            }}
-          >
-            Sign In
-          </Link>
-          <Link 
-            to="/register" 
-            className="action-btn run-btn"
-            style={{ 
-              textDecoration: 'none',
-              fontSize: '0.875rem',
-              padding: '0.5rem 1rem'
-            }}
-          >
-            Get Started
-          </Link>
-        </nav>
-      </header>
+
+      <Header />
 
       <main style={{
         paddingTop: '4rem',
@@ -80,12 +29,12 @@ export default function Homepage() {
         position: 'relative',
         zIndex: 1
       }}>
-        <div style={{ 
+        <div style={{
           textAlign: 'center',
           maxWidth: '1200px',
           width: '100%'
         }}>
-          <h1 style={{ 
+          <h1 style={{
             paddingTop: '6rem',
             fontSize: 'clamp(2.5rem, 6vw, 7rem)',
             marginBottom: '1.5rem',
@@ -100,8 +49,8 @@ export default function Homepage() {
           }}>
             Technical Interviews<br />Made Simple!
           </h1>
-          
-          <p style={{ 
+
+          <p style={{
             fontSize: '1.25rem',
             color: 'hsl(var(--muted-foreground))',
             marginBottom: '3rem',
@@ -117,15 +66,15 @@ export default function Homepage() {
             Conduct seamless remote technical interviews with real-time collaboration, AI assistance, and comprehensive evaluation tools.
           </p>
 
-          <div style={{ 
-            display: 'flex', 
-            gap: '1rem', 
+          <div style={{
+            display: 'flex',
+            gap: '1rem',
             justifyContent: 'center',
             flexWrap: 'wrap',
             marginBottom: '5rem'
           }}>
-            <Link 
-              to="/register" 
+            <Link
+              to="/register"
               className="action-btn run-btn"
               style={{
                 display: 'inline-block',
@@ -136,9 +85,9 @@ export default function Homepage() {
             >
               Get Started
             </Link>
-            
-            <Link 
-              to="/login" 
+
+            <Link
+              to="/login"
               className="action-btn save-btn"
               style={{
                 display: 'inline-block',
@@ -152,9 +101,9 @@ export default function Homepage() {
           </div>
         </div>
       </main>
-      
+
       <footer style={{
-        position:'fixed',
+        position: 'fixed',
         zIndex: 1,
         bottom: '1rem',
         left: '1rem',

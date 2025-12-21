@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './components/AuthWrapper';
+import Header from './components/Header';
 import Footer from './components/Footer';
 import './App.css';
 
@@ -22,7 +23,7 @@ export default function Join() {
 
   const handleOtpChange = (index, value) => {
     if (value.length > 1) return;
-    
+
     const newValues = [...otpValues];
     newValues[index] = value.toUpperCase();
     setOtpValues(newValues);
@@ -43,12 +44,12 @@ export default function Join() {
     e.preventDefault();
     const pastedData = e.clipboardData.getData('text').toUpperCase().slice(0, 6);
     const newValues = [...otpValues];
-    
+
     for (let i = 0; i < 6; i++) {
       newValues[i] = pastedData[i] || '';
     }
     setOtpValues(newValues);
-    
+
     // Focus the last filled input or the first empty one
     const lastFilledIndex = Math.min(pastedData.length - 1, 5);
     inputRefs.current[lastFilledIndex]?.focus();
@@ -81,111 +82,7 @@ export default function Join() {
         position: "relative",
       }}
     >
-      <header
-        className="top-nav-button"
-        style={{
-          position: "fixed",
-          top: "1rem",
-          left: "1rem",
-          right: "1rem",
-          zIndex: 50,
-          backdropFilter: "blur(30px)",
-          border: "1px solid hsl(var(--border))",
-          borderRadius: "12px",
-          padding: window.innerWidth <= 768 ? "0.75rem 1rem" : "1rem 2rem",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          boxShadow:
-            "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-          flexWrap: window.innerWidth <= 480 ? "wrap" : "nowrap",
-          gap: window.innerWidth <= 480 ? "0.5rem" : "0",
-        }}
-      >
-        {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <img
-            src="/logo.webp"
-            alt="Techify Logo"
-            style={{
-              height: window.innerWidth <= 768 ? "32px" : "40px",
-              width: "auto",
-            }}
-          />
-        </div>
-
-        {/* Navigation Links */}
-        <nav
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: window.innerWidth <= 768 ? "0.5rem" : "1rem",
-            flexWrap: window.innerWidth <= 480 ? "wrap" : "nowrap",
-          }}
-        >
-          {isAuthenticated() ? (
-            <>
-              <span
-                style={{
-                  color: "hsl(var(--muted-foreground))",
-                  fontSize: window.innerWidth <= 768 ? "0.75rem" : "0.875rem",
-                }}
-              >
-                {user?.username}
-              </span>
-              <Link
-                to="/dashboard"
-                className="action-btn run-btn"
-                style={{
-                  textDecoration: "none",
-                  fontSize: window.innerWidth <= 768 ? "0.75rem" : "0.875rem",
-                  padding:
-                    window.innerWidth <= 768
-                      ? "0.375rem 0.75rem"
-                      : "0.5rem 1rem",
-                }}
-              >
-                Dashboard
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="action-btn save-btn"
-                style={{
-                  textDecoration: "none",
-                  fontSize: window.innerWidth <= 768 ? "0.75rem" : "0.875rem",
-                  fontWeight: "500",
-                  transition: "color 0.2s ease",
-                  background: "transparent",
-                  backdropFilter: "blur(10px)",
-                  padding:
-                    window.innerWidth <= 768
-                      ? "0.375rem 0.75rem"
-                      : "0.5rem 1rem",
-                }}
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/register"
-                className="action-btn run-btn"
-                style={{
-                  textDecoration: "none",
-                  fontSize: window.innerWidth <= 768 ? "0.75rem" : "0.875rem",
-                  padding:
-                    window.innerWidth <= 768
-                      ? "0.375rem 0.75rem"
-                      : "0.5rem 1rem",
-                }}
-              >
-                Get Started
-              </Link>
-            </>
-          )}
-        </nav>
-      </header>
+      <Header />
 
       {/* Mobile Notice Banner */}
       <div
@@ -279,8 +176,8 @@ export default function Join() {
                   window.innerWidth <= 480
                     ? "clamp(1.5rem, 6vw, 2.5rem)"
                     : window.innerWidth <= 768
-                    ? "clamp(1.8rem, 5vw, 2.8rem)"
-                    : "clamp(2rem, 4vw, 3rem)",
+                      ? "clamp(1.8rem, 5vw, 2.8rem)"
+                      : "clamp(2rem, 4vw, 3rem)",
                 fontWeight: "700",
                 marginBottom: "1rem",
                 color: "hsl(var(--foreground))",
@@ -301,8 +198,8 @@ export default function Join() {
                   window.innerWidth <= 480
                     ? "0.875rem"
                     : window.innerWidth <= 768
-                    ? "1rem"
-                    : "1.125rem",
+                      ? "1rem"
+                      : "1.125rem",
                 color: "hsl(var(--muted-foreground))",
                 marginBottom: "3rem",
                 lineHeight: "1.6",
@@ -337,9 +234,8 @@ export default function Join() {
               <button
                 type="submit"
                 disabled={room.length !== 6}
-                className={`action-btn run-btn ${
-                  room.length !== 6 ? "disabled" : ""
-                }`}
+                className={`action-btn run-btn ${room.length !== 6 ? "disabled" : ""
+                  }`}
                 style={{ width: "100%" }}
               >
                 Join Interview Room
@@ -350,7 +246,7 @@ export default function Join() {
           // Interviewer Dashboard CTA
           <div
             className="auth-card"
-              style={{
+            style={{
               paddingTop: '20px',
               textAlign: "center",
               maxWidth: "500px",
@@ -369,8 +265,8 @@ export default function Join() {
                   window.innerWidth <= 480
                     ? "clamp(1.5rem, 6vw, 2.5rem)"
                     : window.innerWidth <= 768
-                    ? "clamp(1.8rem, 5vw, 2.8rem)"
-                    : "clamp(2rem, 4vw, 3rem)",
+                      ? "clamp(1.8rem, 5vw, 2.8rem)"
+                      : "clamp(2rem, 4vw, 3rem)",
                 fontWeight: "700",
                 marginBottom: "1rem",
                 color: "hsl(var(--foreground))",
@@ -385,11 +281,11 @@ export default function Join() {
                   window.innerWidth <= 480
                     ? "0.875rem"
                     : window.innerWidth <= 768
-                    ? "1rem"
-                    : "1.125rem",
+                      ? "1rem"
+                      : "1.125rem",
                 color: "hsl(var(--muted-foreground))",
                 marginBottom: "3rem",
-                  lineHeight: "1.6",
+                lineHeight: "1.6",
                 letterSpacing: '-0.1em',
               }}
             >
@@ -440,10 +336,10 @@ export default function Join() {
                     window.innerWidth <= 360
                       ? "2rem"
                       : window.innerWidth <= 480
-                      ? "2.5rem"
-                      : window.innerWidth <= 768
-                      ? "4rem"
-                      : "6rem",
+                        ? "2.5rem"
+                        : window.innerWidth <= 768
+                          ? "4rem"
+                          : "6rem",
                   WebkitBackgroundClip: "text",
                   letterSpacing: "-0.08em",
                   WebkitTextFillColor: "transparent",
@@ -468,10 +364,10 @@ export default function Join() {
                     window.innerWidth <= 360
                       ? "2.2rem"
                       : window.innerWidth <= 480
-                      ? "2.8rem"
-                      : window.innerWidth <= 768
-                      ? "4.5rem"
-                      : "6.5rem",
+                        ? "2.8rem"
+                        : window.innerWidth <= 768
+                          ? "4.5rem"
+                          : "6.5rem",
                   letterSpacing:
                     window.innerWidth <= 480 ? "-0.06em" : "-0.1em",
                   transform: "translateZ(0)",
@@ -489,10 +385,10 @@ export default function Join() {
                   window.innerWidth <= 360
                     ? "0.75rem"
                     : window.innerWidth <= 480
-                    ? "0.875rem"
-                    : window.innerWidth <= 768
-                    ? "1rem"
-                    : "1.25rem",
+                      ? "0.875rem"
+                      : window.innerWidth <= 768
+                        ? "1rem"
+                        : "1.25rem",
                 color: "hsl(var(--muted-foreground))",
                 marginBottom: "3rem",
                 lineHeight: "1.6",
@@ -533,16 +429,16 @@ export default function Join() {
                     window.innerWidth <= 360
                       ? "0.75rem"
                       : window.innerWidth <= 480
-                      ? "0.8rem"
-                      : window.innerWidth <= 768
-                      ? "0.875rem"
-                      : "1rem",
+                        ? "0.8rem"
+                        : window.innerWidth <= 768
+                          ? "0.875rem"
+                          : "1rem",
                   padding:
                     window.innerWidth <= 480
                       ? "0.875rem 1.25rem"
                       : window.innerWidth <= 768
-                      ? "0.75rem 1.5rem"
-                      : "0.875rem 2rem",
+                        ? "0.75rem 1.5rem"
+                        : "0.875rem 2rem",
                   width: window.innerWidth <= 480 ? "100%" : "auto",
                   textAlign: "center",
                 }}
@@ -560,16 +456,16 @@ export default function Join() {
                     window.innerWidth <= 360
                       ? "0.75rem"
                       : window.innerWidth <= 480
-                      ? "0.8rem"
-                      : window.innerWidth <= 768
-                      ? "0.875rem"
-                      : "1rem",
+                        ? "0.8rem"
+                        : window.innerWidth <= 768
+                          ? "0.875rem"
+                          : "1rem",
                   padding:
                     window.innerWidth <= 480
                       ? "0.875rem 1.25rem"
                       : window.innerWidth <= 768
-                      ? "0.75rem 1.5rem"
-                      : "0.875rem 2rem",
+                        ? "0.75rem 1.5rem"
+                        : "0.875rem 2rem",
                   background: "transparent",
                   backdropFilter: "blur(10px)",
                   width: window.innerWidth <= 480 ? "100%" : "auto",
@@ -605,10 +501,10 @@ export default function Join() {
                 window.innerWidth <= 360
                   ? "0.625rem"
                   : window.innerWidth <= 480
-                  ? "0.7rem"
-                  : window.innerWidth <= 768
-                  ? "0.75rem"
-                  : "1rem",
+                    ? "0.7rem"
+                    : window.innerWidth <= 768
+                      ? "0.75rem"
+                      : "1rem",
               color: "hsl(var(--muted-foreground))",
               margin: 0,
               fontWeight: "500",

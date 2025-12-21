@@ -28,7 +28,7 @@ const Footer = () => {
         borderRadius: 'calc(var(--radius) - 2px)',
         fontSize: '0.75rem'
       }}>
-         by Uday Savaliya
+        by Uday Savaliya
       </span>
     </footer>
   );
