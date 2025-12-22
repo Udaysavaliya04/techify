@@ -13,7 +13,9 @@ export default function Questions({ onSelect, onClose }) {
   const [editText, setEditText] = useState('');
   const [editDiff, setEditDiff] = useState('easy');
   const [searchTerm, setSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
+  const [addDropdownOpen, setAddDropdownOpen] = useState(false);
+  const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
+  const [editDropdownOpen, setEditDropdownOpen] = useState(false);
   const fetchQuestions = async (diff = '') => {
     setLoading(true);
     try {
@@ -170,48 +172,59 @@ export default function Questions({ onSelect, onClose }) {
         />
 
         <div className="dropdown-menu" style={{ width: '100%', minWidth: '100px' }}>
-          <button className="dropdown-trigger" aria-expanded="false" disabled={loading}>
+          <button
+            type="button"
+            className="dropdown-trigger"
+            aria-expanded={addDropdownOpen}
+            disabled={loading}
+            onClick={() => setAddDropdownOpen(!addDropdownOpen)}
+          >
             <span>{addDiff.charAt(0).toUpperCase() + addDiff.slice(1)}</span>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="dropdown-icon">
               <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <div className="dropdown-content">
-            <div className="dropdown-label">Select Difficulty</div>
-            <button
-              className={`dropdown-item ${addDiff === 'easy' ? 'dropdown-item-active' : ''}`}
-              onClick={() => setAddDiff('easy')}
-            >
-              <span>Easy</span>
-              {addDiff === 'easy' && (
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              )}
-            </button>
-            <button
-              className={`dropdown-item ${addDiff === 'medium' ? 'dropdown-item-active' : ''}`}
-              onClick={() => setAddDiff('medium')}
-            >
-              <span>Medium</span>
-              {addDiff === 'medium' && (
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              )}
-            </button>
-            <button
-              className={`dropdown-item ${addDiff === 'hard' ? 'dropdown-item-active' : ''}`}
-              onClick={() => setAddDiff('hard')}
-            >
-              <span>Hard</span>
-              {addDiff === 'hard' && (
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              )}
-            </button>
-          </div>
+          {addDropdownOpen && (
+            <div className="dropdown-content" style={{ display: 'block' }}>
+              <div className="dropdown-label">Select Difficulty</div>
+              <button
+                type="button"
+                className={`dropdown-item ${addDiff === 'easy' ? 'dropdown-item-active' : ''}`}
+                onClick={() => { setAddDiff('easy'); setAddDropdownOpen(false); }}
+              >
+                <span>Easy</span>
+                {addDiff === 'easy' && (
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </button>
+              <button
+                type="button"
+                className={`dropdown-item ${addDiff === 'medium' ? 'dropdown-item-active' : ''}`}
+                onClick={() => { setAddDiff('medium'); setAddDropdownOpen(false); }}
+              >
+                <span>Medium</span>
+                {addDiff === 'medium' && (
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </button>
+              <button
+                type="button"
+                className={`dropdown-item ${addDiff === 'hard' ? 'dropdown-item-active' : ''}`}
+                onClick={() => { setAddDiff('hard'); setAddDropdownOpen(false); }}
+              >
+                <span>Hard</span>
+                {addDiff === 'hard' && (
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          )}
         </div>
 
         <button
@@ -226,120 +239,84 @@ export default function Questions({ onSelect, onClose }) {
 
       <div style={{ marginBottom: '1rem' }}>
         <div className="dropdown-menu" style={{ width: '100%' }}>
-          <button className="dropdown-trigger" aria-expanded="false" disabled={loading} style={{ width: '100%' }}>
+          <button
+            className="dropdown-trigger"
+            aria-expanded={filterDropdownOpen}
+            disabled={loading}
+            style={{ width: '100%' }}
+            onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
+          >
             <span>{difficulty ? difficulty.charAt(0).toUpperCase() + difficulty.slice(1) : 'All Difficulties'}</span>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="dropdown-icon">
               <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <div className="dropdown-content">
-            <div className="dropdown-label">Filter by Difficulty</div>
-            <button
-              className={`dropdown-item ${difficulty === '' ? 'dropdown-item-active' : ''}`}
-              onClick={() => setDifficulty('')}
-            >
-              <span>All Difficulties</span>
-              {difficulty === '' && (
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              )}
-            </button>
-            <button
-              className={`dropdown-item ${difficulty === 'easy' ? 'dropdown-item-active' : ''}`}
-              onClick={() => setDifficulty('easy')}
-            >
-              <span>Easy</span>
-              {difficulty === 'easy' && (
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              )}
-            </button>
-            <button
-              className={`dropdown-item ${difficulty === 'medium' ? 'dropdown-item-active' : ''}`}
-              onClick={() => setDifficulty('medium')}
-            >
-              <span>Medium</span>
-              {difficulty === 'medium' && (
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              )}
-            </button>
-            <button
-              className={`dropdown-item ${difficulty === 'hard' ? 'dropdown-item-active' : ''}`}
-              onClick={() => setDifficulty('hard')}
-            >
-              <span>Hard</span>
-              {difficulty === 'hard' && (
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              )}
-            </button>
-          </div>
+          {filterDropdownOpen && (
+            <div className="dropdown-content" style={{ display: 'block' }}>
+              <div className="dropdown-label">Filter by Difficulty</div>
+              <button
+                className={`dropdown-item ${difficulty === '' ? 'dropdown-item-active' : ''}`}
+                onClick={() => { setDifficulty(''); setFilterDropdownOpen(false); }}
+              >
+                <span>All Difficulties</span>
+                {difficulty === '' && (
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </button>
+              <button
+                className={`dropdown-item ${difficulty === 'easy' ? 'dropdown-item-active' : ''}`}
+                onClick={() => { setDifficulty('easy'); setFilterDropdownOpen(false); }}
+              >
+                <span>Easy</span>
+                {difficulty === 'easy' && (
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </button>
+              <button
+                className={`dropdown-item ${difficulty === 'medium' ? 'dropdown-item-active' : ''}`}
+                onClick={() => { setDifficulty('medium'); setFilterDropdownOpen(false); }}
+              >
+                <span>Medium</span>
+                {difficulty === 'medium' && (
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </button>
+              <button
+                className={`dropdown-item ${difficulty === 'hard' ? 'dropdown-item-active' : ''}`}
+                onClick={() => { setDifficulty('hard'); setFilterDropdownOpen(false); }}
+              >
+                <span>Hard</span>
+                {difficulty === 'hard' && (
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Search and View Controls */}
+      {/* Search Control */}
       <div style={{
-        display: 'flex',
-        gap: '1rem',
-        marginBottom: '1rem',
-        alignItems: 'center',
-        flexWrap: 'wrap'
+        marginBottom: '1rem'
       }}>
         <input
           className="input"
           type="text"
-          placeholder="Search questions or tags..."
+          placeholder="Search questions..."
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
           style={{
-            flex: 1,
-            minWidth: '200px'
+            width: '100%'
           }}
         />
-
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button
-            className={`action-btn ${viewMode === 'list' ? 'run-btn' : 'save-btn'}`}
-            onClick={() => setViewMode('list')}
-            style={{
-              padding: '0.375rem 0.75rem',
-              fontSize: '0.75rem',
-              minHeight: 'auto',
-              height: '2.25rem'
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="8" y1="6" x2="21" y2="6"></line>
-              <line x1="8" y1="12" x2="21" y2="12"></line>
-              <line x1="8" y1="18" x2="21" y2="18"></line>
-              <line x1="3" y1="6" x2="3.01" y2="6"></line>
-              <line x1="3" y1="12" x2="3.01" y2="12"></line>
-              <line x1="3" y1="18" x2="3.01" y2="18"></line>
-            </svg>
-          </button>
-          <button
-            className={`action-btn ${viewMode === 'grid' ? 'run-btn' : 'save-btn'}`}
-            onClick={() => setViewMode('grid')}
-            style={{
-              padding: '0.375rem 0.75rem',
-              fontSize: '0.75rem',
-              minHeight: 'auto',
-              height: '2.25rem'
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-            </svg>
-          </button>
-        </div>
       </div>
 
       <div className="questions-list">
@@ -363,13 +340,11 @@ export default function Questions({ onSelect, onClose }) {
           </div>
         ) : (
           <div style={{
-            display: viewMode === 'grid' ? 'grid' : 'block',
-            gridTemplateColumns: viewMode === 'grid' ? 'repeat(auto-fill, minmax(240px, 1fr))' : 'none',
-            gap: viewMode === 'grid' ? '1rem' : '0',
+            display: 'block',
             maxHeight: '310px',
             overflowY: 'auto',
-            border: viewMode === 'list' ? '1px solid hsl(var(--border))' : 'none',
-            borderRadius: viewMode === 'list' ? 'calc(var(--radius) - 2px)' : '0'
+            border: '1px solid hsl(var(--border))',
+            borderRadius: 'calc(var(--radius) - 2px)'
           }}>
             {filteredQuestions.map(q => (
               <div
@@ -377,10 +352,7 @@ export default function Questions({ onSelect, onClose }) {
                 className="question-item"
                 style={{
                   cursor: editingQuestion === q._id ? 'default' : 'pointer',
-                  border: viewMode === 'grid' ? '1px solid hsl(var(--border))' : 'none',
-                  borderRadius: viewMode === 'grid' ? 'calc(var(--radius) - 2px)' : '0',
-                  borderBottom: viewMode === 'list' ? '1px solid hsl(var(--border))' : 'none',
-                  marginBottom: viewMode === 'grid' ? '0' : '0'
+                  borderBottom: '1px solid hsl(var(--border))'
                 }}
               >
                 {editingQuestion === q._id ? (
@@ -395,48 +367,59 @@ export default function Questions({ onSelect, onClose }) {
                       placeholder="Edit question text..."
                     />
                     <div className="dropdown-menu" style={{ width: '100%', marginBottom: '1rem' }}>
-                      <button className="dropdown-trigger" aria-expanded="false" style={{ width: '100%' }}>
+                      <button
+                        type="button"
+                        className="dropdown-trigger"
+                        aria-expanded={editDropdownOpen}
+                        style={{ width: '100%' }}
+                        onClick={() => setEditDropdownOpen(!editDropdownOpen)}
+                      >
                         <span>{editDiff.charAt(0).toUpperCase() + editDiff.slice(1)}</span>
                         <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="dropdown-icon">
                           <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       </button>
-                      <div className="dropdown-content">
-                        <div className="dropdown-label">Select Difficulty</div>
-                        <button
-                          className={`dropdown-item ${editDiff === 'easy' ? 'dropdown-item-active' : ''}`}
-                          onClick={() => setEditDiff('easy')}
-                        >
-                          <span>Easy</span>
-                          {editDiff === 'easy' && (
-                            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
-                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                        </button>
-                        <button
-                          className={`dropdown-item ${editDiff === 'medium' ? 'dropdown-item-active' : ''}`}
-                          onClick={() => setEditDiff('medium')}
-                        >
-                          <span>Medium</span>
-                          {editDiff === 'medium' && (
-                            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
-                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                        </button>
-                        <button
-                          className={`dropdown-item ${editDiff === 'hard' ? 'dropdown-item-active' : ''}`}
-                          onClick={() => setEditDiff('hard')}
-                        >
-                          <span>Hard</span>
-                          {editDiff === 'hard' && (
-                            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
-                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                        </button>
-                      </div>
+                      {editDropdownOpen && (
+                        <div className="dropdown-content" style={{ display: 'block' }}>
+                          <div className="dropdown-label">Select Difficulty</div>
+                          <button
+                            type="button"
+                            className={`dropdown-item ${editDiff === 'easy' ? 'dropdown-item-active' : ''}`}
+                            onClick={() => { setEditDiff('easy'); setEditDropdownOpen(false); }}
+                          >
+                            <span>Easy</span>
+                            {editDiff === 'easy' && (
+                              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            className={`dropdown-item ${editDiff === 'medium' ? 'dropdown-item-active' : ''}`}
+                            onClick={() => { setEditDiff('medium'); setEditDropdownOpen(false); }}
+                          >
+                            <span>Medium</span>
+                            {editDiff === 'medium' && (
+                              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            className={`dropdown-item ${editDiff === 'hard' ? 'dropdown-item-active' : ''}`}
+                            onClick={() => { setEditDiff('hard'); setEditDropdownOpen(false); }}
+                          >
+                            <span>Hard</span>
+                            {editDiff === 'hard' && (
+                              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </button>
+                        </div>
+                      )}
                     </div>
                     <div style={{ display: 'flex', gap: '0.75rem' }}>
                       <button
@@ -546,11 +529,7 @@ export default function Questions({ onSelect, onClose }) {
                       color: '#fff',
                       fontSize: '0.875rem',
                       lineHeight: '1.5',
-                      marginBottom: '0.5rem',
-                      display: '-webkit-box',
-                      WebkitLineClamp: viewMode === 'grid' ? 4 : 'none',
-                      WebkitBoxOrient: 'vertical',
-                      overflow: viewMode === 'grid' ? 'hidden' : 'visible'
+                      marginBottom: '0.5rem'
                     }}>
                       {q.text}
                     </div>
