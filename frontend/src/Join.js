@@ -433,8 +433,8 @@ export default function Join() {
             >
               <span
                 style={{
-                  background:
-                    "linear-gradient(135deg, #ffffff, #acacacff, rgba(255, 255, 255, 1))",
+                  background: "linear-gradient(135deg, #ffffff 0%, #f0f9ff 25%, #faf5ff 50%, #f0f9ff 75%, #ffffff 100%)",
+                  backgroundSize: "200% 200%",
                   fontSize:
                     window.innerWidth <= 360
                       ? "2rem"
@@ -448,33 +448,38 @@ export default function Join() {
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
                   display: "block",
+                  fontWeight: "800",
+                  filter: "drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08))",
+                  animation: "gradientShift 6s ease-in-out infinite",
+                  WebkitFontSmoothing: "antialiased",
+                  MozOsxFontSmoothing: "grayscale",
                 }}
               >
                 Technical Interviews
               </span>
               <span
                 style={{
-                  background:
-                    "linear-gradient(135deg, #1E3A8A, #3B82F6, #87CEEB, #8B5CF6)",
+                  background: "linear-gradient(135deg, #0071e3 0%, #06b6d4 20%, #5e5ce6 40%, #bf5af2 60%, #ff7f50 80%, #ff375f 100%)",
+                  backgroundSize: "150% 150%",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
-                  backgroundSize: "400% 400%",
-                  animation: "gradientShift 15s ease-in-out infinite",
                   display: "block",
                   fontWeight: "900",
                   fontSize:
                     window.innerWidth <= 360
-                      ? "2.2rem"
+                      ? "2.6rem"
                       : window.innerWidth <= 480
-                        ? "2.8rem"
+                        ? "3.2rem"
                         : window.innerWidth <= 768
-                          ? "4.5rem"
-                          : "6.5rem",
+                          ? "5rem"
+                          : "7.5rem",
                   letterSpacing:
-                    window.innerWidth <= 480 ? "-0.06em" : "-0.1em",
-                  transform: "translateZ(0)",
-                  filter: "drop-shadow(0 0 8px rgba(135, 206, 235, 0.15))",
+                    window.innerWidth <= 480 ? "-0.03em" : "-0.09em",
+                  filter: "drop-shadow(0 4px 16px rgba(0, 113, 227, 0.15)) drop-shadow(0 8px 32px rgba(191, 90, 242, 0.12))",
+                  animation: "appleGradientFlow 8s ease-in-out infinite",
+                  WebkitFontSmoothing: "antialiased",
+                  MozOsxFontSmoothing: "grayscale",
                 }}
               >
                 Made Simple!
