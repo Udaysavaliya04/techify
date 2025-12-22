@@ -208,6 +208,10 @@ router.get('/dashboard', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('-password');
 
+    // Clean up any duplicate interviews
+    user.cleanupDuplicateInterviews();
+    await user.save();
+
     // Get recent interviews (last 10), properly filtered
     const uniqueInterviews = new Map();
 

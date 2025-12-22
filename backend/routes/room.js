@@ -212,12 +212,10 @@ router.get('/:roomId/report/export', async (req, res) => {
         if (room.rubricScores.scores) {
           doc.text('Detailed Scores:', { underline: true });
           Object.entries(room.rubricScores.scores).forEach(([criteria, data]) => {
-            if (data && typeof data.score !== 'undefined') {
-              const criteriaName = criteria.replace(/_/g, ' ').toUpperCase();
-              doc.text(`${criteriaName}: ${data.score}/10`);
-              if (data.notes) {
-                doc.text(`  Notes: ${data.notes}`);
-              }
+            const criteriaName = criteria.replace(/_/g, ' ').toUpperCase();
+            doc.text(`${criteriaName}: ${data.score}/10`);
+            if (data.notes) {
+              doc.text(`  Notes: ${data.notes}`);
             }
           });
           doc.moveDown();

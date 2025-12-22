@@ -63,12 +63,12 @@ function App() {
           </select>
           <div className="dropdown-icon">
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
         </div>
       </div>
-      
+
       <div className="editor-container">
         <MonacoEditor
           height="60vh"
@@ -77,10 +77,10 @@ function App() {
             language === 'python3'
               ? 'python'
               : language === 'nodejs'
-              ? 'javascript'
-              : language === 'cpp17'
-              ? 'cpp'
-              : language
+                ? 'javascript'
+                : language === 'cpp17'
+                  ? 'cpp'
+                  : language
           }
           value={code}
           onChange={v => setCode(v || '')}
@@ -119,7 +119,7 @@ function App() {
           }}
         />
       </div>
-      
+
       <div className="button-row">
         <button
           onClick={runCode}
@@ -135,7 +135,7 @@ function App() {
           Save Snippet
         </button>
       </div>
-      
+
       <div className="output-container">
         <span className="output-label">Output</span>
         <pre className="output-area">{output || 'No output yet. Run your code to see results here.'}</pre>

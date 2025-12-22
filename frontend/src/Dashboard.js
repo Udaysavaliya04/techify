@@ -34,7 +34,7 @@ export default function Dashboard() {
       const response = await axios.get(`${config.API_BASE_URL}/api/auth/dashboard`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       setDashboardData(response.data);
     } catch (error) {
       console.error('Dashboard fetch error:', error);
@@ -59,7 +59,7 @@ export default function Dashboard() {
       // Ignore logout errors
       console.error('Logout error:', error);
     }
-    
+
     logout();
     navigate('/login');
   };
@@ -69,7 +69,7 @@ export default function Dashboard() {
       // Just generate random room ID, don't create database record yet
       const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
       setGeneratedRoomId(roomId);
-      
+
       // Show modal without creating interview record
       setShowInterviewModal(true);
     } catch (error) {
@@ -100,7 +100,7 @@ export default function Dashboard() {
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       // Navigate to interview room
       navigate(`/room/${generatedRoomId}`, { state: { role: 'interviewer' } });
     } catch (error) {
@@ -165,7 +165,7 @@ export default function Dashboard() {
           }}>
             {error}
           </div>
-          <button 
+          <button
             onClick={fetchDashboardData}
             className="action-btn run-btn"
             style={{ width: '100%', marginTop: '1rem' }}
@@ -180,78 +180,79 @@ export default function Dashboard() {
   const { stats, recentInterviews } = dashboardData;
 
   return (
-    <div className="app-root">     
-        <div className="editor-header" style={{ maxWidth: '80rem', letterSpacing: '-0.05em' ,
-        }}>
-          <div>
-            <h2 style={{
-              background: 'linear-gradient(135deg, #ffffff, #cacacaff, #ffffffff)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              letterSpacing: '-0.05em',
-            }}>Dashboard</h2>
-            <p style={{
-              color: 'hsl(var(--muted-foreground))',
-              fontSize: '1rem',
-              margin: '0.5rem 0 0 0',
-            }}>
-          Welcome back, {dashboardData.user.username}!
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            {dashboardData.user.role === 'interviewer' ? (
-          <button 
-            onClick={handleStartInterview}
-            className="action-btn run-btn"
-          >
-            Start Interview
-          </button>
-            ) : (
-          <Link 
-            to="/join" 
-            className="action-btn run-btn"
-            style={{ textDecoration: 'none', letterSpacing: '0.01em' }}
-          >
-            Join Interview
-          </Link>
-            )}
-            <button 
-          onClick={handleLogout}
-          className="action-btn save-btn"
-            >
-          Logout
-            </button>
-          </div>
+    <div className="app-root">
+      <div className="editor-header" style={{
+        maxWidth: '80rem', letterSpacing: '-0.05em',
+      }}>
+        <div>
+          <h2 style={{
+            background: 'linear-gradient(135deg, #ffffff, #cacacaff, #ffffffff)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            letterSpacing: '-0.05em',
+          }}>Dashboard</h2>
+          <p style={{
+            color: 'hsl(var(--muted-foreground))',
+            fontSize: '1rem',
+            margin: '0.5rem 0 0 0',
+          }}>
+            Welcome back, {dashboardData.user.username}!
+          </p>
         </div>
-        <div style={{
-          width: '100%',
-          maxWidth: '80rem',
-          display: 'grid',
-          gridTemplateColumns: dashboardData.user.role === 'candidate' ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)',
-          gap: 0,
-          marginBottom: '2rem'
-        }}>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          {dashboardData.user.role === 'interviewer' ? (
+            <button
+              onClick={handleStartInterview}
+              className="action-btn run-btn"
+            >
+              Start Interview
+            </button>
+          ) : (
+            <Link
+              to="/join"
+              className="action-btn run-btn"
+              style={{ textDecoration: 'none', letterSpacing: '0.01em' }}
+            >
+              Join Interview
+            </Link>
+          )}
+          <button
+            onClick={handleLogout}
+            className="action-btn save-btn"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+      <div style={{
+        width: '100%',
+        maxWidth: '80rem',
+        display: 'grid',
+        gridTemplateColumns: dashboardData.user.role === 'candidate' ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)',
+        gap: 0,
+        marginBottom: '2rem'
+      }}>
 
-            <div className="join-container" style={{ margin: 0, padding: '1.5rem', paddingLeft: '2rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                
-                <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: '0.875rem', color: 'hsl(var(--muted-foreground))', margin: 0, marginBottom: '0.25rem' }}>
-              {dashboardData.user.role === 'interviewer' ? 'Interviews Conducted' : 'Interviews Taken'}
-                  </p>
-                  <p style={{ fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))', margin: 0 }}>
-              +{stats.thisMonthInterviews} this month
-                  </p>
-                </div>
-              </div>
-              <p style={{ fontSize: '2rem', fontWeight: '700', margin: 0, color: 'hsl(var(--foreground))', textAlign: 'center', gap: '0.5rem' ,}}>
-                {stats.totalInterviews}
+        <div className="join-container" style={{ margin: 0, padding: '1.5rem', paddingLeft: '2rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: '0.875rem', color: 'hsl(var(--muted-foreground))', margin: 0, marginBottom: '0.25rem' }}>
+                {dashboardData.user.role === 'interviewer' ? 'Interviews Conducted' : 'Interviews Taken'}
+              </p>
+              <p style={{ fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))', margin: 0 }}>
+                +{stats.thisMonthInterviews} this month
               </p>
             </div>
+          </div>
+          <p style={{ fontSize: '2rem', fontWeight: '700', margin: 0, color: 'hsl(var(--foreground))', textAlign: 'center', gap: '0.5rem', }}>
+            {stats.totalInterviews}
+          </p>
+        </div>
 
 
-            {/* Average Score - Only for Candidates */}
+        {/* Average Score - Only for Candidates */}
         {dashboardData.user.role === 'candidate' && (
           <div className="join-container" style={{ margin: 0, padding: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
@@ -275,21 +276,21 @@ export default function Dashboard() {
       </div>
 
       {/* Recent Interviews */}
-      <div className="join-container" style={{ 
-        maxWidth: '80rem', 
-        width: '100%', 
-        margin: 0, 
-        padding: '1.5rem' 
+      <div className="join-container" style={{
+        maxWidth: '80rem',
+        width: '100%',
+        margin: 0,
+        padding: '1.5rem'
       }}>
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
           alignItems: 'center',
           marginBottom: '1.5rem'
         }}>
-          <h3 style={{ 
-            margin: 0, 
-            fontSize: '1.25rem', 
+          <h3 style={{
+            margin: 0,
+            fontSize: '1.25rem',
             fontWeight: '600',
             color: 'hsl(var(--foreground))',
             letterSpacing: '-0.05em',
@@ -297,8 +298,8 @@ export default function Dashboard() {
             Recent Interviews
           </h3>
           {recentInterviews.length > 0 && (
-            <span style={{ 
-              fontSize: '0.875rem', 
+            <span style={{
+              fontSize: '0.875rem',
               color: 'hsl(var(--muted-foreground))'
             }}>
               Last {Math.min(10, recentInterviews.length)} interviews
@@ -307,17 +308,17 @@ export default function Dashboard() {
         </div>
 
         {recentInterviews.length === 0 ? (
-          <div style={{ 
-            textAlign: 'center', 
+          <div style={{
+            textAlign: 'center',
             padding: '3rem 1rem',
             color: 'hsl(var(--muted-foreground))'
           }}>
-            <svg 
-              width="48" 
-              height="48" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
               strokeWidth="1.5"
               style={{ margin: '0 auto 1rem', opacity: 0.5 }}
             >
@@ -337,15 +338,15 @@ export default function Dashboard() {
               </p>
             )}
             {dashboardData.user.role === 'interviewer' ? (
-              <button 
+              <button
                 onClick={handleStartInterview}
                 className="action-btn run-btn"
               >
                 Start Interview
               </button>
             ) : (
-              <Link 
-                to="/join" 
+              <Link
+                to="/join"
                 className="action-btn run-btn"
                 style={{ textDecoration: 'none' }}
               >
@@ -364,9 +365,9 @@ export default function Dashboard() {
                         {interview.role}
                       </span>
                       {interview.difficulty && (
-                        <span 
+                        <span
                           className={`question-difficulty ${interview.difficulty}`}
-                          style={{ 
+                          style={{
                             background: `${getDifficultyColor(interview.difficulty)} / 0.1`,
                             color: getDifficultyColor(interview.difficulty),
                             border: `1px solid ${getDifficultyColor(interview.difficulty)} / 0.2`
@@ -378,37 +379,37 @@ export default function Dashboard() {
                       {dashboardData.user.role === 'interviewer' && (
                         <span style={{
                           fontSize: '0.75rem',
-                          color: interview.status === 'completed' ? 'hsl(142 76% 36%)' : 
-                                interview.status === 'ongoing' ? 'hsl(32 95% 44%)' : 
-                                'hsl(var(--muted-foreground))',
-                          background: interview.status === 'completed' ? 'hsl(142 76% 36% / 0.1)' : 
-                                     interview.status === 'ongoing' ? 'hsl(32 95% 44% / 0.1)' : 
-                                     'hsl(var(--muted))',
+                          color: interview.status === 'completed' ? 'hsl(142 76% 36%)' :
+                            interview.status === 'ongoing' ? 'hsl(32 95% 44%)' :
+                              'hsl(var(--muted-foreground))',
+                          background: interview.status === 'completed' ? 'hsl(142 76% 36% / 0.1)' :
+                            interview.status === 'ongoing' ? 'hsl(32 95% 44% / 0.1)' :
+                              'hsl(var(--muted))',
                           padding: '0.125rem 0.375rem',
                           borderRadius: 'calc(var(--radius) - 4px)',
                           textTransform: 'capitalize',
-                          border: `1px solid ${interview.status === 'completed' ? 'hsl(142 76% 36% / 0.2)' : 
-                                               interview.status === 'ongoing' ? 'hsl(32 95% 44% / 0.2)' : 
-                                               'hsl(var(--border))'}`
+                          border: `1px solid ${interview.status === 'completed' ? 'hsl(142 76% 36% / 0.2)' :
+                            interview.status === 'ongoing' ? 'hsl(32 95% 44% / 0.2)' :
+                              'hsl(var(--border))'}`
                         }}>
-                          {interview.status === 'completed' ? 'Completed' : 
-                           interview.status === 'ongoing' ? 'Ongoing' : 
-                           interview.status}
+                          {interview.status === 'completed' ? 'Completed' :
+                            interview.status === 'ongoing' ? 'Ongoing' :
+                              interview.status}
                         </span>
                       )}
                     </div>
-                    <h4 style={{ 
-                      margin: 0, 
-                      fontSize: '1rem', 
+                    <h4 style={{
+                      margin: 0,
+                      fontSize: '1rem',
                       fontWeight: '500',
                       color: 'hsl(var(--foreground))',
                       marginBottom: '0.5rem'
                     }}>
                       {interview.questionTitle || `Interview #${interview.roomId}`}
                     </h4>
-                    <div style={{ 
-                      display: 'flex', 
-                      gap: '1rem', 
+                    <div style={{
+                      display: 'flex',
+                      gap: '1rem',
                       fontSize: '0.75rem',
                       color: 'hsl(var(--muted-foreground))'
                     }}>
@@ -493,16 +494,16 @@ export default function Dashboard() {
             textAlign: 'center'
           }}>
             <div style={{ marginBottom: '1.5rem' }}>
-              <h3 style={{ 
-                margin: '0 0 0.5rem 0', 
-                fontSize: '1.25rem', 
+              <h3 style={{
+                margin: '0 0 0.5rem 0',
+                fontSize: '1.25rem',
                 fontWeight: '600',
                 color: 'hsl(var(--foreground))',
                 letterSpacing: '-0.025em'
               }}>
                 Interview Room Created
               </h3>
-              <p style={{ 
+              <p style={{
                 fontSize: '0.875rem',
                 color: 'hsl(var(--muted-foreground))',
                 margin: '0'
@@ -563,12 +564,12 @@ export default function Dashboard() {
                 onMouseLeave={(e) => e.target.style.background = 'hsl(var(--secondary))'}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-                  <path d="m4 16-2-2v-10c0-1.1.9-2 2-2h10l2 2"/>
+                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                  <path d="m4 16-2-2v-10c0-1.1.9-2 2-2h10l2 2" />
                 </svg>
                 Copy Code
               </button>
-              
+
               <button
                 onClick={enterRoom}
                 className="action-btn run-btn"

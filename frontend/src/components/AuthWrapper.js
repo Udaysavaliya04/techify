@@ -36,7 +36,7 @@ export default function AuthWrapper({ children }) {
         if (response.data.valid) {
           setToken(storedToken);
           setUser(JSON.parse(storedUser));
-          
+
           // Set default authorization header for all requests
           axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
         } else {

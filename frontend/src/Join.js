@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './components/AuthWrapper';
-import Header from './components/Header';
 import Footer from './components/Footer';
 import './App.css';
 
@@ -187,7 +186,6 @@ export default function Join() {
           )}
         </nav>
       </header>
-
 
       {/* Mobile Notice Banner */}
       <div

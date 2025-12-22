@@ -8,7 +8,6 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
   const [recommendation, setRecommendation] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Rubric criteria with weights
   const rubricCriteria = [
@@ -65,16 +64,16 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
       ]
     },
     {
-      id: 'code_optimization',
-      title: 'Code Optimization',
-      description: 'Ability to optimize code for performance and efficiency',
+      id: 'debugging',
+      title: 'Debugging & Testing',
+      description: 'Identifying and fixing issues, testing approaches',
       weight: 10,
       maxScore: 10,
       subcriteria: [
-        'Time complexity optimization',
-        'Space complexity optimization',
-        'Performance considerations',
-        'Best practices implementation'
+        'Error identification skills',
+        'Systematic debugging approach',
+        'Test case development',
+        'Code verification methods'
       ]
     }
   ];
@@ -170,12 +169,17 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
   const weightedScore = calculateWeightedScore();
 
   return (
-    <div className="modal-content" style={{
+    <div style={{
+      width: '100%',
       maxWidth: '900px',
       maxHeight: '90vh',
       overflow: 'hidden',
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      background: 'hsl(var(--card))',
+      borderRadius: 'var(--radius)',
+      border: '1px solid hsl(var(--border))',
+      boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)'
     }}>
       <button
         onClick={onClose}
@@ -185,11 +189,23 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
         ×
       </button>
 
-      <div className="modal-header" style={{ borderBottom: '1px solid hsl(var(--border))', textAlign: 'left' }}>
-        <h2 className="modal-title" style={{ fontSize: '1.5rem' }}>
+      <div style={{
+        padding: '1.5rem 2rem 1rem 2rem',
+        borderBottom: '1px solid hsl(var(--border))'
+      }}>
+        <h2 style={{
+          margin: '0 0 0.5rem 0',
+          fontSize: '1.5rem',
+          fontWeight: '600',
+          color: 'hsl(var(--foreground))'
+        }}>
           Interview Evaluation Rubric
         </h2>
-        <p className="modal-description">
+        <p style={{
+          margin: '0',
+          fontSize: '0.875rem',
+          color: 'hsl(var(--muted-foreground))'
+        }}>
           Score each criterion from 1-10. Weighted total: <strong style={{ color: getScoreColor(weightedScore) }}>{weightedScore}/10</strong>
         </p>
       </div>
@@ -306,8 +322,27 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
                 value={currentNotes}
                 onChange={(e) => handleNotesChange(criteria.id, e.target.value)}
                 placeholder={`Notes for ${criteria.title.toLowerCase()}...`}
-                className="ai-textarea"
-                style={{ minHeight: '60px', height: 'auto' }}
+                style={{
+                  width: '100%',
+                  minHeight: '60px',
+                  padding: '0.75rem',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: 'calc(var(--radius) - 2px)',
+                  background: 'hsl(var(--background))',
+                  color: 'hsl(var(--foreground))',
+                  fontSize: '0.875rem',
+                  fontFamily: 'inherit',
+                  resize: 'vertical',
+                  outline: 'none'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = 'hsl(var(--ring))';
+                  e.target.style.boxShadow = '0 0 0 2px hsl(var(--ring) / 0.2)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'hsl(var(--border))';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
             </div>
           );
@@ -315,9 +350,8 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
 
         {/* Overall Assessment */}
         <div style={{
-          background: 'hsl(var(--background) / 0.5)',
-          border: '3px solid hsl(var(--border))',
-          borderStyle: 'dashed',
+          background: 'hsl(var(--muted) / 0.5)',
+          border: '1px solid hsl(var(--border))',
           borderRadius: 'var(--radius)',
           padding: '1.5rem',
           marginBottom: '1rem'
@@ -367,13 +401,39 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
             value={overallNotes}
             onChange={(e) => setOverallNotes(e.target.value)}
             placeholder="Overall interview notes, strengths, areas for improvement..."
-            className="ai-textarea"
-            style={{ minHeight: '100px', height: 'auto' }}
+            style={{
+              width: '100%',
+              minHeight: '100px',
+              padding: '0.75rem',
+              border: '1px solid hsl(var(--border))',
+              borderRadius: 'calc(var(--radius) - 2px)',
+              background: 'hsl(var(--background))',
+              color: 'hsl(var(--foreground))',
+              fontSize: '0.875rem',
+              fontFamily: 'inherit',
+              resize: 'vertical',
+              outline: 'none'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = 'hsl(var(--ring))';
+              e.target.style.boxShadow = '0 0 0 2px hsl(var(--ring) / 0.2)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = 'hsl(var(--border))';
+              e.target.style.boxShadow = 'none';
+            }}
           />
         </div>
       </div>
 
-      <div className="modal-footer" style={{ justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid hsl(var(--border))', padding: '1rem 1.5rem' }}>
+      <div style={{
+        padding: '1rem 1.5rem',
+        borderTop: '1px solid hsl(var(--border))',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: '1rem'
+      }}>
         <div style={{
           fontSize: '0.875rem',
           color: 'hsl(var(--muted-foreground))'

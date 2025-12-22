@@ -40,15 +40,15 @@ export default function Room() {
 
   useEffect(() => {
     if (!isAuthenticated()) {
-      navigate('/login', { 
-        state: { 
+      navigate('/login', {
+        state: {
           from: `/room/${roomId}`,
           message: 'Please sign in to access the interview room'
         }
       });
     }
   }, [isAuthenticated, navigate, roomId]);
- 
+
   if (!isAuthenticated()) {
     return (
       <div style={{
@@ -60,15 +60,15 @@ export default function Room() {
         color: 'hsl(var(--foreground))'
       }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ 
-            fontSize: '1.125rem', 
+          <div style={{
+            fontSize: '1.125rem',
             marginBottom: '0.5rem',
             fontWeight: '500'
           }}>
             Authentication Required
           </div>
-          <div style={{ 
-            fontSize: '0.875rem', 
+          <div style={{
+            fontSize: '0.875rem',
             color: 'hsl(var(--muted-foreground))'
           }}>
             Redirecting to sign in...
@@ -77,7 +77,7 @@ export default function Room() {
       </div>
     );
   }
-  
+
   const role = location.state?.role || 'candidate';
   const [code, setCode] = useState();
   const [output, setOutput] = useState('');
@@ -108,15 +108,15 @@ export default function Room() {
 
   useEffect(() => {
     socketRef.current = io(SOCKET_URL);
-    
+
     socketRef.current.on('connect', () => {
       setIsConnected(true);
-      socketRef.current.emit('joinRoom', { 
-        roomId, 
-        role, 
-        username: user?.username || 'Anonymous' 
+      socketRef.current.emit('joinRoom', {
+        roomId,
+        role,
+        username: user?.username || 'Anonymous'
       });
-      
+
       // Start interview tracking 
       startInterviewTracking();
     });
@@ -127,9 +127,9 @@ export default function Room() {
 
     socketRef.current.on('init', ({ code }) => {
       setCode(code || `/* 
-- Friendly request from your dev buddy :)
-- JDoodle(API i am using to execute code) credits are super limited (Just 22 per day for a free plan).
-- So please stick to just 1 to 2 runs, so next curious souls can also test the platform.
+- Friendly request from your dev buddy 👋
+- JDoodle(API i am using to execute code) credits are super limited (Just 22 per day for a free plan)🪫
+- Please stick to just 1 to 2 runs, so next curious souls can also test the platform 😇
 - If the code is not running, that means the daily limit is reached.
 - Thanks for trying out Techify and Thanks for understanding! 
 */
@@ -151,7 +151,7 @@ export default function Room() {
       if (isAuthenticated()) {
         setTimeout(() => {
           navigate('/dashboard');
-        }, 2000); 
+        }, 2000);
       }
     });
 
@@ -160,11 +160,11 @@ export default function Room() {
       setJoinedUsers(prev => {
         if (!prev.find(u => u.userId === userId)) {
           const newUser = { username, role: userRole, userId, joinedAt: new Date() };
-   
+
           if (userRole === 'candidate' && role === 'interviewer') {
             showUserJoinAlert(username, userRole);
           }
-          
+
           return [...prev, newUser];
         }
         return prev;
@@ -173,7 +173,7 @@ export default function Room() {
 
     socketRef.current.on('userLeft', ({ userId, username, role: userRole }) => {
       setJoinedUsers(prev => prev.filter(u => u.userId !== userId));
-      
+
       // Show alert when user leaves (for interviewers)
       if (role === 'interviewer' && userRole === 'candidate') {
         showUserLeaveAlert(username, userRole);
@@ -181,7 +181,7 @@ export default function Room() {
     });
 
     fetchTimerInfo();
-    
+
     if (role === 'interviewer') {
       fetchInterviewNotes();
     }
@@ -253,7 +253,7 @@ export default function Room() {
       try {
         const token = localStorage.getItem('token');
         const duration = startTime ? Math.round((Date.now() - new Date(startTime).getTime()) / 60000) : 0;
-        
+
         await axios.put(`${config.API_BASE_URL}/api/auth/interview/${roomId}/complete`, {
           duration,
           codeSubmitted: code,
@@ -271,14 +271,14 @@ export default function Room() {
   const showUserJoinAlert = (username, userRole) => {
     const alertId = alertIdCounter;
     setAlertIdCounter(prev => prev + 1);
-    
+
     const newAlert = {
       id: alertId,
       message: `${userRole === 'candidate' ? 'Candidate' : 'Interviewer'}: ${username} joined the room`,
       type: 'success',
       timestamp: new Date()
     };
-    
+
     setUserAlerts(prev => [...prev, newAlert]);
 
     setTimeout(() => {
@@ -289,14 +289,14 @@ export default function Room() {
   const showUserLeaveAlert = (username, userRole) => {
     const alertId = alertIdCounter;
     setAlertIdCounter(prev => prev + 1);
-    
+
     const newAlert = {
       id: alertId,
       message: `${userRole === 'candidate' ? 'Candidate' : 'Interviewer'}: ${username} left the interview`,
       type: 'warning',
       timestamp: new Date()
     };
-    
+
     setUserAlerts(prev => [...prev, newAlert]);
 
     setTimeout(() => {
@@ -356,21 +356,21 @@ export default function Room() {
   const runCode = async () => {
     setLoading(true);
     setOutput(`[${role}] Running code...`);
-    
+
     const startTime = performance.now();
     const timestamp = new Date();
-    
+
     try {
-      const res = await axios.post(`${config.API_BASE_URL}/api/code/execute`, { 
-        code, 
+      const res = await axios.post(`${config.API_BASE_URL}/api/code/execute`, {
+        code,
         language,
         roomId,
         executedBy: role
       });
-      
+
       const endTime = performance.now();
       const executionTime = endTime - startTime;
-      
+
       // Add to execution history
       const historyEntry = {
         id: Date.now(),
@@ -382,16 +382,16 @@ export default function Room() {
         executedBy: role,
         executionTime: Math.round(executionTime)
       };
-      
+
       setExecutionHistory(prev => [historyEntry, ...prev.slice(0, 19)]); // Keep last 20 runs
-      
+
       if (!socketRef.current?.connected) {
         setOutput(`[${role}] ${res.data.output || res.data.error || 'Code executed successfully.'}`);
       }
     } catch (err) {
       const endTime = performance.now();
       const executionTime = endTime - startTime;
-      
+
       // Add failed execution to history
       const historyEntry = {
         id: Date.now(),
@@ -403,7 +403,7 @@ export default function Room() {
         executedBy: role,
         executionTime: Math.round(executionTime)
       };
-      
+
       setExecutionHistory(prev => [historyEntry, ...prev.slice(0, 19)]);
       setOutput(`[${role}] Error: Could not execute code. Please check your connection and try again.`);
     }
@@ -414,15 +414,15 @@ export default function Room() {
     if (window.confirm('Are you sure you want to end the interview?')) {
       try {
         await axios.put(`${config.API_BASE_URL}/api/room/${roomId}/end`);
-        
+
         // Complete interview tracking
         await completeInterviewTracking({
-          feedback: interviewNotes 
+          feedback: interviewNotes
         });
-        
+
         setEnded(true);
         socketRef.current?.emit('endInterview');
-        
+
         if (isAuthenticated()) {
           setTimeout(() => {
             navigate('/dashboard');
@@ -441,29 +441,29 @@ export default function Room() {
           status: 'left_early',
           feedback: 'Candidate left the interview early'
         });
-        
+
         const alertId = alertIdCounter;
         setAlertIdCounter(prev => prev + 1);
-        
+
         const leaveAlert = {
           id: alertId,
           message: 'You have left the interview. Redirecting to dashboard...',
           type: 'warning',
           timestamp: new Date()
         };
-        
+
         setUserAlerts(prev => [...prev, leaveAlert]);
-        
-        socketRef.current?.emit('userLeave', { 
-          roomId, 
+
+        socketRef.current?.emit('userLeave', {
+          roomId,
           username: user?.username || 'Anonymous',
-          role 
+          role
         });
-        
+
         setTimeout(() => {
           navigate('/dashboard');
         }, 2000);
-        
+
       } catch (err) {
         console.error('Failed to leave interview:', err);
         navigate('/dashboard');
@@ -481,7 +481,7 @@ export default function Room() {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
-    
+
     if (hours > 0) {
       return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
@@ -502,25 +502,25 @@ export default function Room() {
             {ended ? (
               <span style={{ color: '#ef4444' }}>Interview Ended</span>
             ) : (
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
                 gap: '0.75rem',
                 flexWrap: 'wrap'
               }}>
                 {joinedUsers.length > 0 ? (
                   <>
-                    <div style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: '0.5rem' 
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
                     }}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(var(--primary))" strokeWidth="2">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                         <circle cx="9" cy="7" r="4"></circle>
                         <path d="m22 21-3-3m0 0-3-3m3 3 3 3m-3-3 3-3"></path>
                       </svg>
-                      <span style={{ 
+                      <span style={{
                         fontSize: '0.875rem',
                         fontWeight: '500',
                         color: 'hsl(var(--foreground))'
@@ -528,8 +528,8 @@ export default function Room() {
                         Participants:
                       </span>
                     </div>
-                    <div style={{ 
-                      display: 'flex', 
+                    <div style={{
+                      display: 'flex',
                       gap: '0.5rem',
                       flexWrap: 'wrap'
                     }}>
@@ -553,7 +553,7 @@ export default function Room() {
                         }}></div>
                         {user?.username || 'You'} ({role})
                       </div>
-                      
+
                       {/* Other joined users */}
                       {joinedUsers.map((joinedUser) => (
                         <div key={joinedUser.userId} style={{
@@ -579,9 +579,9 @@ export default function Room() {
                     </div>
                   </>
                 ) : (
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
                     gap: '0.5rem',
                     color: 'hsl(var(--muted-foreground))'
                   }}>
@@ -589,7 +589,7 @@ export default function Room() {
                       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                       <circle cx="12" cy="7" r="4"></circle>
                     </svg>
-                    <span style={{ 
+                    <span style={{
                       fontSize: '0.875rem',
                       fontWeight: '500'
                     }}>
@@ -600,8 +600,8 @@ export default function Room() {
               </div>
             )}
           </div>
-          <div style={{ 
-            fontSize: '0.75rem', 
+          <div style={{
+            fontSize: '0.75rem',
             color: 'rgba(255, 255, 255, 0.5)',
             marginTop: '0.25rem'
           }}>
@@ -611,26 +611,26 @@ export default function Room() {
             )}
           </div>
         </div>
-        
+
         <div className="room-controls">
           {role === 'interviewer' && !ended && (
             <>
-              <button 
-                className="action-btn save-btn" 
+              <button
+                className="action-btn save-btn"
                 onClick={() => setShowQuestions(true)}
                 title="Browse Questions"
               >Questions
               </button>
-              
-              <button 
-                className="action-btn save-btn" 
+
+              <button
+                className="action-btn save-btn"
                 onClick={() => setShowAI(true)}
                 title="AI Assistant"
               > AI Assistant
               </button>
-              
-              <button 
-                className="action-btn save-btn" 
+
+              <button
+                className="action-btn save-btn"
                 onClick={() => setShowVideoCall(true)}
                 title="Start Video Call"
               >Video Call
@@ -640,23 +640,23 @@ export default function Room() {
                 <button className="dropdown-trigger" aria-expanded="false">
                   <span>Evaluation</span>
                   <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="dropdown-icon">
-                    <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
                 <div className="dropdown-content">
                   <div className="dropdown-label">Assessment Tools</div>
-                  <button 
+                  <button
                     className="dropdown-item"
                     onClick={() => setShowRubricScoring(true)}
                   ><span>Rubric Scoring</span>
                   </button>
-                  <button 
+                  <button
                     className="dropdown-item"
                     onClick={() => setShowInterviewReport(true)}
                   ><span>Generate Report</span>
                   </button>
                   <div className="dropdown-separator"></div>
-                  <button 
+                  <button
                     className="dropdown-item"
                     onClick={() => setShowHistory(true)}
                   ><span>History ({executionHistory.length})</span>
@@ -665,28 +665,28 @@ export default function Room() {
               </div>
             </>
           )}
-          
+
           {role === 'candidate' && !ended && (
             <>
-              <button 
-                className="action-btn save-btn" 
+              <button
+                className="action-btn save-btn"
                 onClick={() => setShowVideoCall(true)}
                 title="Join Video Call"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="m22 8-6 4 6 4V8Z"/>
-                  <rect width="14" height="12" x="2" y="6" rx="2" ry="2"/>
+                  <path d="m22 8-6 4 6 4V8Z" />
+                  <rect width="14" height="12" x="2" y="6" rx="2" ry="2" />
                 </svg>
                 Join Call
               </button>
             </>
           )}
-          
+
           <div className="dropdown-menu">
             <button className="dropdown-trigger" aria-expanded="false">
               <span>{languages.find(l => l.value === language)?.label || 'Language'}</span>
               <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="dropdown-icon">
-                <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
             <div className="dropdown-content">
@@ -707,12 +707,12 @@ export default function Room() {
               ))}
             </div>
           </div>
-          
+
           <div className="dropdown-menu">
             <button className="dropdown-trigger" aria-expanded="false">
               <span>{themes.find(t => t.value === theme)?.label || 'Theme'}</span>
               <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="dropdown-icon">
-                <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
             <div className="dropdown-content">
@@ -733,36 +733,36 @@ export default function Room() {
               ))}
             </div>
           </div>
-          
+
           <div className="role-badge">
             {role === 'interviewer' ? ' ' : ''} {role}
           </div>
-          
+
           {role === 'interviewer' && !ended && (
-            <button 
-              className="action-btn" 
-              style={{ 
-                background: 'transparent', 
+            <button
+              className="action-btn"
+              style={{
+                background: 'transparent',
                 borderColor: '#ef4444',
                 color: '#fff',
                 fontSize: '0.875rem',
-              }} 
+              }}
               onClick={handleEndInterview}
               title="End the interview"
             >
               End Interview
             </button>
           )}
-          
+
           {role === 'candidate' && !ended && (
-            <button 
-              className="action-btn" 
-              style={{ 
-                background: 'transparent', 
-                 borderColor: '#ef4444',
+            <button
+              className="action-btn"
+              style={{
+                background: 'transparent',
+                borderColor: '#ef4444',
                 color: 'white',
                 fontSize: '0.875rem',
-              }} 
+              }}
               onClick={handleLeaveInterview}
               title="Leave the interview"
             >
@@ -775,16 +775,16 @@ export default function Room() {
       <div className={`room-action-buttons ${role === 'interviewer' ? 'interviewer' : ''}`}>
         {role === 'candidate' && (
           <>
-            <button 
-              className="action-btn save-btn" 
+            <button
+              className="action-btn save-btn"
               onClick={() => setShowHistory(true)}
               title="View execution history"
             >
               History ({executionHistory.length})
             </button>
-            <button 
+            <button
               className={`action-btn run-btn ${loading ? 'loading' : ''}`}
-              onClick={runCode} 
+              onClick={runCode}
               disabled={loading}
               title="Run code"
             >
@@ -804,15 +804,15 @@ export default function Room() {
               theme={theme}
               language={
                 language === 'python3' ? 'python' :
-                language === 'nodejs' ? 'javascript' :
-                language === 'cpp17' ? 'cpp' :
-                language === 'c' ? 'c' :
-                language === 'java' ? 'java' :
-                language === 'csharp' ? 'csharp' :
-                language === 'php' ? 'php' :
-                language === 'swift' ? 'swift' :
-                language === 'kotlin' ? 'kotlin' :
-                language
+                  language === 'nodejs' ? 'javascript' :
+                    language === 'cpp17' ? 'cpp' :
+                      language === 'c' ? 'c' :
+                        language === 'java' ? 'java' :
+                          language === 'csharp' ? 'csharp' :
+                            language === 'php' ? 'php' :
+                              language === 'swift' ? 'swift' :
+                                language === 'kotlin' ? 'kotlin' :
+                                  language
               }
               value={code}
               onChange={handleCodeChange}
@@ -875,15 +875,15 @@ export default function Room() {
           </div>
 
           {role === 'interviewer' && !ended && (
-            <div style={{ 
-              display: 'flex', 
+            <div style={{
+              display: 'flex',
               justifyContent: 'left',
               marginBottom: '2rem',
               paddingRight: '0.5rem'
             }}>
-              <button 
+              <button
                 className={`action-btn run-btn ${loading ? 'loading' : ''}`}
-                onClick={runCode} 
+                onClick={runCode}
                 disabled={loading}
                 title="Run code"
                 style={{
@@ -906,9 +906,9 @@ export default function Room() {
         {/* Notes sidebar for interviewer */}
         {role === 'interviewer' && !ended && (
           <div className="notes-sidebar">
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
               alignItems: 'center',
               marginBottom: '1rem',
               paddingBottom: '0.75rem',
@@ -916,20 +916,20 @@ export default function Room() {
             }}>
               <h3 style={{ margin: 0 }}>Interview Notes</h3>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button 
+                <button
                   className="action-btn save-btn"
                   onClick={() => setShowHistory(true)}
                   title="View Execution History"
-                  style={{ 
-                    padding: '0.25rem 0.5rem', 
+                  style={{
+                    padding: '0.25rem 0.5rem',
                     fontSize: '0.75rem',
                     minHeight: '1.75rem'
                   }}
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                    <path d="M3 3v5h5"/>
-                    <path d="M12 7v5l4 2"/>
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                    <path d="M12 7v5l4 2" />
                   </svg>
                   {executionHistory.length}
                 </button>
@@ -937,17 +937,17 @@ export default function Room() {
             </div>
 
             {/* Quick Assessment Buttons */}
-            <div style={{ 
-              display: 'grid', 
+            <div style={{
+              display: 'grid',
               gridTemplateColumns: '1fr 1fr',
               gap: '0.5rem',
               marginBottom: '1rem'
             }}>
-              <button 
+              <button
                 className="action-btn save-btn"
                 onClick={() => setShowRubricScoring(true)}
-                style={{ 
-                  padding: '0.5rem', 
+                style={{
+                  padding: '0.5rem',
                   fontSize: '0.7rem',
                   textAlign: 'center',
                   gap: '0.25rem',
@@ -956,11 +956,11 @@ export default function Room() {
               >
                 Scoring
               </button>
-              <button 
+              <button
                 className="action-btn save-btn"
                 onClick={() => setShowInterviewReport(true)}
-                style={{ 
-                  padding: '0.5rem', 
+                style={{
+                  padding: '0.5rem',
                   fontSize: '0.7rem',
                   textAlign: 'center',
                   gap: '0.25rem',
@@ -981,7 +981,7 @@ export default function Room() {
         )}
       </div>
 
-     {showQuestions && role === 'interviewer' && (
+      {showQuestions && role === 'interviewer' && (
         <div className="modal-overlay" onClick={() => setShowQuestions(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <Questions onSelect={handleSelectQuestion} onClose={() => setShowQuestions(false)} />
@@ -992,7 +992,7 @@ export default function Room() {
       {showAI && role === 'interviewer' && (
         <div className="modal-overlay" onClick={() => setShowAI(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <AIAssistant 
+            <AIAssistant
               roomId={roomId}
               code={code}
               language={language}
@@ -1003,7 +1003,7 @@ export default function Room() {
       )}
 
       {showVideoCall && (
-        <WebRTCVideoCall 
+        <WebRTCVideoCall
           roomId={roomId}
           role={role}
           isOpen={showVideoCall}
@@ -1032,12 +1032,12 @@ export default function Room() {
               >
                 ×
               </button>
-              
+
               <div style={{
                 padding: '24px 32px 20px 32px',
                 borderBottom: '1px solid rgba(170, 170, 170, 0.2)'
               }}>
-                <h3 style={{ 
+                <h3 style={{
                   margin: '0',
                   fontSize: '1.3rem',
                   fontWeight: '600',
@@ -1049,8 +1049,8 @@ export default function Room() {
                 </h3>
               </div>
 
-              <div style={{ 
-                flex: 1, 
+              <div style={{
+                flex: 1,
                 overflow: 'auto',
                 padding: '24px'
               }}>
@@ -1163,9 +1163,9 @@ export default function Room() {
               key={alert.id}
               className="user-join-alert"
               style={{
-                background: alert.type === 'success' ? 'hsl(142 76% 36%)' : 
-                           alert.type === 'warning' ? 'hsl(32 95% 44%)' : 
-                           'hsl(var(--primary))',
+                background: alert.type === 'success' ? 'hsl(142 76% 36%)' :
+                  alert.type === 'warning' ? 'hsl(32 95% 44%)' :
+                    'hsl(var(--primary))',
                 color: '#ffffff',
                 padding: '0.75rem 1rem',
                 borderRadius: 'var(--radius)',
@@ -1181,9 +1181,9 @@ export default function Room() {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <div style={{ fontSize: '1rem' }}>
-                  {alert.type === 'success' ? '✅' : 
-                   alert.type === 'warning' ? '⚠️' : 
-                   'ℹ️'}
+                  {alert.type === 'success' ? '✅' :
+                    alert.type === 'warning' ? '⚠️' :
+                      'ℹ️'}
                 </div>
                 <span>{alert.message}</span>
               </div>

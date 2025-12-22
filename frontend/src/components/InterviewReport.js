@@ -29,11 +29,11 @@ const InterviewReport = ({ roomId, onClose }) => {
       const res = await axios.get(`${config.API_BASE_URL}/api/room/${roomId}/report/export?format=${format}`, {
         responseType: 'blob'
       });
-      
-      const blob = new Blob([res.data], { 
-        type: format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
+
+      const blob = new Blob([res.data], {
+        type: format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
       });
-      
+
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -150,7 +150,7 @@ const InterviewReport = ({ roomId, onClose }) => {
       >
         ×
       </button>
-      
+
       <div style={{
         padding: '1.5rem 2rem 1rem 2rem',
         borderBottom: '1px solid hsl(var(--border))',
@@ -159,7 +159,7 @@ const InterviewReport = ({ roomId, onClose }) => {
         alignItems: 'center'
       }}>
         <div>
-          <h2 style={{ 
+          <h2 style={{
             margin: '0 0 0.25rem 0',
             fontSize: '1.5rem',
             fontWeight: '600',
@@ -175,7 +175,7 @@ const InterviewReport = ({ roomId, onClose }) => {
             Room: {roomId} • Generated on {new Date().toLocaleDateString()}
           </p>
         </div>
-        
+
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <button
             onClick={() => exportReport('pdf')}
@@ -195,8 +195,8 @@ const InterviewReport = ({ roomId, onClose }) => {
         </div>
       </div>
 
-      <div style={{ 
-        flex: 1, 
+      <div style={{
+        flex: 1,
         overflow: 'auto',
         padding: '1.5rem'
       }}>
@@ -216,7 +216,7 @@ const InterviewReport = ({ roomId, onClose }) => {
           }}>
             Interview Summary
           </h3>
-          
+
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
@@ -230,7 +230,7 @@ const InterviewReport = ({ roomId, onClose }) => {
                 {reportData.candidateName || 'N/A'}
               </div>
             </div>
-            
+
             <div>
               <div style={{ fontSize: '0.75rem', fontWeight: '500', color: 'hsl(var(--muted-foreground))', marginBottom: '0.25rem' }}>
                 Programming Language
@@ -239,7 +239,7 @@ const InterviewReport = ({ roomId, onClose }) => {
                 {reportData.language || 'JavaScript'}
               </div>
             </div>
-            
+
             <div>
               <div style={{ fontSize: '0.75rem', fontWeight: '500', color: 'hsl(var(--muted-foreground))', marginBottom: '0.25rem' }}>
                 Code Executions
@@ -248,14 +248,14 @@ const InterviewReport = ({ roomId, onClose }) => {
                 {reportData.executionHistory?.length || 0}
               </div>
             </div>
-            
+
             <div>
               <div style={{ fontSize: '0.75rem', fontWeight: '500', color: 'hsl(var(--muted-foreground))', marginBottom: '0.25rem' }}>
                 Success Rate
               </div>
               <div style={{ fontSize: '1rem', fontWeight: '600', color: 'hsl(var(--foreground))' }}>
-                {reportData.executionHistory?.length ? 
-                  Math.round((reportData.executionHistory.filter(e => e.success).length / reportData.executionHistory.length) * 100) + '%' : 
+                {reportData.executionHistory?.length ?
+                  Math.round((reportData.executionHistory.filter(e => e.success).length / reportData.executionHistory.length) * 100) + '%' :
                   'N/A'
                 }
               </div>
@@ -281,7 +281,7 @@ const InterviewReport = ({ roomId, onClose }) => {
             }}>
               Overall Evaluation
             </h3>
-            
+
             <div style={{
               display: 'flex',
               justifyContent: 'center',
@@ -306,7 +306,7 @@ const InterviewReport = ({ roomId, onClose }) => {
                   Weighted Score
                 </div>
               </div>
-              
+
               <div style={{
                 padding: '0.75rem 1.5rem',
                 background: getRecommendationColor(reportData.rubricScores.recommendation),
@@ -338,7 +338,7 @@ const InterviewReport = ({ roomId, onClose }) => {
             }}>
               Detailed Scoring
             </h3>
-            
+
             {Object.entries(reportData.rubricScores.scores).map(([criteriaId, scoreData]) => {
               const criteriaNames = {
                 technical_knowledge: 'Technical Knowledge',
@@ -347,7 +347,7 @@ const InterviewReport = ({ roomId, onClose }) => {
                 communication: 'Communication',
                 debugging: 'Debugging & Testing'
               };
-              
+
               return (
                 <div key={criteriaId} style={{
                   display: 'flex',
@@ -407,7 +407,7 @@ const InterviewReport = ({ roomId, onClose }) => {
             }}>
               Interview Notes
             </h3>
-            
+
             {reportData.rubricScores?.overallNotes && (
               <div style={{
                 background: 'hsl(var(--muted) / 0.3)',
@@ -433,7 +433,7 @@ const InterviewReport = ({ roomId, onClose }) => {
                 </div>
               </div>
             )}
-            
+
             {reportData.interviewNotes && (
               <div>
                 <div style={{
@@ -473,7 +473,7 @@ const InterviewReport = ({ roomId, onClose }) => {
             }}>
               Code Execution Summary
             </h3>
-            
+
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',

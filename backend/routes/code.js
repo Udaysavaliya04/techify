@@ -53,8 +53,8 @@ router.post('/execute', async (req, res) => {
 
       await RoomModel.updateOne(
         { roomId },
-        { 
-          $push: { 
+        {
+          $push: {
             executions: executionData,
             executionHistory: historyData
           },
