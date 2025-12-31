@@ -426,31 +426,32 @@ export default function Join() {
                     ? "clamp(1.8rem, 8vw, 4rem)"
                     : "clamp(2.5rem, 6vw, 7rem)",
                 marginBottom: "1.5rem",
-                lineHeight: "1.1",
+                lineHeight: "1",
                 fontWeight: "800",
                 letterSpacing: "-0.08em",
               }}
             >
               <span
                 style={{
-                  background: "linear-gradient(135deg, #ffffff 0%, #f0f9ff 25%, #faf5ff 50%, #f0f9ff 75%, #ffffff 100%)",
+                  background: "linear-gradient(180deg, #ffffff 0%, #ffffffff 25%, #ffffffff 50%, #7bd1ffff 75%, #00b3ffff 100%)",
                   backgroundSize: "200% 200%",
                   fontSize:
                     window.innerWidth <= 360
-                      ? "2rem"
+                      ? "2.5rem"
                       : window.innerWidth <= 480
-                        ? "2.5rem"
+                        ? "3.5rem"
                         : window.innerWidth <= 768
-                          ? "4rem"
-                          : "6rem",
+                          ? "5rem"
+                          : "8rem",
                   WebkitBackgroundClip: "text",
-                  letterSpacing: "-0.08em",
+                  letterSpacing:
+                    window.innerWidth <= 480 ? "-0.03em" : "-0.08em",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
                   display: "block",
-                  fontWeight: "800",
-                  filter: "drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08))",
-                  animation: "gradientShift 6s ease-in-out infinite",
+                  fontWeight: "700",
+                  fontFamily: "'Familjen Grotesk', sans-serif",
+                  animation: "gradientShift 1s ease-in-out infinite",
                   WebkitFontSmoothing: "antialiased",
                   MozOsxFontSmoothing: "grayscale",
                 }}
@@ -459,7 +460,7 @@ export default function Join() {
               </span>
               <span
                 style={{
-                  background: "linear-gradient(135deg, #0071e3 0%, #06b6d4 20%, #5e5ce6 40%, #bf5af2 60%, #ff7f50 80%, #ff375f 100%)",
+                   background: "linear-gradient(180deg, #ffffff 0%, #ffffffff 25%, #91bdffff 50%, #46beffff 75%, #00b3ffff 100%)",
                   backgroundSize: "150% 150%",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
@@ -468,16 +469,15 @@ export default function Join() {
                   fontWeight: "900",
                   fontSize:
                     window.innerWidth <= 360
-                      ? "2.6rem"
+                      ? "3.5rem"
                       : window.innerWidth <= 480
-                        ? "3.2rem"
+                        ? "4.5rem"
                         : window.innerWidth <= 768
-                          ? "5rem"
-                          : "7.5rem",
+                          ? "6.5rem"
+                          : "10rem",
+                  fontFamily: "'Familjen Grotesk', sans-serif",
                   letterSpacing:
-                    window.innerWidth <= 480 ? "-0.03em" : "-0.09em",
-                  filter: "drop-shadow(0 4px 16px rgba(0, 113, 227, 0.15)) drop-shadow(0 8px 32px rgba(191, 90, 242, 0.12))",
-                  animation: "appleGradientFlow 8s ease-in-out infinite",
+                    window.innerWidth <= 480 ? "-0.03em" : "-0.08em",
                   WebkitFontSmoothing: "antialiased",
                   MozOsxFontSmoothing: "grayscale",
                 }}
