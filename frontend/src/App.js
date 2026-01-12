@@ -107,7 +107,7 @@ function App() {
             bracketPairColorization: { enabled: true },
             inlineSuggest: { enabled: true },
             fontSize: 14,
-            fontFamily: "'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace",
+            fontFamily: "'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace",
             padding: { top: 16, bottom: 16 },
             scrollbar: {
               vertical: 'visible',

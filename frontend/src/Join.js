@@ -474,8 +474,8 @@ export default function Join() {
                         ? "4.5rem"
                         : window.innerWidth <= 768
                           ? "6.5rem"
-                          : "10rem",
-                  fontFamily: "'Familjen Grotesk', sans-serif",
+                          : "10rem", 
+                  fontFamily: " 'Familjen Grotesk', sans-serif",
                   letterSpacing:
                     window.innerWidth <= 480 ? "-0.03em" : "-0.08em",
                   WebkitFontSmoothing: "antialiased",
