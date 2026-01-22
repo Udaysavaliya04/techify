@@ -221,20 +221,20 @@ export default function Join() {
       <div
         style={{
           position: "fixed",
-          top: "6rem",
+          top: "12rem",
           left: "1rem",
           right: "1rem",
           zIndex: 60,
-          background:
-            "linear-gradient(135deg, rgba(30, 30, 30, 0.95), rgba(20, 20, 20, 0.9))",
-          backdropFilter: "blur(20px)",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
+          background: "rgba(22, 22, 22, 0.75)",
+          backdropFilter: "blur(25px) saturate(180%)",
+          WebkitBackdropFilter: "blur(25px) saturate(180%)",
+          border: "1px solid rgba(255, 255, 255, 0.12)",
           borderRadius: "16px",
-          padding: "1rem 1.5rem",
+          padding: "1.25rem 1.5rem",
           boxShadow:
-            "0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05)",
+            "0 20px 40px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05)",
           display: window.innerWidth <= 768 ? "block" : "none",
-          animation: "slideDown 0.5s ease-out",
+          animation: "slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
         }}
         className="mobile-notice"
       >
@@ -266,7 +266,7 @@ export default function Join() {
             </div>
             <div style={{ opacity: 0.85, color: "#e5e5e5" }}>
               This platform shines brightest on desktop! It's not optimized for
-              mobile devices. It is recommended to use a laptop for the ultimate
+              mobile devices yet. <br></br>It is recommended to use a laptop strictly for the ultimate
               Interview experience.
             </div>
           </div>
