@@ -477,6 +477,8 @@ export default function Dashboard() {
           right: 0,
           bottom: 0,
           background: 'rgba(0, 0, 0, 0.5)',
+          backdropFilter: 'blur(15px)',
+          WebkitBackdropFilter: 'blur(15px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -484,7 +486,7 @@ export default function Dashboard() {
           animation: 'fadeIn 0.3s ease-out'
         }}>
           <div style={{
-            background: 'hsl(var(--card))',
+            background: 'transparent',
             border: '1px solid hsl(var(--border))',
             borderRadius: 'var(--radius)',
             padding: '2rem',
