@@ -274,6 +274,7 @@ export default function Register() {
               placeholder="Enter your email"
               className={`input ${errors.email ? "error" : ""}`}
               autoComplete="email"
+             
             />
             {errors.email && (
               <p
@@ -305,58 +306,56 @@ export default function Register() {
             <div
               style={{
                 display: "flex",
-                gap: "1rem",
-                padding: "0.5rem 0",
+                backgroundColor: "transparent",
+                borderRadius: "12px",
+                padding: "4px",
+                position: "relative",
+                border: "1px solid rgba(255, 255, 255, 0.1) ",
+                backdropFilter: "blur(10px)",
               }}
             >
-              <label
+              {/* Sliding Background Pill */}
+              <div
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  fontSize: "0.875rem",
-                  cursor: "pointer",
+                  position: "absolute",
+                  top: "4px",
+                  bottom: "4px",
+                  left: formData.role === 'interviewer' ? "4px" : "50%",
+                  width: "calc(50% - 4px)",
+                  borderRadius: "8px",
+                  background: "linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))",
+                  backdropFilter: "blur(10px)",
+                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)",
+                  transition: "all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)",
+                  zIndex: 0,
                 }}
-              >
-                <input
-                  type="radio"
-                  name="role"
-                  value="interviewer"
-                  checked={formData.role === "interviewer"}
-                  onChange={handleChange}
+              />
+
+              {['interviewer', 'candidate'].map((roleOption) => (
+                <button
+                  key={roleOption}
+                  type="button"
+                  onClick={() => handleChange({ target: { name: 'role', value: roleOption } })}
                   style={{
-                    margin: "0",
-                    borderRadius: "50%",
-                    width: "1rem",
-                    height: "1rem",
+                    flex: 1,
+                    position: "relative",
+                    padding: "0.6rem",
+                    border: "none",
+                    borderRadius: "8px",
+                    background: "transparent",
+                    color: formData.role === roleOption ? "#fff" : "rgba(255, 255, 255, 0.5)",
+                    fontSize: "0.875rem",
+                    fontFamily: "'Bricolage Grotesque', sans-serif",
+                    fontWeight: formData.role === roleOption ? "700" : "500",
+                    cursor: "pointer",
+                    transition: "color 0.7s ease",
+                    textTransform: "capitalize",
+                    zIndex: 1,
                   }}
-                />
-                <span>Interviewer</span>
-              </label>
-              <label
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  fontSize: "0.875rem",
-                  cursor: "pointer",
-                }}
-              >
-                <input
-                  type="radio"
-                  name="role"
-                  value="candidate"
-                  checked={formData.role === "candidate"}
-                  onChange={handleChange}
-                  style={{
-                    margin: "0",
-                    borderRadius: "50%",
-                    width: "1rem",
-                    height: "1rem",
-                  }}
-                />
-                <span>Candidate</span>
-              </label>
+                >
+                  {roleOption}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -494,6 +493,75 @@ export default function Register() {
             </Link>
           </p>
         </div>
+      </div>
+
+      <div
+        style={{
+          position: "fixed",
+          bottom: "2rem",
+          right: "2rem",
+          maxWidth: "320px",
+          backdropFilter: "blur(20px)",
+          backgroundColor: "transparent",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+          borderRadius: "12px",
+          padding: "1.25rem",
+          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+          zIndex: 50,
+          animation: "fadeIn 1s ease-out",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", marginBottom: "0.5rem" }}>
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 14 24"
+            fill="none"
+            stroke="yellow"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ marginTop: "0.25rem", flexShrink: 0 }}
+          >
+            <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+            <path d="M9 18h6" />
+            <path d="M10 22h4" />
+          </svg>
+          <h3
+            style={{
+              fontSize: "0.95rem",
+              fontWeight: "600",
+              color: "#fff",
+              margin: 0,
+              paddingTop: "0.25rem"
+            }}
+          >
+            How to try this platform?
+          </h3>
+        </div>
+        
+        <ol
+          style={{
+            margin: 0,
+            paddingLeft: "1.5rem",
+            fontSize: "0.85rem",
+            color: "#e2e2e2",
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.5rem",
+            lineHeight: "1.5"
+          }}
+        >
+          <li>
+            Sign up as an <strong>Interviewer</strong> in this tab and create an interview.
+          </li>
+          <li>
+            Open a new tab (or incognito) and sign up as a <strong>Candidate</strong>.
+          </li>
+          <li>
+            Join the interview using the code.
+          </li>
+        </ol>
       </div>
     </div>
   );
