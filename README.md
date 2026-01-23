@@ -4,6 +4,8 @@
 
 Techify is a comprehensive web-based platform designed for conducting technical interviews with real-time collaboration features. It provides a seamless experience for both interviewers and candidates with code editing, execution, and assessment tools.
 
+<img width="1919" height="910" alt="image" src="https://github.com/user-attachments/assets/620f0c73-f4e9-4c44-80a5-77f188c5b5d3" />
+
 ## Features
 
 ### Core Functionality
