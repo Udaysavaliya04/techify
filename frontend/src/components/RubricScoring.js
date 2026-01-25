@@ -8,6 +8,7 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
   const [recommendation, setRecommendation] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [recommendationDropdownOpen, setRecommendationDropdownOpen] = useState(false);
 
   // Rubric criteria with weights
   const rubricCriteria = [
@@ -350,11 +351,13 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
 
         {/* Overall Assessment */}
         <div style={{
-          background: 'hsl(var(--muted) / 0.5)',
+          background: 'hsl(var(--muted) / 0.3)',
           border: '1px solid hsl(var(--border))',
           borderRadius: 'var(--radius)',
           padding: '1.5rem',
-          marginBottom: '1rem'
+          marginBottom: '1.5rem',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)'
         }}>
           <h3 style={{
             margin: '0 0 1rem 0',
@@ -375,26 +378,69 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
             }}>
               Final Recommendation
             </label>
-            <select
-              value={recommendation}
-              onChange={(e) => setRecommendation(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid hsl(var(--border))',
-                borderRadius: 'calc(var(--radius) - 2px)',
-                background: 'hsl(var(--background))',
-                color: 'hsl(var(--foreground))',
-                fontSize: '0.875rem'
-              }}
-            >
-              <option value="">Auto-generate from score ({getRecommendationFromScore(weightedScore)})</option>
-              <option value="Strong Hire">Strong Hire</option>
-              <option value="Hire">Hire</option>
-              <option value="Weak Hire">Weak Hire</option>
-              <option value="Weak No Hire">Weak No Hire</option>
-              <option value="No Hire">No Hire</option>
-            </select>
+            <div className="dropdown-menu" style={{ width: '100%' }}>
+              <button
+                type="button"
+                className="dropdown-trigger"
+                aria-expanded={recommendationDropdownOpen}
+                onClick={() => setRecommendationDropdownOpen(!recommendationDropdownOpen)}
+                style={{ 
+                  width: '100%',
+                  justifyContent: 'space-between',
+                  background: 'hsl(var(--background))',
+                  border: '1px solid hsl(var(--border))'
+                }}
+              >
+                <span style={{ 
+                  color: recommendation ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))'
+                }}>
+                  {recommendation || `Auto-generate from score (${getRecommendationFromScore(weightedScore)})`}
+                </span>
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="dropdown-icon">
+                  <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              
+              {recommendationDropdownOpen && (
+                <div className="dropdown-content" style={{ 
+                  display: 'block', 
+                  width: '100%',
+                  maxHeight: '200px',
+                  overflowY: 'auto'
+                }}>
+                  <div className="dropdown-label">Select Recommendation</div>
+                  
+                  <button
+                    type="button"
+                    className={`dropdown-item ${recommendation === '' ? 'dropdown-item-active' : ''}`}
+                    onClick={() => { setRecommendation(''); setRecommendationDropdownOpen(false); }}
+                  >
+                    <span>Auto-generate ({getRecommendationFromScore(weightedScore)})</span>
+                    {recommendation === '' && (
+                      <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                  </button>
+
+                  {['Strong Hire', 'Hire', 'Weak Hire', 'Weak No Hire', 'No Hire'].map(option => (
+                    <button
+                      key={option}
+                      type="button"
+                      className={`dropdown-item ${recommendation === option ? 'dropdown-item-active' : ''}`}
+                      onClick={() => { setRecommendation(option); setRecommendationDropdownOpen(false); }}
+                    >
+                      <span>{option}</span>
+                      {recommendation === option && (
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           <textarea

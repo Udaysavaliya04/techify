@@ -384,6 +384,7 @@ export default function Join() {
           <div
             className="auth-card"
             style={{
+              marginTop: '125px',
               paddingTop: '20px',
               textAlign: "center",
               maxWidth: "500px",
@@ -407,6 +408,7 @@ export default function Join() {
                 fontWeight: "700",
                 marginBottom: "1rem",
                 color: "hsl(var(--foreground))",
+                letterSpacing: "-0.05em",
               }}
             >
               Welcome Back
@@ -423,10 +425,12 @@ export default function Join() {
                 color: "hsl(var(--muted-foreground))",
                 marginBottom: "3rem",
                 lineHeight: "1.6",
-                letterSpacing: '-0.1em',
+                letterSpacing: "-0.05em",
+                fontWeight: "400",
               }}
             >
-              Ready to conduct technical interviews? Head to your dashboard to
+              Ready to conduct technical interviews? 
+              <br></br>Head to your dashboard to
               create rooms and manage sessions.
             </p>
 
@@ -436,6 +440,7 @@ export default function Join() {
               style={{
                 display: "inline-block",
                 textDecoration: "none",
+                minWidth: "400px",
               }}
             >
               Go to Dashboard

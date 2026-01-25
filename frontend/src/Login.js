@@ -117,7 +117,7 @@ export default function Login() {
             fontSize: '0.875rem'
           }}
         >
-          Homepage
+          Back to Home
           <svg
             width="16"
             height="16"
