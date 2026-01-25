@@ -316,6 +316,8 @@ export default function Join() {
               marginTop: window.innerWidth <= 768 ? "2rem" : "6rem",
               boxShadow:
                 "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)",
+              animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+              opacity: 0,
             }}
           >
             <h1
@@ -406,6 +408,8 @@ export default function Join() {
               padding: window.innerWidth <= 768 ? "2rem 1.5rem" : "3rem",
               boxShadow:
                 "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)",
+              animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+                opacity: 0,
             }}
           >
             <h1
