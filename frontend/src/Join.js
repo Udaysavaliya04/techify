@@ -27,7 +27,6 @@ export default function Join() {
     newValues[index] = value.toUpperCase();
     setOtpValues(newValues);
 
-    // Auto-focus next input
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -100,6 +99,7 @@ export default function Join() {
             "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
           flexWrap: window.innerWidth <= 480 ? "wrap" : "nowrap",
           gap: window.innerWidth <= 480 ? "0.5rem" : "0",
+          gap: window.innerWidth <= 480 ? "0.5rem" : "0",
         }}
       >
         {/* Logo */}
@@ -110,6 +110,8 @@ export default function Join() {
             style={{
               height: window.innerWidth <= 768 ? "32px" : "40px",
               width: "auto",
+              animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+              opacity: 0,
             }}
           />
         </div>
@@ -129,6 +131,8 @@ export default function Join() {
                 style={{
                   color: "hsl(var(--muted-foreground))",
                   fontSize: window.innerWidth <= 768 ? "0.75rem" : "0.875rem",
+                  animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards',
+                  opacity: 0,
                 }}
               >
                 {user?.username}
@@ -143,6 +147,8 @@ export default function Join() {
                     window.innerWidth <= 768
                       ? "0.375rem 0.75rem"
                       : "0.5rem 1rem",
+                  animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards',
+                  opacity: 0,
                 }}
               >
                 Dashboard
@@ -164,6 +170,8 @@ export default function Join() {
                     window.innerWidth <= 768
                       ? "0.375rem 0.75rem"
                       : "0.5rem 1rem",
+                  animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards',
+                  opacity: 0,
                 }}
               >
                 Sign In
@@ -178,6 +186,8 @@ export default function Join() {
                     window.innerWidth <= 768
                       ? "0.375rem 0.75rem"
                       : "0.5rem 1rem",
+                  animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards',
+                  opacity: 0,
                 }}
               >
                 Get Started
@@ -195,19 +205,20 @@ export default function Join() {
               width: "40px",
               height: "40px",
               borderRadius: "50%",
-              background: "rgba(255, 255, 255, 0.1)",
+              background: "transparent",
               backdropFilter: "blur(10px)",
               border: "1px solid rgba(255, 255, 255, 0.2)",
               transition: "all 0.3s ease",
               cursor: "pointer",
+              animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.6s forwards',
+              opacity: 0,
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
               e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)";
-              e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)";
+              e.currentTarget.style.background = "transparent";
             }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ color: "hsl(var(--foreground))" }}>
@@ -468,6 +479,8 @@ export default function Join() {
                 lineHeight: "1",
                 fontWeight: "800",
                 letterSpacing: "-0.08em",
+                animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+                opacity: 0,
               }}
             >
               <span
@@ -547,6 +560,8 @@ export default function Join() {
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
+                animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards',
+                opacity: 0,
               }}
             >
               Conduct seamless remote technical interviews with real-time
@@ -564,6 +579,8 @@ export default function Join() {
                 marginBottom: "5rem",
                 flexDirection: window.innerWidth <= 480 ? "column" : "row",
                 alignItems: "center",
+                animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards',
+                opacity: 0,
               }}
             >
               <Link
@@ -626,7 +643,6 @@ export default function Join() {
         )}
       </main>
 
-      {!(isAuthenticated() && user?.role === "candidate") && (
         <footer
           className="footer-section"
           style={{
@@ -640,6 +656,8 @@ export default function Join() {
             padding: window.innerWidth <= 768 ? "0.75rem 1rem" : "1rem 2rem",
             textAlign: "center",
             borderRadius: "12px",
+            animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.6s forwards',
+            opacity: 0,
           }}
         >
           <p
@@ -674,7 +692,6 @@ export default function Join() {
           </svg> by <a href="https://github.com/Udaysavaliya04" target="_blank" rel="noopener noreferrer" style={{ color: "rgb(235, 235, 235)", textDecoration: "none", transition: "opacity 0.2s ease", cursor: "pointer" }} onMouseEnter={(e) => e.currentTarget.style.opacity = "1"} onMouseLeave={(e) => e.currentTarget.style.opacity = "0.7"}>Uday Savaliya</a>
           </p>
         </footer>
-      )}
     </div>
   );
 } 
