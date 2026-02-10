@@ -92,7 +92,6 @@ export default function Dashboard() {
 
   const enterRoom = async () => {
     try {
-      // Create interview record in database only when entering room
       const token = localStorage.getItem('token');
       await axios.post(`${config.API_BASE_URL}/api/auth/interview`, {
         roomId: generatedRoomId,
@@ -101,7 +100,6 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      // Navigate to interview room
       navigate(`/room/${generatedRoomId}`, { state: { role: 'interviewer' } });
     } catch (error) {
       console.error('Enter room error:', error);
@@ -250,29 +248,6 @@ export default function Dashboard() {
             {stats.totalInterviews}
           </p>
         </div>
-
-
-        {/* Average Score - Only for Candidates */}
-        {dashboardData.user.role === 'candidate' && (
-          <div className="join-container" style={{ margin: 0, padding: '1.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-              <div style={{
-              }}>
-              </div>
-              <div style={{ flex: 1 }}>
-                <p style={{ fontSize: '0.875rem', color: 'hsl(var(--muted-foreground))', margin: 0, marginBottom: '0.25rem' }}>
-                  Average Score Received
-                </p>
-                <p style={{ fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))', margin: 0 }}>
-                  From interviewers
-                </p>
-              </div>
-            </div>
-            <p style={{ fontSize: '2rem', fontWeight: '700', margin: 0, color: 'hsl(var(--foreground))', textAlign: 'center' }}>
-              {stats.averageScore || 0}
-            </p>
-          </div>
-        )}
       </div>
 
       {/* Recent Interviews */}
@@ -398,16 +373,9 @@ export default function Dashboard() {
                         </span>
                       )}
                     </div>
-                    <h4 style={{
-                      margin: 0,
-                      fontSize: '1rem',
-                      fontWeight: '500',
-                      color: 'hsl(var(--foreground))',
-                      marginBottom: '0.5rem'
-                    }}>
-                      {interview.questionTitle || `Interview #${interview.roomId}`}
-                    </h4>
+                    
                     <div style={{
+                      marginTop: '2rem',
                       display: 'flex',
                       gap: '1rem',
                       fontSize: '0.75rem',
@@ -437,7 +405,8 @@ export default function Dashboard() {
                     borderRadius: 'calc(var(--radius) - 2px)',
                     fontSize: '0.875rem',
                     color: 'hsl(var(--foreground))',
-                    borderLeft: '3px solid hsl(var(--primary))'
+                    border: '1px solid hsl(var(--muted))',
+                    borderColor: 'rgba(54, 54, 54, 1)',
                   }}>
                     <strong>Feedback:</strong> {interview.feedback}
                   </div>
@@ -461,8 +430,8 @@ export default function Dashboard() {
           boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
           fontSize: '0.875rem',
           fontWeight: '500',
-          zIndex: 1000,
-          animation: 'fadeIn 0.3s ease-out'
+          zIndex: 2000,
+          animation: 'fadeIn 0.3s ease-out',
         }}>
           {copyFeedback}
         </div>
@@ -510,7 +479,7 @@ export default function Dashboard() {
                 color: 'hsl(var(--muted-foreground))',
                 margin: '0'
               }}>
-                Share this room code with the candidate
+                Share this room code with the candidate.
               </p>
             </div>
 
@@ -546,30 +515,54 @@ export default function Dashboard() {
             <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
               <button
                 onClick={copyRoomCode}
+                className="action-btn"
                 style={{
-                  background: 'hsl(var(--secondary))',
-                  border: '1px solid hsl(var(--border))',
-                  color: 'hsl(var(--secondary-foreground))',
+                  background: copyFeedback ? 'hsl(var(--primary))' : 'hsl(var(--secondary))',
+                  border: `1px solid ${copyFeedback ? 'hsl(var(--primary))' : 'hsl(var(--border))'}`,
+                  color: copyFeedback ? 'hsl(var(--primary-foreground))' : 'hsl(var(--secondary-foreground))',
                   padding: '0.75rem 1rem',
                   borderRadius: 'calc(var(--radius) - 2px)',
                   fontSize: '0.875rem',
                   fontWeight: '500',
-                  cursor: 'pointer',
+                  cursor: copyFeedback ? 'default' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.5rem',
-                  transition: 'all 0.15s ease',
+                  transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                   outline: 'none',
-                  fontFamily: 'inherit'
+                  fontFamily: 'inherit',
+                  minWidth: '130px',
+                  justifyContent: 'center',
+                  position: 'relative',
+                  overflow: 'hidden'
                 }}
-                onMouseEnter={(e) => e.target.style.background = 'hsl(var(--secondary) / 0.8)'}
-                onMouseLeave={(e) => e.target.style.background = 'hsl(var(--secondary))'}
+                disabled={!!copyFeedback}
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                  <path d="m4 16-2-2v-10c0-1.1.9-2 2-2h10l2 2" />
-                </svg>
-                Copy Code
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  opacity: 1,
+                  transform: 'translateY(0)',
+                  transition: 'all 0.2s ease'
+                }}>
+                  {copyFeedback ? (
+                    <>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)' }}>
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      <span style={{ animation: 'fadeIn 0.2s ease-out' }}>Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transition: 'transform 0.2s ease' }}>
+                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                      </svg>
+                      <span>Copy Code</span>
+                    </>
+                  )}
+                </div>
               </button>
 
               <button
