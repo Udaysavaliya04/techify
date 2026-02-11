@@ -375,7 +375,7 @@ export default function Room() {
       const historyEntry = {
         id: Date.now(),
         timestamp,
-        code: code.substring(0, 200) + (code.length > 200 ? '...' : ''),
+        code: code,
         language,
         output: res.data.output || res.data.error || 'Code executed successfully.',
         success: !res.data.error,
@@ -396,7 +396,7 @@ export default function Room() {
       const historyEntry = {
         id: Date.now(),
         timestamp,
-        code: code.substring(0, 200) + (code.length > 200 ? '...' : ''),
+        code: code,
         language,
         output: 'Error: Could not execute code. Please check your connection and try again.',
         success: false,
@@ -515,11 +515,10 @@ export default function Room() {
                       alignItems: 'center',
                       gap: '0.5rem'
                     }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(var(--primary))" strokeWidth="2">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="m22 21-3-3m0 0-3-3m3 3 3 3m-3-3 3-3"></path>
+                      <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M16 19h4a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-2m-2.236-4a3 3 0 1 0 0-4M3 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                       </svg>
+
                       <span style={{
                         fontSize: '0.875rem',
                         fontWeight: '500',
@@ -571,7 +570,7 @@ export default function Room() {
                             width: '6px',
                             height: '6px',
                             borderRadius: '50%',
-                            background: joinedUser.role === 'interviewer' ? 'hsl(32 95% 44%)' : 'hsl(262 83% 58%)'
+                            background: joinedUser.role === 'interviewer' ? 'hsl(32 95% 44%)' : 'hsla(243, 83%, 58%, 1.00)'
                           }}></div>
                           {joinedUser.username} ({joinedUser.role})
                         </div>
@@ -585,10 +584,9 @@ export default function Room() {
                     gap: '0.5rem',
                     color: 'hsl(var(--muted-foreground))'
                   }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                      <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M16 19h4a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-2m-2.236-4a3 3 0 1 0 0-4M3 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                      </svg>
                     <span style={{
                       fontSize: '0.875rem',
                       fontWeight: '500'
@@ -1067,7 +1065,8 @@ export default function Room() {
                     padding: '40px',
                     letterSpacing: '-0.5px',
                   }}>
-                    No execution history yet. Run some code to see it here!
+                    No execution history yet. 
+                    <br></br>Run some code to see it here!
                   </div>
                 ) : (
                   executionHistory.map((entry) => (
@@ -1093,7 +1092,6 @@ export default function Room() {
                         </span>
                       </div>
                       <div style={{
-
                         background: 'rgba(0, 0, 0, 0.3)',
                         padding: '8px',
                         borderRadius: '6px',
@@ -1102,7 +1100,8 @@ export default function Room() {
                         fontSize: '0.8rem',
                         color: '#d1d5db',
                         whiteSpace: 'pre-wrap',
-                        overflow: 'auto'
+                        overflow: 'auto',
+                        maxHeight: '200px'
 
                       }}>
                         {entry.code}

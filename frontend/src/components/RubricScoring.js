@@ -131,9 +131,9 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
   };
 
   const getScoreColor = (score) => {
-    if (score >= 8) return '#10b981'; // Green
-    if (score >= 6) return '#f59e0b'; // Yellow
-    if (score >= 4) return '#f97316'; // Orange
+    if (score >= 8) return '#10b981'; 
+    if (score >= 6) return '#f59e0b'; 
+    if (score >= 4) return '#f97316'; 
     return '#ef4444'; // Red
   };
 
