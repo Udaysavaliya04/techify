@@ -78,7 +78,7 @@ const buildUserPayload = (user) => ({
 });
 
 const validateCandidateProfile = (candidateProfile = {}) => {
-  const requiredFields = ['fullName', 'targetRole', 'experienceLevel'];
+  const requiredFields = ['fullName', 'targetRole', 'experienceLevel', 'country'];
   for (const field of requiredFields) {
     if (!candidateProfile[field] || !String(candidateProfile[field]).trim()) {
       return `Field "${field}" is required`;
@@ -462,7 +462,17 @@ router.post('/profile/setup', verifyToken, async (req, res) => {
       fullName: String(fullName || '').trim(),
       targetRole: String(targetRole || '').trim(),
       comfortableLanguages: normalizedLanguages,
+      country: String(req.body.country || '').trim(),
       experienceLevel: String(experienceLevel || '').trim(),
+      preferredInterviewTrack: String(req.body.preferredInterviewTrack || '').trim(),
+      openToRemote: req.body.openToRemote !== undefined ? Boolean(req.body.openToRemote) : true,
+      preferredWorkType: String(req.body.preferredWorkType || '').trim(),
+      noticePeriod: String(req.body.noticePeriod || '').trim(),
+      timezone: String(req.body.timezone || '').trim(),
+      careerGoal: String(req.body.careerGoal || '').trim(),
+      githubUrl: String(req.body.githubUrl || '').trim(),
+      linkedinUrl: String(req.body.linkedinUrl || '').trim(),
+      portfolioUrl: String(req.body.portfolioUrl || '').trim(),
       currentCompany: String(currentCompany || '').trim(),
       location: String(location || '').trim(),
       bio: String(bio || '').trim()

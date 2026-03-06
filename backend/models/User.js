@@ -40,11 +40,33 @@ const userSchema = new mongoose.Schema({
     fullName: { type: String, default: '' },
     targetRole: { type: String, default: '' },
     comfortableLanguages: { type: [String], default: [] },
+    country: { type: String, default: '' },
     experienceLevel: {
       type: String,
       enum: ['', 'fresher', '2_plus_years', '10_plus_years', '20_plus_years'],
       default: ''
     },
+    preferredInterviewTrack: {
+      type: String,
+      enum: ['', 'dsa', 'system_design', 'frontend', 'backend', 'fullstack'],
+      default: ''
+    },
+    openToRemote: { type: Boolean, default: true },
+    preferredWorkType: {
+      type: String,
+      enum: ['', 'remote', 'hybrid', 'onsite', 'flexible'],
+      default: ''
+    },
+    noticePeriod: {
+      type: String,
+      enum: ['', 'immediate', '15_days', '30_days', '60_days', '90_plus_days'],
+      default: ''
+    },
+    timezone: { type: String, default: '' },
+    careerGoal: { type: String, default: '' },
+    githubUrl: { type: String, default: '' },
+    linkedinUrl: { type: String, default: '' },
+    portfolioUrl: { type: String, default: '' },
     currentCompany: { type: String, default: '' },
     location: { type: String, default: '' },
     bio: { type: String, default: '' }
