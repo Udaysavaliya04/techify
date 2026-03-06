@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { motion, transform, useScroll, useTransform } from 'framer-motion';
+import { AnimatePresence, motion, transform, useScroll, useTransform } from 'framer-motion';
 import { useAuth } from './components/AuthWrapper';
 import config from './config';
 import './App.css';
@@ -12,6 +12,7 @@ export default function Join() {
   const [inviteToken, setInviteToken] = useState('');
   const [joinError, setJoinError] = useState('');
   const [joining, setJoining] = useState(false);
+  const [openFaqIndex, setOpenFaqIndex] = useState(0);
   const featureSectionRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -209,6 +210,39 @@ export default function Join() {
       points: ['Session timeline replay', 'Execution breakdown', 'Export and print support'],
       glow: 'rgba(114, 142, 244, 0.5)',
       gradient: 'transparent',
+    },
+  ];
+
+  const faqItems = [
+    {
+      question: 'Can I run a full interview without switching tools?',
+      answer:
+        'Yes. Techify keeps coding editor, video, question flow, AI assistance, rubric scoring, and report generation inside one interview room.',
+    },
+    {
+      question: 'How does candidate joining work securely?',
+      answer:
+        'Interviewers generate signed invite links with limited validity. Candidates join using that token and room code, so access remains controlled and traceable.',
+    },
+    {
+      question: 'Can interviewers use their own question bank?',
+      answer:
+        'Absolutely. You can create, edit, and organize custom questions, then push them directly into the active interview room in one click.',
+    },
+    {
+      question: 'How are evaluations standardized across interviewers?',
+      answer:
+        'Techify uses weighted rubric criteria, structured notes, and recommendation bands so decisions stay consistent across different interviewers and teams.',
+    },
+    {
+      question: 'Does Techify provide post-interview analytics?',
+      answer:
+        'Yes. Session timeline, code runs, rubric metrics, and decision snapshots are compiled into interview reports that can be exported and shared.',
+    },
+    {
+      question: 'Is this suitable for remote-first hiring teams?',
+      answer:
+        'That is the core use case. Techify is designed for remote technical interviews with low-friction setup, collaboration, and decision-ready outcomes.',
     },
   ];
 
@@ -831,6 +865,7 @@ export default function Join() {
           boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
           flexWrap: window.innerWidth <= 480 ? "wrap" : "nowrap",
           gap: window.innerWidth <= 480 ? "0.5rem" : "0",
+          animation: "slideDownFromTopCentered 0.8s ease-out",
         }}
       >
         {/* Logo */}
@@ -904,6 +939,7 @@ export default function Join() {
                   animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards',
                   background: "rgba(255, 255, 255, 0.1)",
                   opacity: 0,
+                  border: "1px solid rgba(255, 255, 255, 0.18)",
                 }}
               >
                 Sign In
@@ -1399,6 +1435,7 @@ export default function Join() {
                   width: window.innerWidth <= 480 ? "100%" : "auto",
                   textAlign: "center",
                   background: "rgba(255, 255, 255, 0.1)",
+                  border: "1px solid rgba(255, 255, 255, 0.18)",
                 }}
               >
                 Sign In
@@ -1462,7 +1499,7 @@ export default function Join() {
                     marginBottom: "1rem",
                   }}
                 >
-                  <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#7ad6ff" }} />
+                  <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#7ad6ff" , animation: "badgeBlinkPulse 1.5s ease infinite" }} />
                   <span
                     style={{
                       fontSize: "0.72rem",
@@ -1492,11 +1529,7 @@ export default function Join() {
                     lineHeight: 1.06,
                     letterSpacing: "-0.06em",
                     margin: "0 0 0.85rem 0",
-                    background:
-                      "linear-gradient(180deg, #ffffff 0%, #ffffffff 25%, #ffffffff 50%, #7bd1ffff 75%, #00b3ffff 100%)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text",
+                    color: "rgb(250, 252, 255)",
                     fontFamily: "'Familjen Grotesk', sans-serif",
                   }}
                 >
@@ -1535,7 +1568,13 @@ export default function Join() {
                         : window.innerWidth <= 1024
                           ? "repeat(2, minmax(0, 1fr))"
                           : "repeat(6, minmax(0, 1fr))",
-                    gap: window.innerWidth <= 768 ? "0.95rem" : "1.1rem",
+                    columnGap: window.innerWidth <= 768 ? "0.95rem" : "1.3rem",
+                    rowGap:
+                      window.innerWidth <= 480
+                        ? "1.2rem"
+                        : window.innerWidth <= 768
+                          ? "1.35rem"
+                          : "2rem",
                   }}
                 >
                   {featureBentoItems.map((feature, index) => {
@@ -1546,13 +1585,33 @@ export default function Join() {
                       <motion.article
                         key={feature.id}
                         initial={{ opacity: 0, y: 38, filter: "blur(10px)" }}
-                        whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                        whileHover={{ y: -8, scale: 1.005 }}
+                        whileInView={{
+                          opacity: 1,
+                          y: 0,
+                          filter: "blur(0px)",
+                          transition: {
+                            duration: 0.92,
+                            delay: 0.1 + index * 0.08,
+                            ease: [0.22, 1, 0.36, 1],
+                          },
+                        }}
+                        whileHover={{
+                          y: -7,
+                          boxShadow:
+                            "0 42px 100px -72px rgba(0, 0, 0, 0.96), inset 0 1px 0 rgba(255, 255, 255, 0.24)",
+                          transition: {
+                            type: "spring",
+                            stiffness: 78,
+                            damping: 14,
+                            mass: 1.15,
+                          },
+                        }}
                         viewport={{ once: true, amount: 0.2 }}
                         transition={{
-                          duration: 0.75,
-                          delay: 0.08 + index * 0.08,
-                          ease: [0.16, 1, 0.3, 1],
+                          type: "spring",
+                          stiffness: 70,
+                          damping: 14,
+                          mass: 1.2,
                         }}
                         style={{
                           gridColumn: window.innerWidth <= 1024 ? "span 1" : desktopSpan,
@@ -1676,6 +1735,178 @@ export default function Join() {
                 </div>
               </div>
             </motion.section>
+
+            <motion.section
+              initial={{ opacity: 0, y: 34, filter: "blur(8px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                width: "100%",
+                maxWidth: "1040px",
+                margin: window.innerWidth <= 768 ? "2.8rem auto 0" : "4.6rem auto 0",
+                paddingTop: window.innerWidth <= 768 ? "0.65rem" : "1.1rem",
+                textAlign: "center",
+              }}
+            >
+              <motion.h3
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.62, delay: 0.04, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  margin: "0 0 1.35rem 0",
+                  paddingBottom: window.innerWidth <= 768 ? "0.35rem" : "2.5rem",
+                  fontSize:
+                    window.innerWidth <= 480
+                      ? "clamp(1.6rem, 8vw, 2.25rem)"
+                      : window.innerWidth <= 768
+                        ? "clamp(2rem, 7vw, 2.9rem)"
+                        : "clamp(2.4rem, 5vw, 3.9rem)",
+                  fontWeight: 700,
+                  lineHeight: 1.06,
+                  letterSpacing: "-0.06em",
+                  color: "rgb(250, 252, 255)",
+                  fontFamily: "'Familjen Grotesk', sans-serif",
+                }}
+              >
+                Frequently Asked Questions
+              </motion.h3>
+
+              <div
+                style={{
+                  display: "grid",
+                  gap: window.innerWidth <= 768 ? "0.72rem" : "0.85rem",
+                }}
+              >
+                {faqItems.map((item, faqIndex) => {
+                  const isOpen = openFaqIndex === faqIndex;
+                  return (
+                    <motion.div
+                      key={`faq-${faqIndex}`}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      whileHover={{ y: -2 }}
+                      viewport={{ once: true, amount: 0.35 }}
+                      transition={{
+                        duration: 0.55,
+                        delay: 0.06 + faqIndex * 0.06,
+                        ease: [0.16, 1, 0.3, 1],
+                      }}
+                      style={{
+                        borderRadius: "16px",
+                        border: "1px solid rgba(255, 255, 255, 0.18)",
+                        background: "linear-gradient(140deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03))",
+                        backdropFilter: "blur(22px) saturate(145%)",
+                        WebkitBackdropFilter: "blur(22px) saturate(145%)",
+                        boxShadow: "0 20px 55px -45px rgba(0, 0, 0, 0.88), inset 0 1px 0 rgba(255, 255, 255, 0.22)",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setOpenFaqIndex((prev) => (prev === faqIndex ? null : faqIndex))}
+                        style={{
+                          width: "100%",
+                          border: "none",
+                          background: "transparent",
+                          color: "inherit",
+                          textAlign: "left",
+                          cursor: "pointer",
+                          padding:
+                            window.innerWidth <= 480
+                              ? "0.86rem 0.86rem 0.72rem"
+                              : window.innerWidth <= 768
+                                ? "0.95rem 1rem 0.78rem"
+                                : "1rem 1.08rem 0.82rem",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: "0.9rem",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: window.innerWidth <= 768 ? "0.88rem" : "0.98rem",
+                            lineHeight: 1.36,
+                            color: "rgba(245, 250, 255, 0.98)",
+                            fontWeight: 580,
+                            fontFamily: "Familjen Grotesk, sans-serif",
+                          }}
+                        >
+                          {item.question}
+                        </span>
+                        <motion.span
+                          animate={{ rotate: isOpen ? 45 : 0, scale: isOpen ? 1.08 : 1 }}
+                          transition={{ type: "spring", stiffness: 220, damping: 18 }}
+                          style={{
+                            width: "24px",
+                            height: "24px",
+                            color: "rgba(246, 251, 255, 0.95)",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "1rem",
+                            lineHeight: 1,
+                            flexShrink: 0,
+                          }}
+                          aria-hidden="true"
+                        >
+                          +
+                        </motion.span>
+                      </button>
+
+                      <motion.div
+                        animate={{ width: isOpen ? "100%" : "0%" }}
+                        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                        style={{
+                          height: "1px",
+                          background: "linear-gradient(90deg, rgba(136, 210, 255, 0.05),rgba(94, 193, 255, 0.49), rgba(136, 210, 255, 0.05))",
+                          marginLeft: "1.05rem",
+                        }}
+                      />
+
+                      <AnimatePresence initial={false}>
+                        {isOpen && (
+                          <motion.div
+                            key={`faq-answer-${faqIndex}`}
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+                            style={{ overflow: "hidden" }}
+                          >
+                            <motion.p
+                              initial={{ y: -6, opacity: 0 }}
+                              animate={{ y: 0, opacity: 1 }}
+                              exit={{ y: -5, opacity: 0 }}
+                              transition={{ duration: 0.28, delay: 0.04 }}
+                              style={{
+                                margin: 0,
+                                padding:
+                                  window.innerWidth <= 480
+                                    ? "0.72rem 0.86rem 0.9rem"
+                                    : window.innerWidth <= 768
+                                      ? "0.76rem 1rem 0.98rem"
+                                      : "0.82rem 1.08rem 1.02rem",
+                                fontSize: window.innerWidth <= 768 ? "0.81rem" : "0.9rem",
+                                lineHeight: 1.62,
+                                alignContent:"left",
+                                alignItems:"left",
+                                textAlign:"left",
+                                color: "rgba(214, 227, 248, 0.92)",
+                              }}
+                            >
+                              {item.answer}
+                            </motion.p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.section>
           </div>
         )}
       </main>
@@ -1792,7 +2023,7 @@ export default function Join() {
                   viewport={{ once: true, amount: 0.4 }}
                   transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1], delay: 0.12 }}
                 >
-                  Techify Platform
+                 
                 </motion.p>
                 <motion.h3
                   style={{
@@ -1815,6 +2046,36 @@ export default function Join() {
                   <br />
                   Decide with confidence.
                 </motion.h3>
+                <motion.a
+                  href="https://github.com/Udaysavaliya04"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  whileHover={{ y: -1.5 }}
+                  viewport={{ once: true, amount: 0.5 }}
+                  transition={{ duration: 0.34, ease: [0.16, 1, 0.3, 1], delay: 0.22 }}
+                  style={{
+                    marginTop: "0.75rem",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.45rem",
+                    padding: "0.36rem 0.74rem",
+                    borderRadius: "999px",
+                    border: "1px solid rgb(70, 0, 0)",
+                    background: "rgba(214, 214, 214, 0.1)",
+                    color: "rgba(0, 0, 0, 1)",
+                    fontSize: "0.75rem",
+                    fontWeight: 600,
+                    letterSpacing: "0.03em",
+                    textDecoration: "none",
+                    boxShadow: "0 10px 28px -24px rgba(255, 98, 0, 0.72)",
+                    width: "fit-content",
+                  }}
+                >
+                  <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#ff0000", animation: "badgeBlinkPulse 1s ease infinite" }} />
+                  Cooked by Uday Savaliya
+                </motion.a>
               </div>
 
               <motion.div
@@ -1869,6 +2130,7 @@ export default function Join() {
                     padding: "0.55rem 0.95rem",
                     minHeight: "unset",
                     background: "rgba(255, 255, 255, 0.1)",
+                    border: "1px solid rgba(255, 255, 255, 0.18)",
                   }}
                 >
                   Sign In
@@ -1969,14 +2231,7 @@ export default function Join() {
                 <Link to="/register" style={{ color: "rgba(205, 220, 247, 0.92)", textDecoration: "none", fontSize: "0.78rem" }}>
                   Join as Candidate
                 </Link>
-                <a
-                  href="https://github.com/Udaysavaliya04"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: "rgba(205, 220, 247, 0.92)", textDecoration: "none", fontSize: "0.78rem" }}
-                >
-                  Cooked by Uday Savaliya
-                </a>
+                
               </motion.div>
             </motion.div>
 
@@ -2015,17 +2270,25 @@ export default function Join() {
                   marginTop: "0.35rem",
                   fontSize:
                     window.innerWidth <= 480
-                      ? "clamp(2.2rem, 18vw, 4.2rem)"
+                      ? "clamp(2.4rem, 14vw, 4.6rem)"
                       : window.innerWidth <= 768
-                        ? "clamp(3rem, 14vw, 6rem)"
-                        : "clamp(4.8rem, 11vw, 8.2rem)",
-                  lineHeight: 0.86,
-                  justifyContent: window.innerWidth <= 768 ? "flex-start" : "center",
-                  letterSpacing: "0.8em",
+                        ? "clamp(3.4rem, 11vw, 6.6rem)"
+                        : "clamp(5rem, 10vw, 8.6rem)",
+                  lineHeight: 0.9,
+                  letterSpacing:
+                    window.innerWidth <= 480
+                      ? "0.3em"
+                      : window.innerWidth <= 768
+                        ? "0.48em"
+                        : "0.75em",
                   fontWeight: 800,
                   textTransform: "uppercase",
-                  color: "rgba(183, 214, 255, 0.15)",
-                  textAlign: window.innerWidth <= 768 ? "left" : "center",
+                  color: "rgba(200, 200, 200, 0.09)",
+                  textAlign: "center",
+                  width: "100%",
+                  display: "block",
+                  marginLeft: "auto",
+                  marginRight: "auto",
                   userSelect: "none",
                   pointerEvents: "none",
                   whiteSpace: "nowrap",
