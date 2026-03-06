@@ -37,6 +37,9 @@ export default function Room() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
+  const inviteTokenFromState = location.state?.inviteToken || '';
+  const inviteTokenFromQuery = new URLSearchParams(location.search).get('invite') || '';
+  const inviteToken = inviteTokenFromState || inviteTokenFromQuery;
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -78,7 +81,7 @@ export default function Room() {
     );
   }
 
-  const role = location.state?.role || 'candidate';
+  const role = user?.role || 'candidate';
   const [code, setCode] = useState();
   const [output, setOutput] = useState('');
   const [language, setLanguage] = useState('nodejs');
@@ -107,22 +110,37 @@ export default function Room() {
   const [notesLastSaved, setNotesLastSaved] = useState(null);
 
   useEffect(() => {
-    socketRef.current = io(SOCKET_URL);
+    const token = localStorage.getItem('token');
+    socketRef.current = io(SOCKET_URL, {
+      auth: { token }
+    });
 
     socketRef.current.on('connect', () => {
       setIsConnected(true);
       socketRef.current.emit('joinRoom', {
         roomId,
-        role,
-        username: user?.username || 'Anonymous'
+        inviteToken
       });
 
       // Start interview tracking 
       startInterviewTracking();
+
+      // Fetch room data after socket join to avoid room-creation race conditions.
+      setTimeout(() => {
+        fetchTimerInfo(2);
+        if (role === 'interviewer') {
+          fetchInterviewNotes(2);
+        }
+      }, 350);
     });
 
     socketRef.current.on('disconnect', () => {
       setIsConnected(false);
+    });
+
+    socketRef.current.on('socketError', ({ message }) => {
+      setOutput(`Security error: ${message}`);
+      setTimeout(() => navigate('/join'), 1500);
     });
 
     socketRef.current.on('init', ({ code }) => {
@@ -171,6 +189,10 @@ export default function Room() {
       });
     });
 
+    socketRef.current.on('roomUsers', ({ users }) => {
+      setJoinedUsers(Array.isArray(users) ? users : []);
+    });
+
     socketRef.current.on('userLeft', ({ userId, username, role: userRole }) => {
       setJoinedUsers(prev => prev.filter(u => u.userId !== userId));
 
@@ -180,16 +202,10 @@ export default function Room() {
       }
     });
 
-    fetchTimerInfo();
-
-    if (role === 'interviewer') {
-      fetchInterviewNotes();
-    }
-
     return () => {
       socketRef.current?.disconnect();
     };
-  }, [roomId, role]);
+  }, [roomId, role, inviteToken, navigate, user?.username]);
 
   // Browser navigation protection
   useEffect(() => {
@@ -317,22 +333,32 @@ export default function Room() {
     }
   }, [ended, startTime]);
 
-  const fetchTimerInfo = async () => {
+  const fetchTimerInfo = async (retriesLeft = 0) => {
     try {
       const res = await axios.get(`${config.API_BASE_URL}/api/room/${roomId}/timer`);
       setStartTime(new Date(res.data.startTime));
       setEnded(!res.data.isActive);
     } catch (err) {
       console.error('Failed to fetch timer info:', err);
+      if (err.response?.status === 404 && retriesLeft > 0) {
+        setTimeout(() => fetchTimerInfo(retriesLeft - 1), 500);
+        return;
+      }
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        navigate('/join');
+      }
     }
   };
 
-  const fetchInterviewNotes = async () => {
+  const fetchInterviewNotes = async (retriesLeft = 0) => {
     try {
       const res = await axios.get(`${config.API_BASE_URL}/api/room/${roomId}/notes`);
       setInterviewNotes(res.data.notes || '');
     } catch (err) {
       console.error('Failed to fetch notes:', err);
+      if (err.response?.status === 404 && retriesLeft > 0) {
+        setTimeout(() => fetchInterviewNotes(retriesLeft - 1), 500);
+      }
     }
   };
 
@@ -515,8 +541,8 @@ export default function Room() {
                       alignItems: 'center',
                       gap: '0.5rem'
                     }}>
-                      <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M16 19h4a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-2m-2.236-4a3 3 0 1 0 0-4M3 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                      <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M16 19h4a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-2m-2.236-4a3 3 0 1 0 0-4M3 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                       </svg>
 
                       <span style={{
@@ -584,9 +610,9 @@ export default function Room() {
                     gap: '0.5rem',
                     color: 'hsl(var(--muted-foreground))'
                   }}>
-                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M16 19h4a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-2m-2.236-4a3 3 0 1 0 0-4M3 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                      </svg>
+                    <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M16 19h4a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-2m-2.236-4a3 3 0 1 0 0-4M3 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                    </svg>
                     <span style={{
                       fontSize: '0.875rem',
                       fontWeight: '500'

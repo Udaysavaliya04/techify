@@ -1,24 +1,39 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import { useAuth } from './components/AuthWrapper';
-import Footer from './components/Footer';
+import config from './config';
 import './App.css';
-
-function randomRoomId() {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
-}
 
 export default function Join() {
   const [room, setRoom] = useState('');
-  const [role, setRole] = useState('candidate');
   const [otpValues, setOtpValues] = useState(['', '', '', '', '', '']);
+  const [inviteToken, setInviteToken] = useState('');
+  const [joinError, setJoinError] = useState('');
+  const [joining, setJoining] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const inputRefs = useRef([]);
   const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
     setRoom(otpValues.join(''));
   }, [otpValues]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const invite = params.get('invite') || '';
+    const roomFromUrl = (params.get('roomId') || '').toUpperCase().slice(0, 6);
+
+    if (invite) {
+      setInviteToken(invite);
+    }
+    if (roomFromUrl) {
+      const newValues = roomFromUrl.padEnd(6, '').split('').slice(0, 6);
+      while (newValues.length < 6) newValues.push('');
+      setOtpValues(newValues);
+    }
+  }, [location.search]);
 
   const handleOtpChange = (index, value) => {
     if (value.length > 1) return;
@@ -53,16 +68,60 @@ export default function Join() {
     inputRefs.current[lastFilledIndex]?.focus();
   };
 
-  const joinRoom = (e) => {
-    e.preventDefault();
-    if (room.trim()) {
-      navigate(`/room/${room.trim().toUpperCase()}`, { state: { role } });
+  const handleInviteInput = (value) => {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      setInviteToken('');
+      return;
     }
+
+    // Accept either raw token or full invite URL.
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      try {
+        const url = new URL(trimmed);
+        const tokenFromUrl = url.searchParams.get('invite') || '';
+        const roomFromUrl = (url.searchParams.get('roomId') || '').toUpperCase().slice(0, 6);
+        if (tokenFromUrl) setInviteToken(tokenFromUrl);
+        if (roomFromUrl) {
+          const newValues = roomFromUrl.split('');
+          while (newValues.length < 6) newValues.push('');
+          setOtpValues(newValues);
+        }
+        return;
+      } catch {
+        // Fall back to treating input as token below.
+      }
+    }
+
+    setInviteToken(trimmed);
   };
 
-  const createRoom = () => {
-    const id = randomRoomId();
-    navigate(`/room/${id}`, { state: { role: 'interviewer' } });
+  const joinRoom = async (e) => {
+    e.preventDefault();
+    const normalizedRoom = room.trim().toUpperCase();
+    if (!normalizedRoom) return;
+
+    setJoinError('');
+    setJoining(true);
+    try {
+      // Candidate flow requires signed invite token.
+      if (user?.role === 'candidate') {
+        if (!inviteToken) {
+          setJoinError('Signed invite token is required. Use interviewer invite link.');
+          setJoining(false);
+          return;
+        }
+        await axios.post(`${config.API_BASE_URL}/api/auth/invite/consume`, {
+          inviteToken
+        });
+      }
+
+      navigate(`/room/${normalizedRoom}`, { state: { inviteToken } });
+    } catch (error) {
+      setJoinError(error.response?.data?.error || 'Failed to validate invite. Please request a new invite link.');
+    } finally {
+      setJoining(false);
+    }
   };
 
   return (
@@ -381,15 +440,34 @@ export default function Join() {
                 </div>
               </div>
 
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <input
+                  type="text"
+                  className="input"
+                  value={inviteToken}
+                  onChange={(e) => handleInviteInput(e.target.value)}
+                  placeholder="Paste signed invite token or full invite link"
+                  autoComplete="off"
+                />
+                <div style={{ fontSize: "0.75rem", color: "hsl(var(--muted-foreground))" }}>
+                  Room ID alone is not enough. Paste the signed invite from interviewer.
+                </div>
+              </div>
+
               <button
                 type="submit"
-                disabled={room.length !== 6}
-                className={`action-btn run-btn ${room.length !== 6 ? "disabled" : ""
+                disabled={room.length !== 6 || joining || !inviteToken}
+                className={`action-btn run-btn ${room.length !== 6 || joining || !inviteToken ? "disabled" : ""
                   }`}
                 style={{ width: "100%" }}
               >
-                Join Interview Room
+                {joining ? "Validating Invite..." : "Join Interview Room"}
               </button>
+              {joinError && (
+                <div style={{ color: "#f87171", fontSize: "0.875rem" }}>
+                  {joinError}
+                </div>
+              )}
             </form>
           </div>
         ) : isAuthenticated() && user?.role === "interviewer" ? (

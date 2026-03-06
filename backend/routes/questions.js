@@ -1,7 +1,9 @@
 import express from 'express';
 import Question from '../models/Question.js';
+import { verifyToken, requireRole } from './auth.js';
 
 const router = express.Router();
+router.use(verifyToken, requireRole('interviewer', 'admin'));
 
 // Add a question
 router.post('/add', async (req, res) => {

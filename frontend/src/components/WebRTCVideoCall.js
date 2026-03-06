@@ -17,10 +17,19 @@ const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
   const localStreamRef = useRef(null);
 
   // WebRTC configuration
+  const turnUrl = process.env.REACT_APP_TURN_URL;
+  const turnUsername = process.env.REACT_APP_TURN_USERNAME;
+  const turnCredential = process.env.REACT_APP_TURN_CREDENTIAL;
+
   const iceServers = {
     iceServers: [
       { urls: 'stun:stun.l.google.com:19302' },
       { urls: 'stun:stun1.l.google.com:19302' },
+      ...(turnUrl && turnUsername && turnCredential ? [{
+        urls: turnUrl,
+        username: turnUsername,
+        credential: turnCredential
+      }] : [])
     ]
   };
 
@@ -28,7 +37,10 @@ const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
     if (!isOpen) return;
 
     // Initialize socket connection
-    socketRef.current = io(config.SOCKET_URL);
+    const token = localStorage.getItem('token');
+    socketRef.current = io(config.SOCKET_URL, {
+      auth: { token }
+    });
 
     // Socket event listeners
     socketRef.current.on('user-joined-video', ({ userId, userRole }) => {
@@ -58,6 +70,9 @@ const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
     socketRef.current.on('offer', handleOffer);
     socketRef.current.on('answer', handleAnswer);
     socketRef.current.on('ice-candidate', handleIceCandidate);
+    socketRef.current.on('socketError', ({ message }) => {
+      console.error('Video socket error:', message);
+    });
     socketRef.current.on('user-left-video', () => {
       setRemoteUserConnected(false);
       if (remoteVideoRef.current) {
@@ -66,7 +81,7 @@ const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
     });
 
     // Join video room after setting up listeners
-    socketRef.current.emit('join-video-room', { roomId, role });
+    socketRef.current.emit('join-video-room', { roomId });
 
     // Initialize local media
     initializeMedia();
@@ -99,6 +114,24 @@ const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
       setIsConnected(true);
     } catch (error) {
       console.error('Error accessing media devices:', error);
+      setIsVideoEnabled(false);
+      try {
+        // Fall back to audio-only if camera is busy.
+        const audioStream = await navigator.mediaDevices.getUserMedia({
+          video: false,
+          audio: true
+        });
+        localStreamRef.current = audioStream;
+        if (localVideoRef.current) {
+          localVideoRef.current.srcObject = audioStream;
+        }
+        setIsConnected(true);
+      } catch (audioError) {
+        console.error('Audio fallback also failed:', audioError);
+        setIsAudioEnabled(false);
+        // Keep signaling active so user can still receive remote media.
+        setIsConnected(true);
+      }
     }
   };
 
@@ -110,6 +143,10 @@ const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
       localStreamRef.current.getTracks().forEach(track => {
         peerConnection.addTrack(track, localStreamRef.current);
       });
+    } else {
+      // Allow receiving remote tracks even when no local device can be opened.
+      peerConnection.addTransceiver('video', { direction: 'recvonly' });
+      peerConnection.addTransceiver('audio', { direction: 'recvonly' });
     }
 
     // Handle remote stream

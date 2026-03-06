@@ -1,11 +1,12 @@
 import express from 'express';
 import PDFDocument from 'pdfkit';
 import RoomModel from '../models/Room.js';
+import { verifyToken, requireRole, requireRoomAccess } from './auth.js';
 
 const router = express.Router();
 
 // Update interview notes
-router.put('/:roomId/notes', async (req, res) => {
+router.put('/:roomId/notes', verifyToken, requireRole('interviewer', 'admin'), requireRoomAccess({ interviewerOnly: true }), async (req, res) => {
   const { roomId } = req.params;
   const { notes } = req.body;
 
@@ -21,7 +22,7 @@ router.put('/:roomId/notes', async (req, res) => {
 });
 
 // Get interview notes
-router.get('/:roomId/notes', async (req, res) => {
+router.get('/:roomId/notes', verifyToken, requireRole('interviewer', 'admin'), requireRoomAccess({ interviewerOnly: true }), async (req, res) => {
   const { roomId } = req.params;
 
   try {
@@ -36,7 +37,7 @@ router.get('/:roomId/notes', async (req, res) => {
 });
 
 // End interview
-router.put('/:roomId/end', async (req, res) => {
+router.put('/:roomId/end', verifyToken, requireRole('interviewer', 'admin'), requireRoomAccess({ interviewerOnly: true }), async (req, res) => {
   const { roomId } = req.params;
 
   try {
@@ -54,7 +55,7 @@ router.put('/:roomId/end', async (req, res) => {
 });
 
 // Get room timer info
-router.get('/:roomId/timer', async (req, res) => {
+router.get('/:roomId/timer', verifyToken, requireRoomAccess(), async (req, res) => {
   const { roomId } = req.params;
 
   try {
@@ -79,7 +80,7 @@ router.get('/:roomId/timer', async (req, res) => {
 });
 
 // Save rubric scores
-router.put('/:roomId/rubric', async (req, res) => {
+router.put('/:roomId/rubric', verifyToken, requireRole('interviewer', 'admin'), requireRoomAccess({ interviewerOnly: true }), async (req, res) => {
   const { roomId } = req.params;
   const { scores, weightedScore, recommendation, overallNotes } = req.body;
 
@@ -103,7 +104,7 @@ router.put('/:roomId/rubric', async (req, res) => {
 });
 
 // Get rubric scores
-router.get('/:roomId/rubric', async (req, res) => {
+router.get('/:roomId/rubric', verifyToken, requireRole('interviewer', 'admin'), requireRoomAccess({ interviewerOnly: true }), async (req, res) => {
   const { roomId } = req.params;
 
   try {
@@ -118,7 +119,7 @@ router.get('/:roomId/rubric', async (req, res) => {
 });
 
 // Generate interview report
-router.get('/:roomId/report', async (req, res) => {
+router.get('/:roomId/report', verifyToken, requireRole('interviewer', 'admin'), requireRoomAccess({ interviewerOnly: true }), async (req, res) => {
   const { roomId } = req.params;
 
   try {
@@ -168,7 +169,7 @@ router.get('/:roomId/report', async (req, res) => {
 });
 
 // Export report (PDF/Word)
-router.get('/:roomId/report/export', async (req, res) => {
+router.get('/:roomId/report/export', verifyToken, requireRole('interviewer', 'admin'), requireRoomAccess({ interviewerOnly: true }), async (req, res) => {
   const { roomId } = req.params;
   const { format = 'pdf' } = req.query;
 

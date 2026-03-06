@@ -11,6 +11,7 @@ export default function Dashboard() {
   const [error, setError] = useState('');
   const [showInterviewModal, setShowInterviewModal] = useState(false);
   const [generatedRoomId, setGeneratedRoomId] = useState('');
+  const [generatedInviteLink, setGeneratedInviteLink] = useState('');
   const [copyFeedback, setCopyFeedback] = useState('');
   const navigate = useNavigate();
   const { user, logout, isAuthenticated } = useAuth();
@@ -66,11 +67,18 @@ export default function Dashboard() {
 
   const handleStartInterview = async () => {
     try {
-      // Just generate random room ID, don't create database record yet
       const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
       setGeneratedRoomId(roomId);
+      const token = localStorage.getItem('token');
+      const inviteResponse = await axios.post(`${config.API_BASE_URL}/api/auth/interview/${roomId}/invite`, {
+        ttlSeconds: 1800
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const inviteToken = inviteResponse.data.inviteToken;
+      const inviteLink = `${window.location.origin}/join?roomId=${roomId}&invite=${encodeURIComponent(inviteToken)}`;
+      setGeneratedInviteLink(inviteLink);
 
-      // Show modal without creating interview record
       setShowInterviewModal(true);
     } catch (error) {
       console.error('Start interview error:', error);
@@ -80,8 +88,8 @@ export default function Dashboard() {
 
   const copyRoomCode = async () => {
     try {
-      await navigator.clipboard.writeText(generatedRoomId);
-      setCopyFeedback('Room code copied!');
+      await navigator.clipboard.writeText(generatedInviteLink || generatedRoomId);
+      setCopyFeedback(generatedInviteLink ? 'Invite link copied!' : 'Room code copied!');
       setTimeout(() => setCopyFeedback(''), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
@@ -100,7 +108,7 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      navigate(`/room/${generatedRoomId}`, { state: { role: 'interviewer' } });
+      navigate(`/room/${generatedRoomId}`);
     } catch (error) {
       console.error('Enter room error:', error);
       setError('Failed to start interview. Please try again.');
@@ -479,7 +487,7 @@ export default function Dashboard() {
                 color: 'hsl(var(--muted-foreground))',
                 margin: '0'
               }}>
-                Share this room code with the candidate.
+                Share this signed invite with the candidate.
               </p>
             </div>
 
@@ -499,7 +507,7 @@ export default function Dashboard() {
                 fontWeight: '600',
                 letterSpacing: '0.05em'
               }}>
-                Room Code
+                Room ID
               </div>
               <div style={{
                 fontSize: '1.5rem',
@@ -510,6 +518,16 @@ export default function Dashboard() {
               }}>
                 {generatedRoomId}
               </div>
+              {generatedInviteLink && (
+                <div style={{
+                  marginTop: '0.75rem',
+                  fontSize: '0.75rem',
+                  color: 'hsl(var(--muted-foreground))',
+                  wordBreak: 'break-all'
+                }}>
+                  {generatedInviteLink}
+                </div>
+              )}
             </div>
 
             <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>

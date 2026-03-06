@@ -1,11 +1,15 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import User from '../models/User.js';
+import RoomModel from '../models/Room.js';
+import RoomInvite from '../models/RoomInvite.js';
 
 const router = express.Router();
 
 // JWT Secret - in production, use environment variable
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const INVITE_SECRET = process.env.INVITE_SECRET || JWT_SECRET;
 
 // Middleware to verify JWT token
 export const verifyToken = async (req, res, next) => {
@@ -28,6 +32,36 @@ export const verifyToken = async (req, res, next) => {
   } catch (error) {
     res.status(401).json({ error: 'Invalid token.' });
   }
+};
+
+export const requireRole = (...roles) => (req, res, next) => {
+  if (!req.user) return res.status(401).json({ error: 'Authentication required.' });
+  if (!roles.includes(req.user.role)) {
+    return res.status(403).json({ error: 'Insufficient permissions.' });
+  }
+  return next();
+};
+
+export const hasRoomAccess = (user, roomId) => {
+  if (!user || !roomId) return false;
+  if (user.role === 'admin') return true;
+  return user.interviewHistory?.some((item) => item.roomId === roomId) || false;
+};
+
+export const requireRoomAccess = (opts = {}) => {
+  const { interviewerOnly = false } = opts;
+  return (req, res, next) => {
+    const roomId = req.params.roomId || req.body.roomId || req.query.roomId;
+    if (!roomId) return res.status(400).json({ error: 'Room ID is required' });
+    if (!hasRoomAccess(req.user, roomId)) {
+      return res.status(403).json({ error: 'Unauthorized room access' });
+    }
+    if (interviewerOnly && !['interviewer', 'admin'].includes(req.user.role)) {
+      return res.status(403).json({ error: 'Interviewer access required' });
+    }
+    req.roomId = roomId;
+    return next();
+  };
 };
 
 // Register new user
@@ -275,6 +309,16 @@ router.post('/interview', verifyToken, async (req, res) => {
       return res.status(400).json({ error: 'Room ID and role are required' });
     }
 
+    if (req.user.role !== 'admin' && role !== req.user.role) {
+      return res.status(403).json({ error: 'Role mismatch' });
+    }
+
+    if (role === 'interviewer') {
+      if (!['interviewer', 'admin'].includes(req.user.role)) {
+        return res.status(403).json({ error: 'Only interviewer can start interviewer sessions' });
+      }
+    }
+
     const user = await User.findById(req.user._id);
 
     // Check if interview already exists for this room
@@ -359,6 +403,83 @@ router.post('/logout', verifyToken, async (req, res) => {
     res.json({ message: 'Logged out successfully' });
   } catch (error) {
     res.json({ message: 'Logged out successfully' }); // Still return success
+  }
+});
+
+// Generate a signed candidate invite link for a room (interviewer/admin only)
+router.post('/interview/:roomId/invite', verifyToken, requireRole('interviewer', 'admin'), async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const ttlSeconds = Math.max(300, Math.min(7200, Number(req.body?.ttlSeconds || 1800)));
+
+    const payload = {
+      roomId,
+      role: 'candidate',
+      issuedBy: req.user._id.toString()
+    };
+    const inviteToken = jwt.sign(payload, INVITE_SECRET, { expiresIn: ttlSeconds });
+    const tokenHash = crypto.createHash('sha256').update(inviteToken).digest('hex');
+    const expiresAt = new Date(Date.now() + ttlSeconds * 1000);
+
+    await RoomInvite.create({
+      roomId,
+      tokenHash,
+      issuedBy: req.user._id,
+      expiresAt
+    });
+
+    res.json({
+      roomId,
+      inviteToken,
+      expiresAt
+    });
+  } catch (error) {
+    console.error('Invite generation error:', error);
+    res.status(500).json({ error: 'Failed to generate invite' });
+  }
+});
+
+// Validate and consume candidate invite token
+router.post('/invite/consume', verifyToken, requireRole('candidate', 'admin'), async (req, res) => {
+  try {
+    const { inviteToken } = req.body;
+    if (!inviteToken) {
+      return res.status(400).json({ error: 'inviteToken is required' });
+    }
+
+    const decoded = jwt.verify(inviteToken, INVITE_SECRET);
+    if (!decoded.roomId || decoded.role !== 'candidate') {
+      return res.status(400).json({ error: 'Invalid invite token payload' });
+    }
+
+    const tokenHash = crypto.createHash('sha256').update(inviteToken).digest('hex');
+    const invite = await RoomInvite.findOne({ tokenHash });
+    if (!invite || invite.usedAt || invite.expiresAt < new Date()) {
+      return res.status(403).json({ error: 'Invite expired or already used' });
+    }
+
+    const room = await RoomModel.findOne({ roomId: decoded.roomId });
+    if (!room) {
+      return res.status(404).json({ error: 'Room not found' });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user.interviewHistory.some((entry) => entry.roomId === decoded.roomId)) {
+      user.addInterview({
+        roomId: decoded.roomId,
+        role: 'candidate',
+        status: 'ongoing'
+      });
+      await user.save();
+    }
+
+    invite.usedAt = new Date();
+    invite.usedBy = req.user._id;
+    await invite.save();
+
+    res.json({ valid: true, roomId: decoded.roomId });
+  } catch (error) {
+    res.status(400).json({ error: 'Invalid or expired invite token' });
   }
 });
 
