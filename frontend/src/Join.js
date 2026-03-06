@@ -372,7 +372,7 @@ export default function Join() {
               border: "1px solid hsl(var(--border) / 0.5)",
               borderRadius: "calc(var(--radius) * 1.5)",
               padding: window.innerWidth <= 768 ? "2rem 1.5rem" : "3rem",
-              marginTop: window.innerWidth <= 768 ? "2rem" : "6rem",
+              marginTop: window.innerWidth <= 768 ? "2rem" : "5rem",
               boxShadow:
                 "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)",
               animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
@@ -415,7 +415,7 @@ export default function Join() {
                 letterSpacing: "-0.05em",
               }}
             >
-              Enter the 6-digit interview code provided by your interviewer
+              Paste the invite link below, code will be auto-filled. 
             </p>
 
             <form
@@ -446,12 +446,10 @@ export default function Join() {
                   className="input"
                   value={inviteToken}
                   onChange={(e) => handleInviteInput(e.target.value)}
-                  placeholder="Paste signed invite token or full invite link"
+                  placeholder="Paste Invite link"
                   autoComplete="off"
                 />
-                <div style={{ fontSize: "0.75rem", color: "hsl(var(--muted-foreground))" }}>
-                  Room ID alone is not enough. Paste the signed invite from interviewer.
-                </div>
+                
               </div>
 
               <button
