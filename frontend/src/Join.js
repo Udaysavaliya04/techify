@@ -1008,7 +1008,9 @@ export default function Join() {
     }
   };
 
-  const mainTopPadding = window.innerWidth <= 768 ? "8rem" : "4rem";
+  const isMobileView = window.innerWidth <= 768;
+  const isSmallMobileView = window.innerWidth <= 480;
+  const mainTopPadding = isMobileView ? "8rem" : "4rem";
 
   return (
     <div
@@ -1029,10 +1031,14 @@ export default function Join() {
         className="top-nav-button"
         style={{
           position: "fixed",
-          top: window.innerWidth <= 768 ? "0.55rem" : "0.85rem",
-          left: "49.7%",
+          top: isMobileView ? "0.55rem" : "0.85rem",
+          left: "49.8%",
           right: "auto",
-          width: window.innerWidth <= 768 ? "calc(100% - 1.2rem)" : "calc(100% - 2rem)",
+          width: isMobileView
+            ? isSmallMobileView
+              ? "calc(100% - 0.8rem)"
+              : "calc(100% - 1.2rem)"
+            : "calc(100% - 2rem)",
           maxWidth: "1280px",
           transform: "translateX(-50%)",
           zIndex: 9999,
@@ -1041,23 +1047,28 @@ export default function Join() {
           borderRadius: "22px",
           border: "1px solid rgba(255, 255, 255, 0.11)",
           background: "transparent",
-          padding: window.innerWidth <= 768 ? "0.75rem 1rem" : "1rem 2rem",
+          padding: isMobileView
+            ? isSmallMobileView
+              ? "0.55rem 0.7rem"
+              : "0.75rem 1rem"
+            : "1rem 2rem",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
           boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-          flexWrap: window.innerWidth <= 480 ? "wrap" : "nowrap",
-          gap: window.innerWidth <= 480 ? "0.5rem" : "0",
+          flexWrap: isSmallMobileView ? "wrap" : "nowrap",
+          rowGap: isSmallMobileView ? "0.45rem" : "0",
+          columnGap: isSmallMobileView ? "0.4rem" : "0.75rem",
           animation: "slideDownFromTopCentered 0.8s ease-out",
         }}
       >
         {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexShrink: 0 }}>
           <img
             src="/logo.webp"
             alt="Techify Logo"
             style={{
-              height: window.innerWidth <= 768 ? "32px" : "40px",
+              height: isMobileView ? "32px" : "40px",
               width: "auto",
               animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
               opacity: 0,
@@ -1066,136 +1077,141 @@ export default function Join() {
         </div>
 
         {/* Navigation Links */}
-        <nav
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: window.innerWidth <= 768 ? "0.5rem" : "1rem",
-            flexWrap: window.innerWidth <= 480 ? "wrap" : "nowrap",
-          }}
-        >
-          {isAuthenticated() ? (
-            <>
-              <span
-                style={{
-                  color: "hsl(var(--muted-foreground))",
-                  fontSize: window.innerWidth <= 768 ? "0.75rem" : "0.875rem",
-                  animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards',
-                  opacity: 0,
-                }}
-              >
-                {user?.username}
-              </span>
-              <Link
-                to="/dashboard"
-                className="action-btn run-btn"
-                style={{
-                  textDecoration: "none",
-                  fontSize: window.innerWidth <= 768 ? "0.75rem" : "0.875rem",
-                  padding:
-                    window.innerWidth <= 768
-                      ? "0.375rem 0.75rem"
-                      : "0.5rem 1rem",
-                  animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards',
-                  opacity: 0,
-                }}
-              >
-                Dashboard
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="action-btn save-btn"
-                style={{
-                  textDecoration: "none",
-                  fontSize: window.innerWidth <= 768 ? "0.75rem" : "0.875rem",
-                  fontWeight: "500",
-                  transition: "color 0.2s ease",
-                  background: "transparent",
-                  backdropFilter: "blur(10px)",
-                  padding:
-                    window.innerWidth <= 768
-                      ? "0.375rem 0.75rem"
-                      : "0.5rem 1rem",
-                  animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards',
-                  background: "rgba(255, 255, 255, 0.1)",
-                  opacity: 0,
-                  border: "1px solid rgba(255, 255, 255, 0.18)",
-                }}
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/register"
-                className="action-btn run-btn premium-arrow-btn"
-                style={{
-                  textDecoration: "none",
-                  fontSize: window.innerWidth <= 768 ? "0.75rem" : "0.875rem",
-                  padding:
-                    window.innerWidth <= 768
-                      ? "0.375rem 0.75rem"
-                      : "0.5rem 1rem",
-                  animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards',
-                  opacity: 0,
-                }}
-              >
-                <span className="premium-arrow-btn__label">Sign Up</span>
-                <span className="premium-arrow-btn__icon-wrap" aria-hidden="true">
-                  <svg className="premium-arrow-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
-                  </svg>
-                </span>
-              </Link>
-            </>
-          )}
-          <a
-            href="https://github.com/Udaysavaliya04/techify"
-            target="_blank"
-            rel="noopener noreferrer"
+        {!isMobileView && (
+          <nav
             style={{
-              display: "inline-flex",
+              display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              width: "40px",
-              height: "40px",
-              borderRadius: "50%",
-              background: "transparent",
-              backdropFilter: "blur(10px)",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
-              transition: "all 0.3s ease",
-              cursor: "pointer",
-              animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.6s forwards',
-              opacity: 0,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
-              e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
+              justifyContent: "flex-end",
+              gap: "1rem",
+              flexWrap: "nowrap",
+              minWidth: 0,
             }}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ color: "hsl(var(--foreground))" }}>
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v 3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-            </svg>
-          </a>
-        </nav>
+            {isAuthenticated() ? (
+              <>
+                <span
+                  style={{
+                    color: "hsl(var(--muted-foreground))",
+                    fontSize: "0.875rem",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    flexShrink: 1,
+                    animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards',
+                    opacity: 0,
+                  }}
+                >
+                  {user?.username}
+                </span>
+                <Link
+                  to="/dashboard"
+                  className="action-btn run-btn"
+                  style={{
+                    textDecoration: "none",
+                    fontSize: "0.875rem",
+                    padding: "0.5rem 1rem",
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
+                    animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards',
+                    opacity: 0,
+                  }}
+                >
+                  Dashboard
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="action-btn save-btn"
+                  style={{
+                    textDecoration: "none",
+                    fontSize: "0.875rem",
+                    fontWeight: "500",
+                    transition: "color 0.2s ease",
+                    background: "rgba(255, 255, 255, 0.1)",
+                    backdropFilter: "blur(10px)",
+                    padding: "0.5rem 1rem",
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
+                    animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards',
+                    opacity: 0,
+                    border: "1px solid rgba(255, 255, 255, 0.18)",
+                  }}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/register"
+                  className="action-btn run-btn premium-arrow-btn"
+                  style={{
+                    textDecoration: "none",
+                    fontSize: "0.875rem",
+                    padding: "0.5rem 1rem",
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
+                    animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards',
+                    opacity: 0,
+                  }}
+                >
+                  <span className="premium-arrow-btn__label">Sign Up</span>
+                  <span className="premium-arrow-btn__icon-wrap" aria-hidden="true">
+                    <svg className="premium-arrow-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                      <polyline points="12 5 19 12 12 19" />
+                    </svg>
+                  </span>
+                </Link>
+              </>
+            )}
+            <a
+              href="https://github.com/Udaysavaliya04/techify"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                background: "transparent",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                transition: "all 0.3s ease",
+                cursor: "pointer",
+                flexShrink: 0,
+                animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.6s forwards',
+                opacity: 0,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
+                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ color: "hsl(var(--foreground))" }}>
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v 3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+              </svg>
+            </a>
+          </nav>
+        )}
       </header>
 
       {/* Mobile Notice Banner */}
       <div
         style={{
           position: "fixed",
-          top: "12rem",
+          top: "4rem",
           left: "1rem",
           right: "1rem",
           zIndex: 60,
-          background: "rgba(22, 22, 22, 0.75)",
-          backdropFilter: "blur(25px) saturate(180%)",
-          WebkitBackdropFilter: "blur(25px) saturate(180%)",
+          background: "rgba(22, 22, 22, 0.55)",
+          backdropFilter: "blur(60px) saturate(180%)",
+          WebkitBackdropFilter: "blur(60px) saturate(180%)",
           border: "1px solid rgba(255, 255, 255, 0.12)",
           borderRadius: "16px",
           padding: "1.25rem 1.5rem",
@@ -1975,118 +1991,172 @@ export default function Join() {
 
               <div style={{ display: "grid", gap: window.innerWidth <= 768 ? "0.95rem" : "1.15rem" }}>
                 {howItWorksSteps.map((step, stepIndex) => {
-                  const reverseLayout = stepIndex % 2 !== 0;
+                  const alignRight = stepIndex % 2 !== 0;
+                  const reverseLayout = alignRight;
+                  const connectorPath = "M60 10 L60 104";
+                  const connectorHeadPath = "M51 94 L60 104 L69 94";
+                  const glowStartX = 60;
+                  const glowEndX = 60;
+                  const glowStartY = 10;
+                  const glowEndY = 104;
                   return (
-                    <motion.article
-                      key={step.id}
-                      initial={{ opacity: 0, y: 24, filter: "blur(7px)" }}
-                      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                      whileHover={{ y: -4 }}
-                      viewport={{ once: true, amount: 0.25 }}
-                      transition={{ duration: 0.62, delay: 0.08 + stepIndex * 0.07, ease: [0.16, 1, 0.3, 1] }}
-                      style={{
-                        borderRadius: "24px",
-                        border: "1px solid rgba(255, 255, 255, 0.2)",
-                        background: "linear-gradient(150deg, rgba(255,255,255,0.11), rgba(255,255,255,0.03))",
-                        backdropFilter: "blur(25px) saturate(145%)",
-                        WebkitBackdropFilter: "blur(25px) saturate(145%)",
-                        boxShadow: "0 30px 80px -58px rgba(0, 0, 0, 0.92), inset 0 1px 0 rgba(255, 255, 255, 0.22)",
-                        padding:
-                          window.innerWidth <= 480
-                            ? "0.95rem"
-                            : window.innerWidth <= 768
-                              ? "1.1rem"
-                              : "1.2rem",
-                        position: "relative",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <div
+                    <React.Fragment key={step.id}>
+                      <motion.article
+                        initial={{ opacity: 0, y: 24, filter: "blur(7px)" }}
+                        whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                        whileHover={{ y: -4 }}
+                        viewport={{ once: true, amount: 0.25 }}
+                        transition={{ duration: 0.62, delay: 0.08 + stepIndex * 0.07, ease: [0.16, 1, 0.3, 1] }}
                         style={{
-                          display: "grid",
-                          gridTemplateColumns: window.innerWidth <= 900 ? "1fr" : reverseLayout ? "1fr 1.2fr" : "1.2fr 1fr",
-                          gap: "0.95rem",
-                          alignItems: "center",
+                          width: "100%",
+                          marginLeft: "auto",
+                          marginRight: "auto",
+                          borderRadius: "24px",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
+                          background: "linear-gradient(150deg, rgba(255,255,255,0.11), rgba(255,255,255,0.03))",
+                          backdropFilter: "blur(25px) saturate(145%)",
+                          WebkitBackdropFilter: "blur(25px) saturate(145%)",
+                          boxShadow: "0 30px 80px -58px rgba(0, 0, 0, 0.92), inset 0 1px 0 rgba(255, 255, 255, 0.22)",
+                          padding:
+                            window.innerWidth <= 480
+                              ? "0.95rem"
+                              : window.innerWidth <= 768
+                                ? "1.1rem"
+                                : "1.2rem",
+                          position: "relative",
+                          overflow: "hidden",
                         }}
                       >
-                        <div style={{ order: window.innerWidth <= 900 ? 0 : reverseLayout ? 2 : 1 }}>
-                          <div
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: "0.45rem",
-                              padding: "0.3rem 0.66rem",
-                              borderRadius: "999px",
-                              border: "1px solid rgba(255, 255, 255, 0.24)",
-                              background: "rgba(8, 14, 26, 0.5)",
-                              fontSize: "0.66rem",
-                              color: "rgba(238, 245, 255, 0.95)",
-                              fontWeight: 650,
-                              letterSpacing: "0.06em",
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: step.accent }} />
-                            Step {step.step}
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: window.innerWidth <= 900 ? "1fr" : reverseLayout ? "1fr 1.2fr" : "1.2fr 1fr",
+                            gap: "0.95rem",
+                            alignItems: "center",
+                          }}
+                        >
+                          <div style={{ order: window.innerWidth <= 900 ? 0 : reverseLayout ? 2 : 1 }}>
+                            <div
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "0.45rem",
+                                padding: "0.3rem 0.66rem",
+                                borderRadius: "999px",
+                                border: "1px solid rgba(255, 255, 255, 0.24)",
+                                background: "rgba(8, 14, 26, 0.5)",
+                                fontSize: "0.66rem",
+                                color: "rgba(238, 245, 255, 0.95)",
+                                fontWeight: 650,
+                                letterSpacing: "0.06em",
+                                textTransform: "uppercase",
+                              }}
+                            >
+                              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: step.accent }} />
+                              Step {step.step}
+                            </div>
+                            <h4
+                              style={{
+                                margin: "0.7rem 0 0.4rem 0",
+                                fontSize: window.innerWidth <= 768 ? "1.02rem" : "1.18rem",
+                                color: "rgba(246, 250, 255, 0.98)",
+                                fontWeight: 650,
+                                letterSpacing: "-0.02em",
+                                lineHeight: 1.25,
+                              }}
+                            >
+                              {step.title}
+                            </h4>
+                            <p
+                              style={{
+                                margin: "0 0 0.58rem 0",
+                                fontSize: window.innerWidth <= 768 ? "0.82rem" : "0.9rem",
+                                lineHeight: 1.58,
+                                color: "rgba(214, 227, 248, 0.9)",
+                                letterSpacing: "-0.01em",
+                              }}
+                            >
+                              {step.description}
+                            </p>
+                            <div style={{ display: "grid", gap: "0.24rem" }}>
+                              {step.points.map((point) => (
+                                <div key={`${step.id}-${point}`} style={{ display: "flex", alignItems: "center", gap: "0.36rem" }}>
+                                  <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: step.accent }} />
+                                  <span style={{ fontSize: "0.74rem", color: "rgba(224, 236, 255, 0.9)" }}>{point}</span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                          <h4
-                            style={{
-                              margin: "0.7rem 0 0.4rem 0",
-                              fontSize: window.innerWidth <= 768 ? "1.02rem" : "1.18rem",
-                              color: "rgba(246, 250, 255, 0.98)",
-                              fontWeight: 650,
-                              letterSpacing: "-0.02em",
-                              lineHeight: 1.25,
-                            }}
-                          >
-                            {step.title}
-                          </h4>
-                          <p
-                            style={{
-                              margin: "0 0 0.58rem 0",
-                              fontSize: window.innerWidth <= 768 ? "0.82rem" : "0.9rem",
-                              lineHeight: 1.58,
-                              color: "rgba(214, 227, 248, 0.9)",
-                              letterSpacing: "-0.01em",
-                            }}
-                          >
-                            {step.description}
-                          </p>
-                          <div style={{ display: "grid", gap: "0.24rem" }}>
-                            {step.points.map((point) => (
-                              <div key={`${step.id}-${point}`} style={{ display: "flex", alignItems: "center", gap: "0.36rem" }}>
-                                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: step.accent }} />
-                                <span style={{ fontSize: "0.74rem", color: "rgba(224, 236, 255, 0.9)" }}>{point}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
 
-                        <div style={{ order: window.innerWidth <= 900 ? 0 : reverseLayout ? 1 : 2 }}>
-                          {renderHowItWorksMiniView(step.id)}
+                          <div style={{ order: window.innerWidth <= 900 ? 0 : reverseLayout ? 1 : 2 }}>
+                            {renderHowItWorksMiniView(step.id)}
+                          </div>
                         </div>
-                      </div>
+                      </motion.article>
 
                       {stepIndex < howItWorksSteps.length - 1 && (
                         <motion.div
                           aria-hidden="true"
-                          initial={{ opacity: 0 }}
-                          whileInView={{ opacity: 1 }}
-                          viewport={{ once: true, amount: 0.5 }}
-                          transition={{ duration: 0.35, delay: 0.2 }}
+                          initial={{ opacity: 0, y: -4 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true, amount: 0.55 }}
+                          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.14 }}
                           style={{
-                            position: "absolute",
-                            left: "50%",
-                            bottom: "-0.95rem",
-                            transform: "translateX(-50%)",
-                            width: "2px",
-                            height: window.innerWidth <= 768 ? "18px" : "22px",
-                            background: "linear-gradient(180deg, rgba(138, 210, 255, 0.5), rgba(138, 210, 255, 0))",
+                            width: "100%",
+                            display: "flex",
+                            justifyContent: "center",
+                            margin: window.innerWidth <= 900 ? "0.14rem 0 0.28rem" : "0.22rem 0 0.42rem",
                             pointerEvents: "none",
                           }}
-                        />
+                        >
+                          <motion.svg
+                            viewBox="0 0 120 114"
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true, amount: 0.7 }}
+                            transition={{ duration: 0.35, delay: 0.12 }}
+                            style={{
+                              width: window.innerWidth <= 900 ? "72px" : "84px",
+                              height: window.innerWidth <= 900 ? "64px" : "72px",
+                              overflow: "visible",
+                            }}
+                          >
+                            <motion.path
+                              d={connectorPath}
+                              fill="none"
+                              stroke="rgba(137, 216, 255, 0.92)"
+                              strokeWidth="3.4"
+                              strokeLinecap="round"
+                              initial={{ pathLength: 0, opacity: 0.5 }}
+                              whileInView={{ pathLength: 1, opacity: 1 }}
+                              viewport={{ once: true, amount: 0.7 }}
+                              transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1], delay: 0.08 }}
+                            />
+                            <motion.path
+                              d={connectorHeadPath}
+                              fill="none"
+                              stroke="rgba(141, 218, 255, 0.95)"
+                              strokeWidth="3"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              initial={{ opacity: 0, scale: 0.86 }}
+                              whileInView={{ opacity: 1, scale: 1 }}
+                              viewport={{ once: true, amount: 0.7 }}
+                              transition={{ duration: 0.4, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                              style={{ transformOrigin: "60px 104px" }}
+                            />
+                            <motion.circle
+                              r="3.9"
+                              fill="rgba(196, 238, 255, 0.95)"
+                              initial={{ opacity: 0, cx: glowStartX, cy: glowStartY }}
+                              whileInView={{ opacity: [0, 1, 0], cx: [glowStartX, glowEndX], cy: [glowStartY, glowEndY] }}
+                              viewport={{ once: true, amount: 0.7 }}
+                              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                            />
+                          </motion.svg>
+                        </motion.div>
                       )}
-                    </motion.article>
+                    </React.Fragment>
                   );
                 })}
               </div>
@@ -2664,4 +2734,3 @@ export default function Join() {
     </div>
   );
 } 
-
