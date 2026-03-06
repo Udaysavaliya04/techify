@@ -2,6 +2,7 @@ import express from 'express';
 import axios from 'axios';
 import CodeSnippet from '../models/CodeSnippet.js';
 import RoomModel from '../models/Room.js';
+import { logInterviewEvent } from '../utils/interviewEvents.js';
 
 const router = express.Router();
 
@@ -69,6 +70,23 @@ router.post('/execute', async (req, res) => {
       if (io) {
         io.to(roomId).emit('outputChange', outputData);
       }
+
+      await logInterviewEvent({
+        roomId,
+        type: 'code_executed',
+        actor: {
+          userId: req.user?._id || null,
+          username: req.user?.username || executedBy || 'unknown',
+          role: req.user?.role || executedBy || 'unknown'
+        },
+        payload: {
+          code: code || '',
+          language: language || '',
+          output: response.data.output || response.data.error || '',
+          success: !response.data.error,
+          executionTime: response.data.cpuTime || 0
+        }
+      });
     }
 
     res.json(response.data);

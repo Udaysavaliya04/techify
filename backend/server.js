@@ -9,6 +9,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import RoomModel from './models/Room.js';
 import User from './models/User.js';
 import RoomInvite from './models/RoomInvite.js';
+import { logInterviewEvent } from './utils/interviewEvents.js';
 
 dotenv.config();
 
@@ -103,6 +104,8 @@ io.use(async (socket, next) => {
 io.on('connection', (socket) => {
   let currentRoom = null;
   const userRole = socket.user.role;
+  let lastCodeEventAt = 0;
+  let lastCodeSnapshot = '';
 
   socket.on('joinRoom', async ({ roomId, inviteToken }) => {
     try {
@@ -184,6 +187,16 @@ io.on('connection', (socket) => {
       socket.emit('roomUsers', { users: existingUsers });
 
       socket.emit('init', { code: room.code, question: room.question });
+      await logInterviewEvent({
+        roomId: currentRoom,
+        type: 'room_joined',
+        actor: {
+          userId: socket.user._id,
+          username: socket.user.username,
+          role: userRole
+        },
+        payload: { socketId: socket.id }
+      });
     } catch (error) {
       console.error('joinRoom error:', error);
       socket.emit('socketError', { message: 'Failed to join room' });
@@ -194,12 +207,39 @@ io.on('connection', (socket) => {
     if (!currentRoom) return;
     await RoomModel.updateOne({ roomId: currentRoom }, { code });
     socket.to(currentRoom).emit('codeChange', code);
+
+    const now = Date.now();
+    const shouldLog = code !== lastCodeSnapshot || now - lastCodeEventAt > 2000;
+    if (shouldLog) {
+      lastCodeSnapshot = code || '';
+      lastCodeEventAt = now;
+      await logInterviewEvent({
+        roomId: currentRoom,
+        type: 'code_changed',
+        actor: {
+          userId: socket.user._id,
+          username: socket.user.username,
+          role: userRole
+        },
+        payload: { code: code || '' }
+      });
+    }
   });
 
   socket.on('setQuestion', async (question) => {
     if (!currentRoom || !['interviewer', 'admin'].includes(userRole)) return;
     await RoomModel.updateOne({ roomId: currentRoom }, { question });
     io.in(currentRoom).emit('questionChange', question);
+    await logInterviewEvent({
+      roomId: currentRoom,
+      type: 'question_set',
+      actor: {
+        userId: socket.user._id,
+        username: socket.user.username,
+        role: userRole
+      },
+      payload: { question: question || '' }
+    });
   });
 
   socket.on('endInterview', async () => {
@@ -209,6 +249,16 @@ io.on('connection', (socket) => {
       isActive: false
     });
     io.in(currentRoom).emit('interviewEnded');
+    await logInterviewEvent({
+      roomId: currentRoom,
+      type: 'interview_ended',
+      actor: {
+        userId: socket.user._id,
+        username: socket.user.username,
+        role: userRole
+      },
+      payload: {}
+    });
   });
 
   socket.on('join-video-room', ({ roomId }) => {
@@ -266,6 +316,16 @@ io.on('connection', (socket) => {
         role: userRole
       });
       socket.to(`video-${currentRoom}`).emit('user-left-video', { userId: socket.id });
+      await logInterviewEvent({
+        roomId: currentRoom,
+        type: 'room_left',
+        actor: {
+          userId: socket.user._id,
+          username: socket.user.username,
+          role: userRole
+        },
+        payload: { socketId: socket.id }
+      });
     }
 
     // Handle video-only socket disconnects too.

@@ -2,6 +2,8 @@ import express from 'express';
 import PDFDocument from 'pdfkit';
 import RoomModel from '../models/Room.js';
 import { verifyToken, requireRole, requireRoomAccess } from './auth.js';
+import InterviewEvent from '../models/InterviewEvent.js';
+import { logInterviewEvent } from '../utils/interviewEvents.js';
 
 const router = express.Router();
 
@@ -15,6 +17,16 @@ router.put('/:roomId/notes', verifyToken, requireRole('interviewer', 'admin'), r
       { roomId },
       { interviewNotes: notes }
     );
+    await logInterviewEvent({
+      roomId,
+      type: 'notes_updated',
+      actor: {
+        userId: req.user._id,
+        username: req.user.username,
+        role: req.user.role
+      },
+      payload: { notes: notes || '' }
+    });
     res.json({ message: 'Notes updated successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to update notes' });
@@ -48,6 +60,16 @@ router.put('/:roomId/end', verifyToken, requireRole('interviewer', 'admin'), req
         isActive: false
       }
     );
+    await logInterviewEvent({
+      roomId,
+      type: 'interview_ended',
+      actor: {
+        userId: req.user._id,
+        username: req.user.username,
+        role: req.user.role
+      },
+      payload: {}
+    });
     res.json({ message: 'Interview ended successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to end interview' });
@@ -97,9 +119,33 @@ router.put('/:roomId/rubric', verifyToken, requireRole('interviewer', 'admin'), 
         }
       }
     );
+    await logInterviewEvent({
+      roomId,
+      type: 'rubric_saved',
+      actor: {
+        userId: req.user._id,
+        username: req.user.username,
+        role: req.user.role
+      },
+      payload: { weightedScore, recommendation: recommendation || '' }
+    });
     res.json({ message: 'Rubric scores saved successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to save rubric scores' });
+  }
+});
+
+// Interview timeline for replay
+router.get('/:roomId/timeline', verifyToken, requireRole('interviewer', 'admin'), requireRoomAccess({ interviewerOnly: true }), async (req, res) => {
+  const { roomId } = req.params;
+  try {
+    const timeline = await InterviewEvent.find({ roomId })
+      .sort({ createdAt: 1 })
+      .lean();
+
+    res.json({ timeline });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch timeline' });
   }
 });
 

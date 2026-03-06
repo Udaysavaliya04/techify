@@ -6,9 +6,13 @@ const InterviewReport = ({ roomId, onClose }) => {
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [exportLoading, setExportLoading] = useState(false);
+  const [timeline, setTimeline] = useState([]);
+  const [timelineLoading, setTimelineLoading] = useState(false);
+  const [replayIndex, setReplayIndex] = useState(0);
 
   useEffect(() => {
     fetchReportData();
+    fetchTimeline();
   }, [roomId]);
 
   const fetchReportData = async () => {
@@ -47,6 +51,25 @@ const InterviewReport = ({ roomId, onClose }) => {
     }
     setExportLoading(false);
   };
+
+  const fetchTimeline = async () => {
+    setTimelineLoading(true);
+    try {
+      const res = await axios.get(`${config.API_BASE_URL}/api/room/${roomId}/timeline`);
+      const events = res.data.timeline || [];
+      setTimeline(events);
+      if (events.length > 0) {
+        setReplayIndex(events.length - 1);
+      }
+    } catch (err) {
+      console.error('Failed to fetch timeline:', err);
+      setTimeline([]);
+    } finally {
+      setTimelineLoading(false);
+    }
+  };
+
+  const replayEvent = timeline[replayIndex] || null;
 
   const getScoreColor = (score) => {
     if (score >= 8) return '#10b981';
@@ -133,7 +156,8 @@ const InterviewReport = ({ roomId, onClose }) => {
   return (
     <div style={{
       width: '100%',
-      maxWidth: '900px',
+      maxWidth: '1200px',
+      minWidth: 'min(96vw, 980px)',
       maxHeight: '90vh',
       overflow: 'hidden',
       display: 'flex',
@@ -198,7 +222,8 @@ const InterviewReport = ({ roomId, onClose }) => {
       <div style={{
         flex: 1,
         overflow: 'auto',
-        padding: '1.5rem'
+        padding: '1.5rem',
+        scrollbarGutter: 'stable both-edges'
       }}>
         {/* Interview Summary */}
         <div style={{
@@ -507,6 +532,164 @@ const InterviewReport = ({ roomId, onClose }) => {
             </div>
           </div>
         )}
+
+        {/* Session Replay Timeline */}
+        <div style={{
+          background: 'hsl(var(--card))',
+          border: '1px solid hsl(var(--border))',
+          borderRadius: 'var(--radius)',
+          padding: '1.5rem',
+          marginTop: '1.5rem',
+          minHeight: '420px',
+          overflowX: 'hidden'
+        }}>
+          <h3 style={{
+            margin: '0 0 1rem 0',
+            fontSize: '1.25rem',
+            fontWeight: '600',
+            color: 'hsl(var(--foreground))'
+          }}>
+            Session Replay Timeline
+          </h3>
+
+          {timelineLoading ? (
+            <div style={{ color: 'hsl(var(--muted-foreground))', fontSize: '0.875rem' }}>
+              Loading timeline...
+            </div>
+          ) : timeline.length === 0 ? (
+            <div style={{ color: 'hsl(var(--muted-foreground))', fontSize: '0.875rem' }}>
+              No timeline events captured for this interview.
+            </div>
+          ) : (
+            <>
+              <div style={{ marginBottom: '1rem' }}>
+                <input
+                  type="range"
+                  min={0}
+                  max={Math.max(timeline.length - 1, 0)}
+                  value={replayIndex}
+                  onChange={(e) => setReplayIndex(Number(e.target.value))}
+                  style={{ width: '100%' }}
+                />
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  fontSize: '0.75rem',
+                  color: 'hsl(var(--muted-foreground))'
+                }}>
+                  <span>Start</span>
+                  <span>Event {replayIndex + 1} / {timeline.length}</span>
+                  <span>Latest</span>
+                </div>
+              </div>
+
+              {replayEvent && (
+                <div style={{
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: 'calc(var(--radius) - 2px)',
+                  padding: '1rem',
+                  background: 'hsl(var(--muted) / 0.2)',
+                  minHeight: '300px'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    gap: '0.75rem',
+                    marginBottom: '0.75rem',
+                    flexWrap: 'wrap'
+                  }}>
+                    <div style={{ fontSize: '0.875rem', fontWeight: '600', color: 'hsl(var(--foreground))' }}>
+                      {replayEvent.type.replace(/_/g, ' ').toUpperCase()}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))' }}>
+                      {new Date(replayEvent.createdAt).toLocaleString()}
+                    </div>
+                  </div>
+
+                  <div style={{
+                    fontSize: '0.8rem',
+                    color: 'hsl(var(--muted-foreground))',
+                    marginBottom: '0.75rem'
+                  }}>
+                    Actor: {replayEvent.actor?.username || 'Unknown'} ({replayEvent.actor?.role || 'unknown'})
+                  </div>
+
+                  {replayEvent.payload?.question && (
+                    <div style={{
+                      marginBottom: '0.75rem',
+                      fontSize: '0.875rem',
+                      color: 'hsl(var(--foreground))',
+                      whiteSpace: 'pre-wrap'
+                    }}>
+                      <strong>Question:</strong> {replayEvent.payload.question}
+                    </div>
+                  )}
+
+                  {replayEvent.payload?.notes && (
+                    <div style={{
+                      marginBottom: '0.75rem',
+                      fontSize: '0.875rem',
+                      color: 'hsl(var(--foreground))',
+                      whiteSpace: 'pre-wrap'
+                    }}>
+                      <strong>Notes:</strong> {replayEvent.payload.notes}
+                    </div>
+                  )}
+
+                  {replayEvent.payload?.code && (
+                    <div style={{ marginBottom: '0.75rem' }}>
+                      <div style={{ fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))', marginBottom: '0.35rem' }}>
+                        Code Snapshot
+                      </div>
+                      <pre style={{
+                        margin: 0,
+                        padding: '0.75rem',
+                        borderRadius: '0.5rem',
+                        background: 'hsl(var(--background))',
+                        border: '1px solid hsl(var(--border))',
+                        maxHeight: '200px',
+                        overflow: 'auto',
+                        color: 'hsl(var(--foreground))',
+                        fontSize: '0.75rem',
+                        whiteSpace: 'pre-wrap',
+                        overflowWrap: 'anywhere',
+                        wordBreak: 'break-word',
+                        boxSizing: 'border-box'
+                      }}>
+                        {replayEvent.payload.code}
+                      </pre>
+                    </div>
+                  )}
+
+                  {replayEvent.payload?.output && (
+                    <div>
+                      <div style={{ fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))', marginBottom: '0.35rem' }}>
+                        Execution Output
+                      </div>
+                      <pre style={{
+                        margin: 0,
+                        padding: '0.75rem',
+                        borderRadius: '0.5rem',
+                        background: 'hsl(var(--background))',
+                        border: '1px solid hsl(var(--border))',
+                        maxHeight: '140px',
+                        overflow: 'auto',
+                        color: 'hsl(var(--foreground))',
+                        fontSize: '0.75rem',
+                        whiteSpace: 'pre-wrap',
+                        overflowWrap: 'anywhere',
+                        wordBreak: 'break-word',
+                        boxSizing: 'border-box'
+                      }}>
+                        {replayEvent.payload.output}
+                      </pre>
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
