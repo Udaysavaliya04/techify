@@ -1010,6 +1010,8 @@ export default function Join() {
 
   const isMobileView = window.innerWidth <= 768;
   const isSmallMobileView = window.innerWidth <= 480;
+  const headerShellWidth = "calc(100% - 2rem)";
+  const headerShellRadius = "22px";
   const mainTopPadding = isMobileView ? "8rem" : "4rem";
 
   return (
@@ -1034,17 +1036,13 @@ export default function Join() {
           top: isMobileView ? "0.55rem" : "0.85rem",
           left: "49.8%",
           right: "auto",
-          width: isMobileView
-            ? isSmallMobileView
-              ? "calc(100% - 0.8rem)"
-              : "calc(100% - 1.2rem)"
-            : "calc(100% - 2rem)",
+          width: headerShellWidth,
           maxWidth: "1280px",
           transform: "translateX(-50%)",
           zIndex: 9999,
           backdropFilter: "blur(30px)",
           WebkitBackdropFilter: "blur(30px)",
-          borderRadius: "22px",
+          borderRadius: headerShellRadius,
           border: "1px solid rgba(255, 255, 255, 0.11)",
           background: "transparent",
           padding: isMobileView
@@ -1053,7 +1051,7 @@ export default function Join() {
               : "0.75rem 1rem"
             : "1rem 2rem",
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: isMobileView ? "center" : "space-between",
           alignItems: "center",
           boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
           flexWrap: isSmallMobileView ? "wrap" : "nowrap",
@@ -1213,7 +1211,7 @@ export default function Join() {
           backdropFilter: "blur(60px) saturate(180%)",
           WebkitBackdropFilter: "blur(60px) saturate(180%)",
           border: "1px solid rgba(255, 255, 255, 0.12)",
-          borderRadius: "16px",
+          borderRadius: "22px",
           padding: "1.25rem 1.5rem",
           boxShadow:
             "0 20px 40px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05)",
