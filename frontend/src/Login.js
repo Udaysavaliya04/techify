@@ -64,6 +64,11 @@ export default function Login() {
       // Store token and user data
       login(response.data.user, response.data.token);
 
+      if (response.data.user.role === 'candidate' && !response.data.user.profileCompleted) {
+        navigate('/profile-setup');
+        return;
+      }
+
       // Redirect to original destination or dashboard
       if (from) {
         navigate(from);

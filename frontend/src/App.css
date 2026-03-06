@@ -9,11 +9,11 @@
 }
 
 :root {
-  --background: 0 0% 3.9%;
+  --background: 0 0% 3.5%;
   --foreground: 0 0% 98%;
-  --card: 0 0% 3.9%;
+  --card: 0 0% 3.5%;
   --card-foreground: 0 0% 98%;
-  --popover: 0 0% 3.9%;
+  --popover: 0 0% 3.5%;
   --popover-foreground: 0 0% 98%;
   --primary: 0 0% 98%;
   --primary-foreground: 0 0% 9%;
@@ -23,7 +23,7 @@
   --muted-foreground: 0 0% 63.9%;
   --accent: 0 0% 14.9%;
   --accent-foreground: 0 0% 98%;
-  --destructive: 0 62.8% 30.6%;
+  --destructive: 0 62.8% 40.6%;
   --destructive-foreground: 0 0% 98%;
   --border: 0 0% 14.9%;
   --input: 0 0% 14.9%;

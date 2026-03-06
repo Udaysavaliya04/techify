@@ -17,6 +17,12 @@ export default function Join() {
   const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
+    if (isAuthenticated() && user?.role === 'candidate' && !user?.profileCompleted) {
+      navigate('/profile-setup');
+    }
+  }, [isAuthenticated, user?.role, user?.profileCompleted, navigate]);
+
+  useEffect(() => {
     setRoom(otpValues.join(''));
   }, [otpValues]);
 

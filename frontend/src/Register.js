@@ -83,8 +83,11 @@ export default function Register() {
       // Store token and user data
       login(response.data.user, response.data.token);
 
-      // Redirect to dashboard
-      navigate('/dashboard');
+      if (response.data.user.role === 'candidate' && !response.data.user.profileCompleted) {
+        navigate('/profile-setup');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error) {
       console.error('Registration error:', error);
       setErrors({

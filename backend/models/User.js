@@ -32,6 +32,23 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  profileCompleted: {
+    type: Boolean,
+    default: false
+  },
+  candidateProfile: {
+    fullName: { type: String, default: '' },
+    targetRole: { type: String, default: '' },
+    comfortableLanguages: { type: [String], default: [] },
+    experienceLevel: {
+      type: String,
+      enum: ['', 'fresher', '2_plus_years', '10_plus_years', '20_plus_years'],
+      default: ''
+    },
+    currentCompany: { type: String, default: '' },
+    location: { type: String, default: '' },
+    bio: { type: String, default: '' }
+  },
   interviewHistory: [{
     roomId: {
       type: String,

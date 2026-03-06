@@ -24,8 +24,12 @@ export default function Dashboard() {
       navigate('/login');
       return;
     }
+    if (user?.role === 'candidate' && !user?.profileCompleted) {
+      navigate('/profile-setup');
+      return;
+    }
     fetchDashboardData();
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, user?.role, user?.profileCompleted]);
 
   const fetchDashboardData = async () => {
     try {
@@ -56,6 +60,9 @@ export default function Dashboard() {
   };
 
   const handleLogout = async () => {
+    const confirmLogout = window.confirm('Are you sure you want to logout?');
+    if (!confirmLogout) return;
+
     try {
       // Call logout endpoint
       await axios.post(`${config.API_BASE_URL}/api/auth/logout`);
@@ -220,10 +227,18 @@ export default function Dashboard() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <Link
+            to="/settings/profile"
+            className="action-btn save-btn"
+            style={{ textDecoration: 'none', letterSpacing: '0.01em' }}
+          >
+            Profile
+          </Link>
           {dashboardData.user.role === 'interviewer' ? (
             <button
               onClick={handleStartInterview}
               className="action-btn run-btn"
+              style={{height:'40px'}}
             >
               Start Interview
             </button>
@@ -239,6 +254,7 @@ export default function Dashboard() {
           <button
             onClick={handleLogout}
             className="action-btn save-btn"
+            style={{background: 'hsl(var(--destructive))', border: '1px solid hsl(var(--destructive) / 0.2)', color: 'hsl(var(--destructive-foreground))', height:'40px'}}
           >
             Logout
           </button>

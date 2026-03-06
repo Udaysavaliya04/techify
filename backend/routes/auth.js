@@ -64,6 +64,34 @@ export const requireRoomAccess = (opts = {}) => {
   };
 };
 
+const buildUserPayload = (user) => ({
+  id: user._id,
+  username: user.username,
+  email: user.email,
+  role: user.role,
+  stats: user.stats,
+  preferences: user.preferences,
+  profilePicture: user.profilePicture,
+  profileCompleted: user.profileCompleted,
+  candidateProfile: user.candidateProfile,
+  lastActive: user.lastActive
+});
+
+const validateCandidateProfile = (candidateProfile = {}) => {
+  const requiredFields = ['fullName', 'targetRole', 'experienceLevel'];
+  for (const field of requiredFields) {
+    if (!candidateProfile[field] || !String(candidateProfile[field]).trim()) {
+      return `Field "${field}" is required`;
+    }
+  }
+
+  if (!Array.isArray(candidateProfile.comfortableLanguages) || candidateProfile.comfortableLanguages.length === 0) {
+    return 'At least one comfortable language is required';
+  }
+
+  return null;
+};
+
 // Register new user
 router.post('/register', async (req, res) => {
   try {
@@ -115,14 +143,7 @@ router.post('/register', async (req, res) => {
     res.status(201).json({
       message: 'User registered successfully',
       token,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        stats: user.stats,
-        preferences: user.preferences
-      }
+      user: buildUserPayload(user)
     });
   } catch (error) {
     console.error('Registration error:', error);
@@ -165,15 +186,7 @@ router.post('/login', async (req, res) => {
     res.json({
       message: 'Login successful',
       token,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        stats: user.stats,
-        preferences: user.preferences,
-        lastActive: user.lastActive
-      }
+      user: buildUserPayload(user)
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -187,14 +200,7 @@ router.get('/profile', verifyToken, async (req, res) => {
     const user = await User.findById(req.user._id).select('-password');
     res.json({
       user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        stats: user.stats,
-        preferences: user.preferences,
-        profilePicture: user.profilePicture,
-        lastActive: user.lastActive,
+        ...buildUserPayload(user),
         createdAt: user.createdAt
       }
     });
@@ -207,7 +213,7 @@ router.get('/profile', verifyToken, async (req, res) => {
 // Update user profile
 router.put('/profile', verifyToken, async (req, res) => {
   try {
-    const { preferences, profilePicture } = req.body;
+    const { preferences, profilePicture, candidateProfile, currentPassword, newPassword } = req.body;
     const user = await User.findById(req.user._id);
 
     if (preferences) {
@@ -215,21 +221,46 @@ router.put('/profile', verifyToken, async (req, res) => {
     }
     if (profilePicture !== undefined) user.profilePicture = profilePicture;
 
+    if (candidateProfile && req.user.role === 'candidate') {
+      const normalizedLanguages = Array.isArray(candidateProfile.comfortableLanguages)
+        ? candidateProfile.comfortableLanguages.map((l) => String(l).trim()).filter(Boolean)
+        : String(candidateProfile.comfortableLanguages || '')
+          .split(',')
+          .map((l) => l.trim())
+          .filter(Boolean);
+
+      user.candidateProfile = {
+        ...(user.candidateProfile?.toObject ? user.candidateProfile.toObject() : {}),
+        ...candidateProfile,
+        comfortableLanguages: normalizedLanguages
+      };
+
+      const validationError = validateCandidateProfile(user.candidateProfile);
+      if (!validationError) {
+        user.profileCompleted = true;
+      }
+    }
+
+    if (newPassword && String(newPassword).trim()) {
+      if (!currentPassword) {
+        return res.status(400).json({ error: 'Current password is required to set a new password' });
+      }
+      const validCurrentPassword = await user.comparePassword(currentPassword);
+      if (!validCurrentPassword) {
+        return res.status(400).json({ error: 'Current password is incorrect' });
+      }
+      if (String(newPassword).length < 6) {
+        return res.status(400).json({ error: 'New password must be at least 6 characters long' });
+      }
+      user.password = String(newPassword);
+    }
+
     user.lastActive = new Date();
     await user.save();
 
     res.json({
       message: 'Profile updated successfully',
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        stats: user.stats,
-        preferences: user.preferences,
-        profilePicture: user.profilePicture,
-        lastActive: user.lastActive
-      }
+      user: buildUserPayload(user)
     });
   } catch (error) {
     console.error('Profile update error:', error);
@@ -284,7 +315,9 @@ router.get('/dashboard', verifyToken, async (req, res) => {
         id: user._id,
         username: user.username,
         role: user.role,
-        profilePicture: user.profilePicture
+        profilePicture: user.profilePicture,
+        profileCompleted: user.profileCompleted,
+        candidateProfile: user.candidateProfile
       },
       stats: {
         ...user.stats.toObject(),
@@ -388,7 +421,9 @@ router.get('/verify', verifyToken, (req, res) => {
       id: req.user._id,
       username: req.user.username,
       email: req.user.email,
-      role: req.user.role
+      role: req.user.role,
+      profileCompleted: req.user.profileCompleted,
+      candidateProfile: req.user.candidateProfile
     }
   });
 });
@@ -403,6 +438,53 @@ router.post('/logout', verifyToken, async (req, res) => {
     res.json({ message: 'Logged out successfully' });
   } catch (error) {
     res.json({ message: 'Logged out successfully' }); // Still return success
+  }
+});
+
+// Candidate onboarding profile setup (mandatory fields)
+router.post('/profile/setup', verifyToken, async (req, res) => {
+  try {
+    if (req.user.role !== 'candidate') {
+      return res.status(403).json({ error: 'Profile setup is only required for candidates.' });
+    }
+
+    const { fullName, targetRole, comfortableLanguages, experienceLevel, currentCompany, location, bio } = req.body;
+    const user = await User.findById(req.user._id);
+
+    const normalizedLanguages = Array.isArray(comfortableLanguages)
+      ? comfortableLanguages.map((l) => String(l).trim()).filter(Boolean)
+      : String(comfortableLanguages || '')
+        .split(',')
+        .map((l) => l.trim())
+        .filter(Boolean);
+
+    const updatedProfile = {
+      fullName: String(fullName || '').trim(),
+      targetRole: String(targetRole || '').trim(),
+      comfortableLanguages: normalizedLanguages,
+      experienceLevel: String(experienceLevel || '').trim(),
+      currentCompany: String(currentCompany || '').trim(),
+      location: String(location || '').trim(),
+      bio: String(bio || '').trim()
+    };
+
+    const validationError = validateCandidateProfile(updatedProfile);
+    if (validationError) {
+      return res.status(400).json({ error: validationError });
+    }
+
+    user.candidateProfile = updatedProfile;
+    user.profileCompleted = true;
+    user.lastActive = new Date();
+    await user.save();
+
+    return res.json({
+      message: 'Profile setup completed successfully',
+      user: buildUserPayload(user)
+    });
+  } catch (error) {
+    console.error('Profile setup error:', error);
+    return res.status(500).json({ error: 'Failed to complete profile setup' });
   }
 });
 

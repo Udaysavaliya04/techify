@@ -49,8 +49,13 @@ export default function Room() {
           message: 'Please sign in to access the interview room'
         }
       });
+      return;
     }
-  }, [isAuthenticated, navigate, roomId]);
+
+    if (user?.role === 'candidate' && !user?.profileCompleted) {
+      navigate('/profile-setup');
+    }
+  }, [isAuthenticated, navigate, roomId, user?.role, user?.profileCompleted]);
 
   if (!isAuthenticated()) {
     return (

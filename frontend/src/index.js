@@ -7,6 +7,7 @@ import Join from './Join';
 import Login from './Login';
 import Register from './Register';
 import Dashboard from './Dashboard';
+import ProfileSettings from './ProfileSettings';
 import AuthWrapper from './components/AuthWrapper';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -19,6 +20,8 @@ root.render(
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile-setup" element={<ProfileSettings />} />
+        <Route path="/settings/profile" element={<ProfileSettings />} />
         <Route path="/room/:roomId" element={<Room />} />
         <Route path="/editor" element={<App />} />
       </Routes>

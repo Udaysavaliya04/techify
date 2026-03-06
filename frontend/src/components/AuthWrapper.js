@@ -34,8 +34,13 @@ export default function AuthWrapper({ children }) {
         });
 
         if (response.data.valid) {
+          const mergedUser = {
+            ...JSON.parse(storedUser),
+            ...response.data.user
+          };
           setToken(storedToken);
-          setUser(JSON.parse(storedUser));
+          setUser(mergedUser);
+          localStorage.setItem('user', JSON.stringify(mergedUser));
 
           // Set default authorization header for all requests
           axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
