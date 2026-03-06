@@ -729,7 +729,7 @@ export default function Join() {
               transition={{ duration: 0.34, ease: 'easeOut', delay: 0.1 }}
               style={{ fontSize: '0.66rem', color: 'rgba(214, 226, 248, 0.93)', marginBottom: '0.65rem' }}
             >
-              Evaluation Rubric - Weighted Score 8.4/10
+              Evaluation Rubric - Weighted Score 8.2/10
             </motion.div>
             {[
               ['Problem Solving', '8.5'],
@@ -888,7 +888,7 @@ export default function Join() {
           >
             <div style={{ fontSize: "0.64rem", color: "rgba(218, 231, 252, 0.92)" }}>Create New Room</div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.45rem" }}>
-              <span style={{ color: "rgba(242, 248, 255, 0.98)", fontSize: "0.86rem", fontWeight: 650, letterSpacing: "0.08em" }}>AB12CD</span>
+              <span style={{ color: "rgba(242, 248, 255, 0.98)", fontSize: "0.86rem", fontWeight: 650, letterSpacing: "0.08em" }}>P2N1ZA</span>
               <span style={{ fontSize: "0.6rem", color: "rgba(132, 223, 178, 0.95)" }}>Ready</span>
             </div>
             <div style={{ display: "grid", gap: "0.3rem" }}>
@@ -2486,9 +2486,9 @@ export default function Join() {
                     gap: "0.45rem",
                     padding: "0.36rem 0.74rem",
                     borderRadius: "999px",
-                    border: "1px solid rgb(70, 0, 0)",
-                    background: "rgba(214, 214, 214, 0.1)",
-                    color: "rgba(0, 0, 0, 1)",
+                    border: "1px solid rgba(255, 255, 255, 0.78)",
+                    background: "rgba(255, 255, 255, 0.1)",
+                    color: "rgb(0, 0, 0)",
                     fontSize: "0.75rem",
                     fontWeight: 600,
                     letterSpacing: "0.03em",
