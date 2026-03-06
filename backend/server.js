@@ -21,21 +21,38 @@ import authRouter from './routes/auth.js';
 const app = express();
 app.use(express.json());
 
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || process.env.FRONTEND_URL || 'http://localhost:3000')
-  .split(',')
+const configuredOrigins = [
+  ...(process.env.ALLOWED_ORIGINS || '').split(','),
+  process.env.FRONTEND_URL || ''
+]
   .map((item) => item.trim())
   .filter(Boolean);
 
-app.use(cors({
+const defaultOrigins = [
+  'http://localhost:3000',
+  'https://techify-platform.onrender.com'
+];
+
+const allowedOrigins = [...new Set([...configuredOrigins, ...defaultOrigins])];
+
+const corsOptions = {
   origin(origin, callback) {
+    // Allow non-browser/CLI tools without Origin header.
     if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    return callback(new Error('CORS blocked origin'));
+    console.warn(`CORS blocked origin: ${origin}`);
+    return callback(new Error(`CORS blocked origin: ${origin}`));
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-}));
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+console.log('CORS allowed origins:', allowedOrigins);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Techify Backend API is running!', timestamp: new Date().toISOString() });
