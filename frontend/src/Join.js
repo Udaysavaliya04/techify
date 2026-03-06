@@ -1442,7 +1442,7 @@ export default function Join() {
               style={{
                 display: "inline-block",
                 textDecoration: "none",
-                minWidth: "400px",
+                minWidth: "100%",
               }}
             >
               Go to Dashboard
