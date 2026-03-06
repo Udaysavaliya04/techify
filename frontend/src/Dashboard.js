@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './components/AuthWrapper';
 import axios from 'axios';
 import config from './config';
+import InterviewReport from './components/InterviewReport';
 import './App.css';
 
 export default function Dashboard() {
@@ -13,6 +14,8 @@ export default function Dashboard() {
   const [generatedRoomId, setGeneratedRoomId] = useState('');
   const [generatedInviteLink, setGeneratedInviteLink] = useState('');
   const [copyFeedback, setCopyFeedback] = useState('');
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [selectedReportRoomId, setSelectedReportRoomId] = useState('');
   const navigate = useNavigate();
   const { user, logout, isAuthenticated } = useAuth();
 
@@ -113,6 +116,16 @@ export default function Dashboard() {
       console.error('Enter room error:', error);
       setError('Failed to start interview. Please try again.');
     }
+  };
+
+  const openInterviewReport = (roomId) => {
+    setSelectedReportRoomId(roomId);
+    setShowReportModal(true);
+  };
+
+  const closeInterviewReport = () => {
+    setShowReportModal(false);
+    setSelectedReportRoomId('');
   };
 
   const formatDate = (dateString) => {
@@ -341,9 +354,20 @@ export default function Dashboard() {
           <div className="questions-list" style={{ maxHeight: 'none', border: 'none' }}>
             {recentInterviews.map((interview, index) => (
               <div key={interview._id || index} className="question-item" style={{ cursor: 'default' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: dashboardData.user.role === 'interviewer' ? '1fr auto' : '1fr',
+                  gap: '1rem',
+                  alignItems: 'start'
+                }}>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      flexWrap: 'wrap',
+                      marginBottom: '0.6rem'
+                    }}>
                       <span className={`role-badge ${interview.role}`}>
                         {interview.role}
                       </span>
@@ -359,34 +383,33 @@ export default function Dashboard() {
                           {interview.difficulty}
                         </span>
                       )}
-                      {dashboardData.user.role === 'interviewer' && (
-                        <span style={{
-                          fontSize: '0.75rem',
-                          color: interview.status === 'completed' ? 'hsl(142 76% 36%)' :
-                            interview.status === 'ongoing' ? 'hsl(32 95% 44%)' :
-                              'hsl(var(--muted-foreground))',
-                          background: interview.status === 'completed' ? 'hsl(142 76% 36% / 0.1)' :
-                            interview.status === 'ongoing' ? 'hsl(32 95% 44% / 0.1)' :
-                              'hsl(var(--muted))',
-                          padding: '0.125rem 0.375rem',
-                          borderRadius: 'calc(var(--radius) - 4px)',
-                          textTransform: 'capitalize',
-                          border: `1px solid ${interview.status === 'completed' ? 'hsl(142 76% 36% / 0.2)' :
-                            interview.status === 'ongoing' ? 'hsl(32 95% 44% / 0.2)' :
-                              'hsl(var(--border))'}`
-                        }}>
-                          {interview.status === 'completed' ? 'Completed' :
-                            interview.status === 'ongoing' ? 'Ongoing' :
-                              interview.status}
-                        </span>
-                      )}
+                      <span style={{
+                        fontSize: '0.72rem',
+                        color: interview.status === 'completed' ? 'hsl(142 76% 36%)' :
+                          interview.status === 'ongoing' ? 'hsl(32 95% 44%)' :
+                            'hsl(var(--muted-foreground))',
+                        background: interview.status === 'completed' ? 'hsl(142 76% 36% / 0.1)' :
+                          interview.status === 'ongoing' ? 'hsl(32 95% 44% / 0.1)' :
+                            'hsl(var(--muted))',
+                        padding: '0.125rem 0.375rem',
+                        borderRadius: 'calc(var(--radius) - 4px)',
+                        textTransform: 'capitalize',
+                        border: `1px solid ${interview.status === 'completed' ? 'hsl(142 76% 36% / 0.2)' :
+                          interview.status === 'ongoing' ? 'hsl(32 95% 44% / 0.2)' :
+                            'hsl(var(--border))'}`
+                      }}>
+                        {interview.status === 'completed' ? 'Completed' :
+                          interview.status === 'ongoing' ? 'Ongoing' :
+                            interview.status}
+                      </span>
                     </div>
-                    
+
                     <div style={{
-                      marginTop: '2rem',
                       display: 'flex',
-                      gap: '1rem',
-                      fontSize: '0.75rem',
+                      gap: '0.85rem',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      fontSize: '0.78rem',
                       color: 'hsl(var(--muted-foreground))'
                     }}>
                       <span>Room: {interview.roomId}</span>
@@ -396,22 +419,43 @@ export default function Dashboard() {
                       )}
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right', fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))' }}>
-                    <div>{formatDate(interview.createdAt)}</div>
-                    {interview.completedAt && interview.completedAt !== interview.createdAt && (
-                      <div style={{ marginTop: '0.25rem', opacity: 0.7 }}>
-                        Completed: {formatDate(interview.completedAt)}
-                      </div>
+
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-end',
+                    gap: '0.5rem'
+                  }}>
+                    <div style={{ textAlign: 'right', fontSize: '0.72rem', color: 'hsl(var(--muted-foreground))' }}>
+                      <div>{formatDate(interview.createdAt)}</div>
+                      {interview.completedAt && interview.completedAt !== interview.createdAt && (
+                        <div style={{ marginTop: '0.2rem', opacity: 0.75 }}>
+                          Completed: {formatDate(interview.completedAt)}
+                        </div>
+                      )}
+                    </div>
+                    {dashboardData.user.role === 'interviewer' && (
+                      <button
+                        onClick={() => openInterviewReport(interview.roomId)}
+                        className="action-btn save-btn"
+                        style={{
+                          fontSize: '0.74rem',
+                          padding: '0.35rem 0.7rem',
+                          minHeight: 'unset'
+                        }}
+                      >
+                        View Report
+                      </button>
                     )}
                   </div>
                 </div>
                 {interview.feedback && (
                   <div style={{
-                    marginTop: '0.75rem',
+                    marginTop: '0.7rem',
                     padding: '0.75rem',
                     background: 'hsl(var(--muted))',
                     borderRadius: 'calc(var(--radius) - 2px)',
-                    fontSize: '0.875rem',
+                    fontSize: '0.82rem',
                     color: 'hsl(var(--foreground))',
                     border: '1px solid hsl(var(--muted))',
                     borderColor: 'rgba(54, 54, 54, 1)',
@@ -610,6 +654,18 @@ export default function Dashboard() {
             >
               Cancel
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Interview Report Modal */}
+      {showReportModal && selectedReportRoomId && (
+        <div className="modal-overlay" onClick={closeInterviewReport}>
+          <div onClick={(e) => e.stopPropagation()}>
+            <InterviewReport
+              roomId={selectedReportRoomId}
+              onClose={closeInterviewReport}
+            />
           </div>
         </div>
       )}
