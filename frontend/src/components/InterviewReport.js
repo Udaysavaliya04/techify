@@ -125,7 +125,7 @@ const InterviewReport = ({ roomId, onClose }) => {
             borderRadius: '50%',
             animation: 'spin 1s linear infinite'
           }}></div>
-          Generating interview report...
+          Loading interview report...
         </div>
       </div>
     );
