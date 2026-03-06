@@ -57,6 +57,8 @@ const RubricScoringSchema = new mongoose.Schema({
   weightedScore: { type: Number, min: 0, max: 10 },
   recommendation: String,
   overallNotes: String,
+  strengths: String,
+  areasForImprovement: String,
   evaluatedAt: { type: Date, default: Date.now }
 }, { _id: false });
 

@@ -441,11 +441,6 @@ export default function Room() {
       try {
         await axios.put(`${config.API_BASE_URL}/api/room/${roomId}/end`);
 
-        // Complete interview tracking
-        await completeInterviewTracking({
-          feedback: interviewNotes
-        });
-
         setEnded(true);
         socketRef.current?.emit('endInterview');
 
@@ -456,6 +451,8 @@ export default function Room() {
         }
       } catch (err) {
         console.error('Failed to end interview:', err);
+        const message = err.response?.data?.error || 'Failed to end interview.';
+        window.alert(message);
       }
     }
   };

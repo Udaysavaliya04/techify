@@ -459,6 +459,58 @@ const InterviewReport = ({ roomId, onClose }) => {
               </div>
             )}
 
+            {reportData.rubricScores?.strengths && (
+              <div style={{
+                background: 'hsl(var(--muted) / 0.3)',
+                padding: '1rem',
+                borderRadius: 'calc(var(--radius) - 2px)',
+                marginBottom: '1rem'
+              }}>
+                <div style={{
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: 'hsl(var(--foreground))',
+                  marginBottom: '0.5rem'
+                }}>
+                  Strengths
+                </div>
+                <div style={{
+                  fontSize: '0.875rem',
+                  color: 'hsl(var(--foreground))',
+                  lineHeight: '1.5',
+                  whiteSpace: 'pre-wrap'
+                }}>
+                  {reportData.rubricScores.strengths}
+                </div>
+              </div>
+            )}
+
+            {reportData.rubricScores?.areasForImprovement && (
+              <div style={{
+                background: 'hsl(var(--muted) / 0.3)',
+                padding: '1rem',
+                borderRadius: 'calc(var(--radius) - 2px)',
+                marginBottom: reportData.interviewNotes ? '1rem' : '0'
+              }}>
+                <div style={{
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: 'hsl(var(--foreground))',
+                  marginBottom: '0.5rem'
+                }}>
+                  Areas for Improvement
+                </div>
+                <div style={{
+                  fontSize: '0.875rem',
+                  color: 'hsl(var(--foreground))',
+                  lineHeight: '1.5',
+                  whiteSpace: 'pre-wrap'
+                }}>
+                  {reportData.rubricScores.areasForImprovement}
+                </div>
+              </div>
+            )}
+
             {reportData.interviewNotes && (
               <div>
                 <div style={{

@@ -5,6 +5,8 @@ import config from '../config';
 const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
   const [scores, setScores] = useState({});
   const [overallNotes, setOverallNotes] = useState('');
+  const [strengths, setStrengths] = useState('');
+  const [areasForImprovement, setAreasForImprovement] = useState('');
   const [recommendation, setRecommendation] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -86,10 +88,13 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
   const fetchExistingScores = async () => {
     try {
       const res = await axios.get(`${config.API_BASE_URL}/api/room/${roomId}/rubric`);
-      if (res.data) {
-        setScores(res.data.scores || {});
-        setOverallNotes(res.data.overallNotes || '');
-        setRecommendation(res.data.recommendation || '');
+      const rubric = res.data?.rubricScores || null;
+      if (rubric) {
+        setScores(rubric.scores || {});
+        setOverallNotes(rubric.overallNotes || '');
+        setRecommendation(rubric.recommendation || '');
+        setStrengths(rubric.strengths || '');
+        setAreasForImprovement(rubric.areasForImprovement || '');
       }
     } catch (err) {
       console.error('Failed to fetch rubric scores:', err);
@@ -154,6 +159,8 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
       await axios.put(`${config.API_BASE_URL}/api/room/${roomId}/rubric`, {
         scores,
         overallNotes,
+        strengths,
+        areasForImprovement,
         recommendation: recommendation || autoRecommendation,
         weightedScore,
         timestamp: new Date().toISOString()
@@ -469,6 +476,66 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
               e.target.style.boxShadow = 'none';
             }}
           />
+
+          <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
+            <label style={{
+              display: 'block',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              color: 'hsl(var(--foreground))',
+              marginBottom: '0.5rem'
+            }}>
+              Strengths
+            </label>
+            <textarea
+              value={strengths}
+              onChange={(e) => setStrengths(e.target.value)}
+              placeholder="Candidate strengths observed..."
+              style={{
+                width: '100%',
+                minHeight: '80px',
+                padding: '0.75rem',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: 'calc(var(--radius) - 2px)',
+                background: 'hsl(var(--background))',
+                color: 'hsl(var(--foreground))',
+                fontSize: '0.875rem',
+                fontFamily: 'inherit',
+                resize: 'vertical',
+                outline: 'none'
+              }}
+            />
+          </div>
+
+          <div>
+            <label style={{
+              display: 'block',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              color: 'hsl(var(--foreground))',
+              marginBottom: '0.5rem'
+            }}>
+              Areas for Improvement
+            </label>
+            <textarea
+              value={areasForImprovement}
+              onChange={(e) => setAreasForImprovement(e.target.value)}
+              placeholder="Specific areas candidate should improve..."
+              style={{
+                width: '100%',
+                minHeight: '80px',
+                padding: '0.75rem',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: 'calc(var(--radius) - 2px)',
+                background: 'hsl(var(--background))',
+                color: 'hsl(var(--foreground))',
+                fontSize: '0.875rem',
+                fontFamily: 'inherit',
+                resize: 'vertical',
+                outline: 'none'
+              }}
+            />
+          </div>
         </div>
       </div>
 

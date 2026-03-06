@@ -441,7 +441,8 @@ export default function Dashboard() {
                         style={{
                           fontSize: '0.74rem',
                           padding: '0.35rem 0.7rem',
-                          minHeight: 'unset'
+                          minHeight: 'unset',
+                          border: '1px solid rgb(80, 80, 80)',
                         }}
                       >
                         View Report
@@ -449,7 +450,7 @@ export default function Dashboard() {
                     )}
                   </div>
                 </div>
-                {interview.feedback && (
+                {dashboardData.user.role === 'interviewer' && interview.feedback && (
                   <div style={{
                     marginTop: '0.7rem',
                     padding: '0.75rem',
@@ -458,9 +459,13 @@ export default function Dashboard() {
                     fontSize: '0.82rem',
                     color: 'hsl(var(--foreground))',
                     border: '1px solid hsl(var(--muted))',
-                    borderColor: 'rgba(54, 54, 54, 1)',
+                    borderColor: 'rgb(80, 80, 80)',
+                    whiteSpace: 'pre-wrap',
+                    lineHeight: '1.5'
                   }}>
-                    <strong>Feedback:</strong> {interview.feedback}
+                    <strong>Overall Assessment</strong>
+                    {'\n'}
+                    {interview.feedback}
                   </div>
                 )}
               </div>

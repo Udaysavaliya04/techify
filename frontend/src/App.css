@@ -1229,7 +1229,7 @@ html,
 }
 
 .question-item:hover {
-  background: hsl(var(--accent));
+  background: rgba(49, 49, 49, 0.3);
 }
 
 .question-item:focus-visible {

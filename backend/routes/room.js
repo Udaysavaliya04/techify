@@ -1,6 +1,7 @@
 import express from 'express';
 import PDFDocument from 'pdfkit';
 import RoomModel from '../models/Room.js';
+import User from '../models/User.js';
 import { verifyToken, requireRole, requireRoomAccess } from './auth.js';
 import InterviewEvent from '../models/InterviewEvent.js';
 import { logInterviewEvent } from '../utils/interviewEvents.js';
@@ -53,13 +54,60 @@ router.put('/:roomId/end', verifyToken, requireRole('interviewer', 'admin'), req
   const { roomId } = req.params;
 
   try {
+    const room = await RoomModel.findOne({ roomId });
+    if (!room) {
+      return res.status(404).json({ error: 'Room not found' });
+    }
+
+    const candidateJoined = await User.exists({
+      'interviewHistory.roomId': roomId,
+      'interviewHistory.role': 'candidate'
+    });
+
+    if (candidateJoined) {
+      const hasEvaluation = !!(
+        room.rubricScores &&
+        room.rubricScores.recommendation &&
+        room.rubricScores.overallNotes &&
+        String(room.rubricScores.overallNotes).trim()
+      );
+      if (!hasEvaluation) {
+        return res.status(400).json({
+          error: 'Please complete and save interview evaluation before ending this interview.'
+        });
+      }
+    }
+
+    const now = new Date();
     await RoomModel.updateOne(
       { roomId },
       {
-        endTime: new Date(),
+        endTime: now,
         isActive: false
       }
     );
+
+    const durationMinutes = room.startTime ? Math.max(1, Math.round((now.getTime() - room.startTime.getTime()) / 60000)) : 0;
+    const weightedScore = room.rubricScores?.weightedScore;
+    const normalizedScore = typeof weightedScore === 'number' ? Math.round(weightedScore * 10) : undefined;
+    const assessmentSummary = room.rubricScores ? [
+      room.rubricScores.recommendation ? `Recommendation: ${room.rubricScores.recommendation}` : null,
+      room.rubricScores.overallNotes ? `Overall Assessment: ${room.rubricScores.overallNotes}` : null,
+      room.rubricScores.strengths ? `Strengths: ${room.rubricScores.strengths}` : null,
+      room.rubricScores.areasForImprovement ? `Areas for Improvement: ${room.rubricScores.areasForImprovement}` : null
+    ].filter(Boolean).join('\n\n') : '';
+
+    const impactedUsers = await User.find({ 'interviewHistory.roomId': roomId });
+    for (const user of impactedUsers) {
+      user.completeInterview(roomId, {
+        score: normalizedScore,
+        feedback: assessmentSummary || undefined,
+        duration: durationMinutes,
+        codeSubmitted: room.code || ''
+      });
+      await user.save();
+    }
+
     await logInterviewEvent({
       roomId,
       type: 'interview_ended',
@@ -104,7 +152,7 @@ router.get('/:roomId/timer', verifyToken, requireRoomAccess(), async (req, res) 
 // Save rubric scores
 router.put('/:roomId/rubric', verifyToken, requireRole('interviewer', 'admin'), requireRoomAccess({ interviewerOnly: true }), async (req, res) => {
   const { roomId } = req.params;
-  const { scores, weightedScore, recommendation, overallNotes } = req.body;
+  const { scores, weightedScore, recommendation, overallNotes, strengths, areasForImprovement } = req.body;
 
   try {
     await RoomModel.updateOne(
@@ -115,6 +163,8 @@ router.put('/:roomId/rubric', verifyToken, requireRole('interviewer', 'admin'), 
           weightedScore,
           recommendation,
           overallNotes,
+          strengths,
+          areasForImprovement,
           evaluatedAt: new Date()
         }
       }
@@ -127,7 +177,13 @@ router.put('/:roomId/rubric', verifyToken, requireRole('interviewer', 'admin'), 
         username: req.user.username,
         role: req.user.role
       },
-      payload: { weightedScore, recommendation: recommendation || '' }
+      payload: {
+        weightedScore,
+        recommendation: recommendation || '',
+        overallNotes: overallNotes || '',
+        strengths: strengths || '',
+        areasForImprovement: areasForImprovement || ''
+      }
     });
     res.json({ message: 'Rubric scores saved successfully' });
   } catch (err) {
@@ -273,6 +329,18 @@ router.get('/:roomId/report/export', verifyToken, requireRole('interviewer', 'ad
           doc.text(room.rubricScores.overallNotes);
           doc.moveDown();
         }
+
+        if (room.rubricScores.strengths) {
+          doc.text('Strengths:', { underline: true });
+          doc.text(room.rubricScores.strengths);
+          doc.moveDown();
+        }
+
+        if (room.rubricScores.areasForImprovement) {
+          doc.text('Areas for Improvement:', { underline: true });
+          doc.text(room.rubricScores.areasForImprovement);
+          doc.moveDown();
+        }
       }
 
       // Interview Notes
@@ -329,6 +397,8 @@ ${Object.entries(room.rubricScores.scores || {}).map(([criteria, data]) =>
       ).join('\n')}
 
 ${room.rubricScores.overallNotes ? 'OVERALL NOTES:\n' + room.rubricScores.overallNotes : ''}
+${room.rubricScores.strengths ? '\n\nSTRENGTHS:\n' + room.rubricScores.strengths : ''}
+${room.rubricScores.areasForImprovement ? '\n\nAREAS FOR IMPROVEMENT:\n' + room.rubricScores.areasForImprovement : ''}
 ` : 'No evaluation scores available.'}
 
 INTERVIEW NOTES
