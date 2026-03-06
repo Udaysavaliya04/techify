@@ -9,10 +9,12 @@ import Register from './Register';
 import Dashboard from './Dashboard';
 import ProfileSettings from './ProfileSettings';
 import AuthWrapper from './components/AuthWrapper';
+import RouteScrollReset from './components/RouteScrollReset';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
+    <RouteScrollReset />
     <AuthWrapper>
       <Routes>
         <Route path="/" element={<Join />} />

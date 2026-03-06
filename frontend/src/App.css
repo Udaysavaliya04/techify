@@ -23,7 +23,7 @@
   --muted-foreground: 0 0% 63.9%;
   --accent: 0 0% 14.9%;
   --accent-foreground: 0 0% 98%;
-  --destructive: 0 62.8% 40.6%;
+  --destructive: 0 62.8% 50.6%;
   --destructive-foreground: 0 0% 98%;
   --border: 0 0% 14.9%;
   --input: 0 0% 14.9%;
@@ -426,6 +426,47 @@ html,
 
 .action-btn:active {
   transform: scale(0.98);
+}
+
+.premium-arrow-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  overflow: hidden;
+}
+
+.premium-arrow-btn__label {
+  letter-spacing: -0.01em;
+}
+
+.premium-arrow-btn__icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.12);
+  transition: background 0.28s ease, border-color 0.28s ease, transform 0.28s ease;
+}
+
+.premium-arrow-btn__icon {
+  width: 0.78rem;
+  height: 0.78rem;
+  transform: translateX(-1px);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-arrow-btn:hover .premium-arrow-btn__icon-wrap {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: translateX(1px);
+}
+
+.premium-arrow-btn:hover .premium-arrow-btn__icon {
+  transform: translateX(2px);
 }
 
 .run-btn {
