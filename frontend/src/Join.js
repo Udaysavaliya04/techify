@@ -246,6 +246,45 @@ export default function Join() {
     },
   ];
 
+  const howItWorksSteps = [
+    {
+      id: 'create-room',
+      step: '01',
+      title: 'Create Interview Room',
+      description:
+        'Start from your dashboard, generate a room, and pick the interview track in seconds.',
+      points: ['Generate secure room ID', 'Choose DSA/System/Role track', 'Load starter question set'],
+      accent: 'rgba(122, 211, 255, 0.9)',
+    },
+    {
+      id: 'share-invite',
+      step: '02',
+      title: 'Share Signed Invite',
+      description:
+        'Invite candidate with signed token links so only intended participants can join.',
+      points: ['Token-based access', 'Time-limited invite links', 'One-click copy and share'],
+      accent: 'rgba(142, 172, 255, 0.9)',
+    },
+    {
+      id: 'conduct-interview',
+      step: '03',
+      title: 'Run Live Interview',
+      description:
+        'Collaborate in real-time with editor sync, video, AI support, and guided evaluation.',
+      points: ['Realtime coding + output sync', 'Integrated video controls', 'AI-assisted probing questions'],
+      accent: 'rgba(119, 212, 191, 0.9)',
+    },
+    {
+      id: 'decide-share',
+      step: '04',
+      title: 'Score, Decide, Export',
+      description:
+        'Finalize rubric scores and generate decision-ready reports for your hiring panel.',
+      points: ['Weighted rubric scoring', 'Timeline + notes replay', 'Exportable final report'],
+      accent: 'rgba(255, 189, 124, 0.9)',
+    },
+  ];
+
   const getBentoDesktopSpan = (index) =>
     index % 4 === 0 || index % 4 === 3 ? 'span 4' : 'span 2';
 
@@ -819,6 +858,150 @@ export default function Join() {
                   </motion.div>
                 ))}
               </motion.div>
+            </div>
+          </motion.div>
+        );
+    }
+  };
+
+  const renderHowItWorksMiniView = (stepId) => {
+    const previewStyle = {
+      borderRadius: "14px",
+      border: "1px solid rgba(255, 255, 255, 0.16)",
+      background: "rgba(7, 13, 24, 0.62)",
+      padding: "0.72rem",
+      overflow: "hidden",
+      minHeight: "138px",
+      display: "grid",
+      gap: "0.5rem",
+    };
+
+    switch (stepId) {
+      case "create-room":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.55 }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            style={previewStyle}
+          >
+            <div style={{ fontSize: "0.64rem", color: "rgba(218, 231, 252, 0.92)" }}>Create New Room</div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.45rem" }}>
+              <span style={{ color: "rgba(242, 248, 255, 0.98)", fontSize: "0.86rem", fontWeight: 650, letterSpacing: "0.08em" }}>AB12CD</span>
+              <span style={{ fontSize: "0.6rem", color: "rgba(132, 223, 178, 0.95)" }}>Ready</span>
+            </div>
+            <div style={{ display: "grid", gap: "0.3rem" }}>
+              {["DSA Round", "System Design", "Frontend Deep Dive"].map((track, idx) => (
+                <motion.div
+                  key={track}
+                  initial={{ opacity: 0, x: -8 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, amount: 0.6 }}
+                  transition={{ duration: 0.3, delay: 0.06 + idx * 0.06 }}
+                  style={{
+                    fontSize: "0.62rem",
+                    color: "rgba(216, 228, 248, 0.9)",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    borderRadius: "8px",
+                    padding: "0.24rem 0.36rem",
+                    background: "rgba(255, 255, 255, 0.04)",
+                  }}
+                >
+                  {track}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        );
+
+      case "share-invite":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.55 }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            style={previewStyle}
+          >
+            <div style={{ fontSize: "0.64rem", color: "rgba(218, 231, 252, 0.92)" }}>Invite Link</div>
+            <div style={{ borderRadius: "8px", border: "1px solid rgba(255,255,255,0.14)", padding: "0.34rem 0.4rem", fontSize: "0.58rem", color: "rgba(170, 194, 235, 0.88)", background: "rgba(255,255,255,0.04)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              techify.ai/join?room=AB12CD&invite=...
+            </div>
+            <div style={{ display: "grid", gap: "0.26rem" }}>
+              {["Copied to clipboard", "Signed token active", "TTL: 30 min"].map((label, idx) => (
+                <motion.div
+                  key={label}
+                  initial={{ opacity: 0, x: -8 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, amount: 0.6 }}
+                  transition={{ duration: 0.3, delay: 0.08 + idx * 0.06 }}
+                  style={{ fontSize: "0.61rem", color: "rgba(214, 227, 248, 0.9)" }}
+                >
+                  • {label}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        );
+
+      case "conduct-interview":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.55 }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            style={previewStyle}
+          >
+            <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "0.4rem" }}>
+              <div style={{ borderRadius: "8px", border: "1px solid rgba(255,255,255,0.14)", padding: "0.36rem", background: "rgba(255,255,255,0.04)" }}>
+                {[88, 72, 96, 66].map((w, idx) => (
+                  <motion.div
+                    key={`code-${w}-${idx}`}
+                    initial={{ opacity: 0, scaleX: 0.9 }}
+                    whileInView={{ opacity: 1, scaleX: 1 }}
+                    viewport={{ once: true, amount: 0.65 }}
+                    transition={{ duration: 0.24, delay: 0.05 + idx * 0.06 }}
+                    style={{ width: `${w}%`, height: "5px", borderRadius: "999px", marginBottom: "0.24rem", background: idx % 2 ? "rgba(188, 205, 233, 0.45)" : "rgba(136, 204, 255, 0.88)" }}
+                  />
+                ))}
+              </div>
+              <div style={{ borderRadius: "8px", border: "1px solid rgba(255,255,255,0.14)", padding: "0.36rem", background: "rgba(255,255,255,0.04)", fontSize: "0.6rem", color: "rgba(222, 235, 255, 0.92)" }}>
+                AI: Ask for edge-case handling.
+              </div>
+            </div>
+            <div style={{ fontSize: "0.62rem", color: "rgba(214, 227, 248, 0.9)" }}>Realtime sync • Video on • Notes active</div>
+          </motion.div>
+        );
+
+      case "decide-share":
+      default:
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.55 }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            style={previewStyle}
+          >
+            <div style={{ fontSize: "0.64rem", color: "rgba(218, 231, 252, 0.92)" }}>Final Decision</div>
+            <div style={{ display: "grid", gap: "0.3rem" }}>
+              {[["Problem Solving", 84], ["Code Quality", 79], ["Communication", 91]].map(([label, score], idx) => (
+                <div key={label}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.58rem", color: "rgba(209, 225, 250, 0.9)", marginBottom: "0.14rem" }}>
+                    <span>{label}</span>
+                    <span>{score}%</span>
+                  </div>
+                  <motion.div
+                    initial={{ width: "18%" }}
+                    whileInView={{ width: `${score}%` }}
+                    viewport={{ once: true, amount: 0.65 }}
+                    transition={{ duration: 0.42, delay: 0.08 + idx * 0.08 }}
+                    style={{ height: "5px", borderRadius: "999px", background: "linear-gradient(90deg, rgba(255, 205, 116, 0.95), rgba(255, 153, 82, 0.9))" }}
+                  />
+                </div>
+              ))}
             </div>
           </motion.div>
         );
@@ -1737,6 +1920,178 @@ export default function Join() {
             </motion.section>
 
             <motion.section
+              initial={{ opacity: 0, y: 38, filter: "blur(8px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true, amount: 0.15 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                width: "100%",
+                maxWidth: "1160px",
+                margin: window.innerWidth <= 768 ? "2.8rem auto 0" : "4.2rem auto 0",
+                textAlign: "left",
+                paddingTop: window.innerWidth <= 480 ? "1.5rem" : "2.5rem",
+              }}
+            >
+              <motion.h3
+                initial={{ opacity: 0, y: 22 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.62, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  margin: "0 0 0.5rem 0",
+                  textAlign: "center",
+                  fontSize:
+                    window.innerWidth <= 480
+                      ? "clamp(1.45rem, 8vw, 2rem)"
+                      : window.innerWidth <= 768
+                        ? "clamp(1.9rem, 7vw, 2.7rem)"
+                        : "clamp(2.2rem, 4.2vw, 3.2rem)",
+                  fontWeight: 700,
+                  lineHeight: 1.08,
+                  letterSpacing: "-0.05em",
+                  color: "rgba(246, 250, 255, 0.99)",
+                }}
+              >
+                How It Works?
+              </motion.h3>
+
+              <motion.p
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.55, delay: 0.06, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  margin: "0 auto 4rem auto",
+                  maxWidth: "760px",
+                  textAlign: "center",
+                  fontSize: window.innerWidth <= 768 ? "0.88rem" : "0.96rem",
+                  lineHeight: 1.62,
+                  color: "rgba(214, 227, 248, 0.9)",
+                  letterSpacing: "-0.01em",
+                }}
+              >
+                A clean 4-step interview flow from room creation to final decision, with full visibility at every stage.
+              </motion.p>
+
+              <div style={{ display: "grid", gap: window.innerWidth <= 768 ? "0.95rem" : "1.15rem" }}>
+                {howItWorksSteps.map((step, stepIndex) => {
+                  const reverseLayout = stepIndex % 2 !== 0;
+                  return (
+                    <motion.article
+                      key={step.id}
+                      initial={{ opacity: 0, y: 24, filter: "blur(7px)" }}
+                      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                      whileHover={{ y: -4 }}
+                      viewport={{ once: true, amount: 0.25 }}
+                      transition={{ duration: 0.62, delay: 0.08 + stepIndex * 0.07, ease: [0.16, 1, 0.3, 1] }}
+                      style={{
+                        borderRadius: "24px",
+                        border: "1px solid rgba(255, 255, 255, 0.2)",
+                        background: "linear-gradient(150deg, rgba(255,255,255,0.11), rgba(255,255,255,0.03))",
+                        backdropFilter: "blur(25px) saturate(145%)",
+                        WebkitBackdropFilter: "blur(25px) saturate(145%)",
+                        boxShadow: "0 30px 80px -58px rgba(0, 0, 0, 0.92), inset 0 1px 0 rgba(255, 255, 255, 0.22)",
+                        padding:
+                          window.innerWidth <= 480
+                            ? "0.95rem"
+                            : window.innerWidth <= 768
+                              ? "1.1rem"
+                              : "1.2rem",
+                        position: "relative",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: window.innerWidth <= 900 ? "1fr" : reverseLayout ? "1fr 1.2fr" : "1.2fr 1fr",
+                          gap: "0.95rem",
+                          alignItems: "center",
+                        }}
+                      >
+                        <div style={{ order: window.innerWidth <= 900 ? 0 : reverseLayout ? 2 : 1 }}>
+                          <div
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "0.45rem",
+                              padding: "0.3rem 0.66rem",
+                              borderRadius: "999px",
+                              border: "1px solid rgba(255, 255, 255, 0.24)",
+                              background: "rgba(8, 14, 26, 0.5)",
+                              fontSize: "0.66rem",
+                              color: "rgba(238, 245, 255, 0.95)",
+                              fontWeight: 650,
+                              letterSpacing: "0.06em",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: step.accent }} />
+                            Step {step.step}
+                          </div>
+                          <h4
+                            style={{
+                              margin: "0.7rem 0 0.4rem 0",
+                              fontSize: window.innerWidth <= 768 ? "1.02rem" : "1.18rem",
+                              color: "rgba(246, 250, 255, 0.98)",
+                              fontWeight: 650,
+                              letterSpacing: "-0.02em",
+                              lineHeight: 1.25,
+                            }}
+                          >
+                            {step.title}
+                          </h4>
+                          <p
+                            style={{
+                              margin: "0 0 0.58rem 0",
+                              fontSize: window.innerWidth <= 768 ? "0.82rem" : "0.9rem",
+                              lineHeight: 1.58,
+                              color: "rgba(214, 227, 248, 0.9)",
+                              letterSpacing: "-0.01em",
+                            }}
+                          >
+                            {step.description}
+                          </p>
+                          <div style={{ display: "grid", gap: "0.24rem" }}>
+                            {step.points.map((point) => (
+                              <div key={`${step.id}-${point}`} style={{ display: "flex", alignItems: "center", gap: "0.36rem" }}>
+                                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: step.accent }} />
+                                <span style={{ fontSize: "0.74rem", color: "rgba(224, 236, 255, 0.9)" }}>{point}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div style={{ order: window.innerWidth <= 900 ? 0 : reverseLayout ? 1 : 2 }}>
+                          {renderHowItWorksMiniView(step.id)}
+                        </div>
+                      </div>
+
+                      {stepIndex < howItWorksSteps.length - 1 && (
+                        <motion.div
+                          aria-hidden="true"
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
+                          viewport={{ once: true, amount: 0.5 }}
+                          transition={{ duration: 0.35, delay: 0.2 }}
+                          style={{
+                            position: "absolute",
+                            left: "50%",
+                            bottom: "-0.95rem",
+                            transform: "translateX(-50%)",
+                            width: "2px",
+                            height: window.innerWidth <= 768 ? "18px" : "22px",
+                            background: "linear-gradient(180deg, rgba(138, 210, 255, 0.5), rgba(138, 210, 255, 0))",
+                            pointerEvents: "none",
+                          }}
+                        />
+                      )}
+                    </motion.article>
+                  );
+                })}
+              </div>
+            </motion.section>
+            <motion.section
               initial={{ opacity: 0, y: 34, filter: "blur(8px)" }}
               whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               viewport={{ once: true, amount: 0.2 }}
@@ -1755,7 +2110,7 @@ export default function Join() {
                 viewport={{ once: true, amount: 0.4 }}
                 transition={{ duration: 0.62, delay: 0.04, ease: [0.16, 1, 0.3, 1] }}
                 style={{
-                  margin: "0 0 1.35rem 0",
+                  margin: "0 0 2rem 0",
                   paddingBottom: window.innerWidth <= 768 ? "0.35rem" : "2.5rem",
                   fontSize:
                     window.innerWidth <= 480
@@ -1907,6 +2262,7 @@ export default function Join() {
                 })}
               </div>
             </motion.section>
+
           </div>
         )}
       </main>
@@ -2308,3 +2664,4 @@ export default function Join() {
     </div>
   );
 } 
+
