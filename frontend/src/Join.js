@@ -226,6 +226,28 @@ export default function Join() {
       glow: 'rgba(114, 142, 244, 0.5)',
       gradient: 'transparent',
     },
+    {
+      id: 'integrity',
+      badge: 'Interview Integrity',
+      title: 'Candidate Integrity Layer With Live Signals',
+      description:
+        'Tab focus, media health, and network behavior are tracked in-session so interviewers get real-time visibility.',
+      points: ['Soft-warning policy', 'Realtime interviewer monitor', 'Session-level event evidence'],
+      glow: 'rgba(94, 196, 255, 0.52)',
+      gradient: 'transparent',
+      meta: 'Cheat Detection',
+    },
+    {
+      id: 'history',
+      badge: 'Code History',
+      title: 'Code Replay Timeline For Every Session',
+      description:
+        'Track editor snapshots, execution checkpoints, and progression history so decisions are grounded in actual coding flow.',
+      points: ['Snapshot timeline', 'Execution-linked history', 'Replay for review'],
+      glow: 'rgba(156, 170, 255, 0.48)',
+      gradient: 'transparent',
+      meta: 'Audit Trail',
+    },
   ];
 
   const faqItems = [
@@ -354,6 +376,21 @@ export default function Join() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 11l3 3L22 4" />
             <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+          </svg>
+        );
+      case 'integrity':
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
+        );
+      case 'history':
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 12a9 9 0 1 0 3-6.7" />
+            <path d="M3 4v5h5" />
+            <path d="M12 7v5l3 2" />
           </svg>
         );
       case 'reports':
@@ -800,6 +837,140 @@ export default function Join() {
             </motion.div>
           </motion.div>
         );
+
+      case 'integrity': {
+        const integrityEvents = [
+          ['Tab focus changed', 'Medium'],
+          ['Network unstable detected', 'Low'],
+          ['Camera stream recovered', 'Info'],
+          ['Window refocused', 'Low'],
+          ['Audio device re-enabled', 'Info'],
+        ];
+
+        return (
+          <motion.div
+            style={{ ...panelStyle, padding: '0.78rem', display: 'grid', gap: '0.55rem' }}
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.55, ease: 'easeOut' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.4rem' }}>
+              <span style={{ fontSize: '0.66rem', color: 'rgba(226, 236, 255, 0.93)' }}>Live Integrity Stream</span>
+              <span style={{ fontSize: '0.62rem', color: 'rgba(170, 239, 192, 0.95)' }}>Candidate active</span>
+            </div>
+            <div
+              style={{
+                height: '92px',
+                overflow: 'hidden',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '10px',
+                background: 'rgba(255, 255, 255, 0.04)',
+                padding: '0.4rem 0.45rem',
+              }}
+            >
+              <motion.div
+                animate={{ y: [0, -52, 0] }}
+                transition={{ duration: 7.5, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ display: 'grid', gap: '0.34rem' }}
+              >
+                {integrityEvents.map(([eventLabel, level]) => (
+                  <div key={`${feature.id}-${eventLabel}`} style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '0.64rem', color: 'rgba(228, 236, 252, 0.9)' }}>{eventLabel}</span>
+                    <span
+                      style={{
+                        fontSize: '0.61rem',
+                        color: level === 'Medium' ? 'rgba(255, 191, 132, 0.95)' : 'rgba(162, 225, 255, 0.95)',
+                      }}
+                    >
+                      {level}
+                    </span>
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.6 }}
+              transition={{ duration: 0.4, ease: 'easeOut', delay: 0.16 }}
+              style={{
+                borderRadius: '8px',
+                border: '1px solid rgba(113, 168, 255, 0.25)',
+                background: 'rgba(255, 255, 255, 0.03)',
+                color: 'rgba(234, 241, 255, 0.95)',
+                fontSize: '0.66rem',
+                padding: '0.35rem 0.5rem',
+                textAlign: 'center',
+              }}
+            >
+              Monitor score updates in realtime for interviewers
+            </motion.div>
+          </motion.div>
+        );
+      }
+
+      case 'history': {
+        const historyRows = [
+          '01:41 PM  Added hashmap approach',
+          '01:47 PM  Optimized loop condition',
+          '01:55 PM  Edge case fix for empty list',
+          '02:04 PM  Final complexity notes',
+          '02:11 PM  Submitted evaluated version',
+        ];
+
+        return (
+          <motion.div
+            style={{ ...panelStyle, padding: '0.78rem', display: 'grid', gap: '0.52rem' }}
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.55, ease: 'easeOut' }}
+          >
+            <div style={{ fontSize: '0.66rem', color: 'rgba(226, 236, 255, 0.93)' }}>Replay Timeline Preview</div>
+            <div
+              style={{
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '10px',
+                background: 'rgba(255, 255, 255, 0.04)',
+                padding: '0.42rem 0.48rem',
+                overflow: 'hidden',
+                height: '94px',
+              }}
+            >
+              <motion.div
+                animate={{ y: [0, -48, 0] }}
+                transition={{ duration: 8.2, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ display: 'grid', gap: '0.34rem' }}
+              >
+                {historyRows.map((historyLine) => (
+                  <div key={`${feature.id}-${historyLine}`} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(162, 226, 255, 0.9)' }} />
+                    <span style={{ fontSize: '0.63rem', color: 'rgba(220, 231, 252, 0.9)' }}>{historyLine}</span>
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+              {['Snapshots', 'Runs', 'Report'].map((tag) => (
+                <span
+                  key={`${feature.id}-${tag}`}
+                  style={{
+                    padding: '0.18rem 0.42rem',
+                    borderRadius: '999px',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    color: 'rgba(226, 236, 255, 0.92)',
+                    fontSize: '0.62rem',
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        );
+      }
 
       case 'reports':
       default:
@@ -1992,6 +2163,7 @@ export default function Join() {
                     );
                   })}
                 </div>
+
               </div>
             </motion.section>
 
