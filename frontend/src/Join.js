@@ -223,7 +223,7 @@ export default function Join() {
         'Post-interview reports combine notes, rubric data, execution history, and timeline replay with export options.',
       meta: 'Audit-ready Output',
       points: ['Session timeline replay', 'Execution breakdown', 'Export and print support'],
-      glow: 'rgba(114, 142, 244, 0.5)',
+      glow: 'rgba(114, 159, 244, 0.5)',
       gradient: 'transparent',
     },
     {
@@ -935,13 +935,12 @@ export default function Join() {
                 background: 'rgba(255, 255, 255, 0.04)',
                 padding: '0.42rem 0.48rem',
                 overflow: 'hidden',
-                height: '94px',
+                height: '145px',
               }}
             >
               <motion.div
-                animate={{ y: [0, -48, 0] }}
-                transition={{ duration: 8.2, repeat: Infinity, ease: 'easeInOut' }}
-                style={{ display: 'grid', gap: '0.34rem' }}
+                
+                style={{ display: 'grid', gap: '0.54rem' }}
               >
                 {historyRows.map((historyLine) => (
                   <div key={`${feature.id}-${historyLine}`} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
