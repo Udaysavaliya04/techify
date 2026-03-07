@@ -1,20 +1,31 @@
-import React, { useEffect, useRef, useState } from 'react';
+﻿import React, { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 import config from '../config';
 
-const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
+const WebRTCVideoCall = ({
+  roomId,
+  role,
+  onClose,
+  isOpen,
+  onMediaStateChange,
+  onAttemptClose
+}) => {
   const [isConnected, setIsConnected] = useState(false);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [isCallStarted, setIsCallStarted] = useState(false);
   const [remoteUserConnected, setRemoteUserConnected] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState(null);
 
+  const modalRef = useRef(null);
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnectionRef = useRef(null);
   const socketRef = useRef(null);
   const localStreamRef = useRef(null);
+  const dragOffsetRef = useRef({ x: 0, y: 0 });
 
   // WebRTC configuration
   const turnUrl = process.env.REACT_APP_TURN_URL;
@@ -100,6 +111,12 @@ const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
     };
   }, [isOpen, roomId, role]);
 
+  const emitMediaState = (state) => {
+    if (typeof onMediaStateChange === 'function') {
+      onMediaStateChange(state);
+    }
+  };
+
   const initializeMedia = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -112,9 +129,22 @@ const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
         localVideoRef.current.srcObject = stream;
       }
       setIsConnected(true);
+      emitMediaState({
+        cameraAvailable: true,
+        microphoneAvailable: true,
+        videoEnabled: true,
+        audioEnabled: true
+      });
     } catch (error) {
       console.error('Error accessing media devices:', error);
       setIsVideoEnabled(false);
+      emitMediaState({
+        cameraAvailable: false,
+        microphoneAvailable: true,
+        videoEnabled: false,
+        audioEnabled: true,
+        reason: 'camera_unavailable'
+      });
       try {
         // Fall back to audio-only if camera is busy.
         const audioStream = await navigator.mediaDevices.getUserMedia({
@@ -126,11 +156,24 @@ const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
           localVideoRef.current.srcObject = audioStream;
         }
         setIsConnected(true);
+        emitMediaState({
+          cameraAvailable: false,
+          microphoneAvailable: true,
+          videoEnabled: false,
+          audioEnabled: true
+        });
       } catch (audioError) {
         console.error('Audio fallback also failed:', audioError);
         setIsAudioEnabled(false);
         // Keep signaling active so user can still receive remote media.
         setIsConnected(true);
+        emitMediaState({
+          cameraAvailable: false,
+          microphoneAvailable: false,
+          videoEnabled: false,
+          audioEnabled: false,
+          reason: 'camera_and_microphone_unavailable'
+        });
       }
     }
   };
@@ -231,6 +274,13 @@ const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
       if (videoTrack) {
         videoTrack.enabled = !videoTrack.enabled;
         setIsVideoEnabled(videoTrack.enabled);
+        emitMediaState({
+          cameraAvailable: true,
+          microphoneAvailable: true,
+          videoEnabled: videoTrack.enabled,
+          audioEnabled: isAudioEnabled,
+          reason: videoTrack.enabled ? 'camera_enabled' : 'camera_disabled'
+        });
       }
     }
   };
@@ -241,6 +291,13 @@ const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
       if (audioTrack) {
         audioTrack.enabled = !audioTrack.enabled;
         setIsAudioEnabled(audioTrack.enabled);
+        emitMediaState({
+          cameraAvailable: true,
+          microphoneAvailable: true,
+          videoEnabled: isVideoEnabled,
+          audioEnabled: audioTrack.enabled,
+          reason: audioTrack.enabled ? 'microphone_enabled' : 'microphone_disabled'
+        });
       }
     }
   };
@@ -249,7 +306,89 @@ const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
     setIsMaximized(!isMaximized);
   };
 
-  const endCall = () => {
+  const clampPosition = (left, top) => {
+    const modalRect = modalRef.current?.getBoundingClientRect();
+    const width = modalRect?.width || 350;
+    const height = modalRect?.height || 280;
+    const margin = 8;
+    const maxLeft = Math.max(margin, window.innerWidth - width - margin);
+    const maxTop = Math.max(margin, window.innerHeight - height - margin);
+
+    return {
+      left: Math.min(Math.max(margin, left), maxLeft),
+      top: Math.min(Math.max(margin, top), maxTop)
+    };
+  };
+
+  const handleHeaderPointerDown = (event) => {
+    if (isMaximized) return;
+    if (event.button !== 0) return;
+    if (event.target?.closest('button')) return;
+    if (!modalRef.current) return;
+
+    const rect = modalRef.current.getBoundingClientRect();
+    const nextPosition = position || { left: rect.left, top: rect.top };
+    if (!position) {
+      setPosition(nextPosition);
+    }
+
+    dragOffsetRef.current = {
+      x: event.clientX - nextPosition.left,
+      y: event.clientY - nextPosition.top
+    };
+
+    setIsDragging(true);
+    event.preventDefault();
+  };
+
+  useEffect(() => {
+    if (!isDragging) return undefined;
+
+    const handlePointerMove = (event) => {
+      const rawLeft = event.clientX - dragOffsetRef.current.x;
+      const rawTop = event.clientY - dragOffsetRef.current.y;
+      setPosition(clampPosition(rawLeft, rawTop));
+    };
+
+    const handlePointerUp = () => {
+      setIsDragging(false);
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+    document.body.style.userSelect = 'none';
+
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      document.body.style.userSelect = '';
+    };
+  }, [isDragging]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (!position || isMaximized) return;
+      setPosition((prev) => (prev ? clampPosition(prev.left, prev.top) : prev));
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [position, isMaximized]);
+
+  const handleCandidateCloseAttempt = () => {
+    cleanup();
+    if (typeof onAttemptClose === 'function') {
+      onAttemptClose();
+      return;
+    }
+    onClose();
+  };
+
+  const handleModalClose = () => {
+    if (role === 'candidate') {
+      handleCandidateCloseAttempt();
+      return;
+    }
     cleanup();
     onClose();
   };
@@ -272,9 +411,13 @@ const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
   if (!isOpen) return null;
 
   return (
-    <div className={`video-call-modal ${isMaximized ? 'maximized' : ''}`}>
+    <div
+      ref={modalRef}
+      className={`video-call-modal ${isMaximized ? 'maximized' : ''} ${isDragging ? 'dragging' : ''}`}
+      style={!isMaximized && position ? { top: `${position.top}px`, left: `${position.left}px`, right: 'auto', bottom: 'auto' } : undefined}
+    >
       <div className="video-call-container">
-        <div className="video-call-header">
+        <div className="video-call-header" onPointerDown={handleHeaderPointerDown}>
           <h3>Video Call - Room {roomId}</h3>
           <div className="header-controls">
             <button
@@ -292,9 +435,11 @@ const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
                 </svg>
               )}
             </button>
-            <button onClick={endCall} className="video-close-btn">
-              ×
-            </button>
+            {role !== 'candidate' && (
+              <button onClick={handleModalClose} className="video-close-btn">
+                ×
+              </button>
+            )}
           </div>
         </div>
 
@@ -375,16 +520,18 @@ const WebRTCVideoCall = ({ roomId, role, onClose, isOpen }) => {
             )}
           </button>
 
-          <button
-            onClick={endCall}
-            className="control-btn end-call"
-            title="End call"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-              <line x1="18" y1="6" x2="6" y2="18" />
-            </svg>
-          </button>
+          {role !== 'candidate' && (
+            <button
+              onClick={handleModalClose}
+              className="control-btn end-call"
+              title="End call"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                <line x1="18" y1="6" x2="6" y2="18" />
+              </svg>
+            </button>
+          )}
         </div>
 
         {/* Call status */}

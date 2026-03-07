@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+﻿import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './components/AuthWrapper';
 import MonacoEditor from '@monaco-editor/react';
@@ -31,6 +31,23 @@ const themes = [
   { label: 'Light', value: 'light' },
   { label: 'High Contrast', value: 'hc-black' }
 ];
+
+const INTEGRITY_WEIGHTS = {
+  tab_switch: 3,
+  network_offline: 3,
+  network_online: 0,
+  video_modal_closed: 3,
+  camera_unavailable: 3,
+  microphone_unavailable: 3,
+  camera_disabled: 2,
+  microphone_disabled: 2
+};
+
+const getIntegritySeverity = (score = 0) => {
+  if (score >= 12) return 'HIGH';
+  if (score >= 6) return 'MEDIUM';
+  return 'LOW';
+};
 
 export default function Room() {
   const { roomId } = useParams();
@@ -110,9 +127,68 @@ export default function Room() {
   const [activeInterviewerTab, setActiveInterviewerTab] = useState('notes');
   const [joinedUsers, setJoinedUsers] = useState([]);
   const [userAlerts, setUserAlerts] = useState([]);
-  const [alertIdCounter, setAlertIdCounter] = useState(0);
   const [notesSaving, setNotesSaving] = useState(false);
   const [notesLastSaved, setNotesLastSaved] = useState(null);
+  const [showFullscreenOverlay, setShowFullscreenOverlay] = useState(false);
+  const [interviewerIntegrityEvents, setInterviewerIntegrityEvents] = useState([]);
+  const [interviewerIntegrityScore, setInterviewerIntegrityScore] = useState(0);
+  const integrityCooldownRef = useRef({});
+  const candidateIntegrityScoreRef = useRef(0);
+  const alertIdRef = useRef(0);
+  const videoReopenTimeoutRef = useRef(null);
+  const skipVideoReopenRef = useRef(false);
+  const hasAutoOpenedVideoRef = useRef(false);
+  const fullscreenPromptCooldownRef = useRef(0);
+
+  const pushToastAlert = (message, type = 'warning', timeoutMs = 5000) => {
+    const alertId = alertIdRef.current++;
+    const newAlert = {
+      id: alertId,
+      message,
+      type,
+      timestamp: new Date()
+    };
+
+    setUserAlerts((prev) => [...prev, newAlert]);
+    setTimeout(() => {
+      setUserAlerts((prev) => prev.filter((alert) => alert.id !== alertId));
+    }, timeoutMs);
+  };
+
+  const shouldEmitIntegritySignal = (key, cooldownMs = 1500) => {
+    const now = Date.now();
+    const lastEventAt = integrityCooldownRef.current[key] || 0;
+    if (now - lastEventAt < cooldownMs) return false;
+    integrityCooldownRef.current[key] = now;
+    return true;
+  };
+
+  const emitIntegritySignal = ({ rule, message, metadata = {}, cooldownKey = rule, cooldownMs = 1500 }) => {
+    if (role !== 'candidate' || ended || !shouldEmitIntegritySignal(cooldownKey, cooldownMs)) {
+      return;
+    }
+
+    const weight = INTEGRITY_WEIGHTS[rule] ?? 1;
+    const nextScore = candidateIntegrityScoreRef.current + Math.max(0, weight);
+    const severity = getIntegritySeverity(nextScore);
+    const eventPayload = {
+      roomId,
+      rule,
+      message,
+      weight,
+      severity,
+      totalScore: nextScore,
+      metadata,
+      occurredAt: new Date().toISOString()
+    };
+
+    candidateIntegrityScoreRef.current = nextScore;
+    pushToastAlert(message, 'warning');
+
+    if (socketRef.current?.connected) {
+      socketRef.current.emit('integrity-event', eventPayload);
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -170,6 +246,12 @@ export default function Room() {
 
     socketRef.current.on('interviewEnded', () => {
       setEnded(true);
+      skipVideoReopenRef.current = true;
+      if (videoReopenTimeoutRef.current) {
+        clearTimeout(videoReopenTimeoutRef.current);
+        videoReopenTimeoutRef.current = null;
+      }
+      setShowVideoCall(false);
 
       if (isAuthenticated()) {
         setTimeout(() => {
@@ -207,7 +289,24 @@ export default function Room() {
       }
     });
 
+    socketRef.current.on('candidate-integrity-event', (integrityEvent) => {
+      if (role !== 'interviewer') return;
+      const numericTotal = Number(integrityEvent?.totalScore) || 0;
+      setInterviewerIntegrityScore(numericTotal);
+      setInterviewerIntegrityEvents((prev) => [
+        {
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+          ...integrityEvent
+        },
+        ...prev
+      ].slice(0, 40));
+    });
+
     return () => {
+      if (videoReopenTimeoutRef.current) {
+        clearTimeout(videoReopenTimeoutRef.current);
+        videoReopenTimeoutRef.current = null;
+      }
       socketRef.current?.disconnect();
     };
   }, [roomId, role, inviteToken, navigate, user?.username]);
@@ -250,6 +349,134 @@ export default function Room() {
     };
   }, [ended]);
 
+  useEffect(() => {
+    candidateIntegrityScoreRef.current = 0;
+    integrityCooldownRef.current = {};
+    setShowFullscreenOverlay(false);
+    setInterviewerIntegrityEvents([]);
+    setInterviewerIntegrityScore(0);
+    skipVideoReopenRef.current = false;
+    hasAutoOpenedVideoRef.current = false;
+    setShowVideoCall(false);
+    if (videoReopenTimeoutRef.current) {
+      clearTimeout(videoReopenTimeoutRef.current);
+      videoReopenTimeoutRef.current = null;
+    }
+  }, [roomId, role]);
+
+  useEffect(() => {
+    if (!['candidate', 'interviewer'].includes(role) || ended || !isConnected || hasAutoOpenedVideoRef.current) {
+      return;
+    }
+    hasAutoOpenedVideoRef.current = true;
+    const openTimer = setTimeout(() => setShowVideoCall(true), 700);
+    return () => clearTimeout(openTimer);
+  }, [role, ended, isConnected]);
+
+  useEffect(() => {
+    if (role !== 'candidate' || ended) {
+      setShowFullscreenOverlay(false);
+      return;
+    }
+
+    const notInFullscreen = !document.fullscreenElement;
+    setShowFullscreenOverlay(notInFullscreen);
+  }, [role, ended, roomId]);
+
+  useEffect(() => {
+    if (role !== 'candidate' || ended) return undefined;
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        emitIntegritySignal({
+          rule: 'tab_switch',
+          message: 'Tab/window switch detected during interview. Please stay on the interview screen.',
+          metadata: { source: 'visibilitychange' },
+          cooldownKey: 'tab_switch_visibility',
+          cooldownMs: 2500
+        });
+      }
+    };
+
+    const handleWindowBlur = () => {
+      emitIntegritySignal({
+        rule: 'tab_switch',
+        message: 'Window focus changed. Stay focused on the interview tab.',
+        metadata: { source: 'window_blur' },
+        cooldownKey: 'tab_switch_blur',
+        cooldownMs: 2500
+      });
+    };
+
+    const handleFullscreenChange = () => {
+      const isFullscreen = !!document.fullscreenElement;
+      setShowFullscreenOverlay(!isFullscreen);
+      if (!isFullscreen) {
+        const now = Date.now();
+        if (now - fullscreenPromptCooldownRef.current > 1800) {
+          fullscreenPromptCooldownRef.current = now;
+          pushToastAlert('Full-screen is required. Please enable full-screen to continue.', 'warning', 4500);
+        }
+      }
+    };
+
+    const handleOffline = () => {
+      emitIntegritySignal({
+        rule: 'network_offline',
+        message: 'Network connection lost. Reconnect quickly to continue the interview safely.',
+        metadata: { online: false },
+        cooldownMs: 1000
+      });
+    };
+
+    const handleOnline = () => {
+      emitIntegritySignal({
+        rule: 'network_online',
+        message: 'Network connection restored.',
+        metadata: { online: true },
+        cooldownMs: 1000
+      });
+    };
+
+    const handleClipboardBlock = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+
+    const handleClipboardKeydown = (event) => {
+      const key = String(event.key || '').toLowerCase();
+      const hasModifier = event.ctrlKey || event.metaKey;
+      const isClipboardShortcut = hasModifier && ['c', 'x', 'v'].includes(key);
+      const isShiftInsert = event.shiftKey && key === 'insert';
+      if (!isClipboardShortcut && !isShiftInsert) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleWindowBlur);
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    window.addEventListener('offline', handleOffline);
+    window.addEventListener('online', handleOnline);
+    document.addEventListener('copy', handleClipboardBlock, true);
+    document.addEventListener('cut', handleClipboardBlock, true);
+    document.addEventListener('paste', handleClipboardBlock, true);
+    document.addEventListener('keydown', handleClipboardKeydown, true);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleWindowBlur);
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('online', handleOnline);
+      document.removeEventListener('copy', handleClipboardBlock, true);
+      document.removeEventListener('cut', handleClipboardBlock, true);
+      document.removeEventListener('paste', handleClipboardBlock, true);
+      document.removeEventListener('keydown', handleClipboardKeydown, true);
+    };
+  }, [role, ended, roomId]);
+
   // Interview tracking functions
   const startInterviewTracking = async () => {
     if (isAuthenticated() && !interviewStarted) {
@@ -290,39 +517,11 @@ export default function Room() {
 
   // User join alert functions
   const showUserJoinAlert = (username, userRole) => {
-    const alertId = alertIdCounter;
-    setAlertIdCounter(prev => prev + 1);
-
-    const newAlert = {
-      id: alertId,
-      message: `${userRole === 'candidate' ? 'Candidate' : 'Interviewer'}: ${username} joined the room`,
-      type: 'success',
-      timestamp: new Date()
-    };
-
-    setUserAlerts(prev => [...prev, newAlert]);
-
-    setTimeout(() => {
-      setUserAlerts(prev => prev.filter(alert => alert.id !== alertId));
-    }, 5000);
+    pushToastAlert(`${userRole === 'candidate' ? 'Candidate' : 'Interviewer'}: ${username} joined the room`, 'success', 5000);
   };
 
   const showUserLeaveAlert = (username, userRole) => {
-    const alertId = alertIdCounter;
-    setAlertIdCounter(prev => prev + 1);
-
-    const newAlert = {
-      id: alertId,
-      message: `${userRole === 'candidate' ? 'Candidate' : 'Interviewer'}: ${username} left the interview`,
-      type: 'warning',
-      timestamp: new Date()
-    };
-
-    setUserAlerts(prev => [...prev, newAlert]);
-
-    setTimeout(() => {
-      setUserAlerts(prev => prev.filter(alert => alert.id !== alertId));
-    }, 5000);
+    pushToastAlert(`${userRole === 'candidate' ? 'Candidate' : 'Interviewer'}: ${username} left the interview`, 'warning', 5000);
   };
 
   const dismissAlert = (alertId) => {
@@ -462,46 +661,123 @@ export default function Room() {
     }
   };
 
-  const handleLeaveInterview = async () => {
-    if (window.confirm('Are you sure you want to leave the interview? This action cannot be undone and your progress may be lost.')) {
-      try {
-        await completeInterviewTracking({
-          status: 'left_early',
-          feedback: 'Candidate left the interview early'
-        });
+  const handleLeaveInterview = async ({ skipConfirm = false } = {}) => {
+    const shouldLeave = skipConfirm || window.confirm('Are you sure you want to leave the interview? This action cannot be undone and your progress may be lost.');
+    if (!shouldLeave) return;
 
-        const alertId = alertIdCounter;
-        setAlertIdCounter(prev => prev + 1);
-
-        const leaveAlert = {
-          id: alertId,
-          message: 'You have left the interview. Redirecting to dashboard...',
-          type: 'warning',
-          timestamp: new Date()
-        };
-
-        setUserAlerts(prev => [...prev, leaveAlert]);
-
-        socketRef.current?.emit('userLeave', {
-          roomId,
-          username: user?.username || 'Anonymous',
-          role
-        });
-
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 2000);
-
-      } catch (err) {
-        console.error('Failed to leave interview:', err);
-        navigate('/dashboard');
+    try {
+      skipVideoReopenRef.current = true;
+      if (videoReopenTimeoutRef.current) {
+        clearTimeout(videoReopenTimeoutRef.current);
+        videoReopenTimeoutRef.current = null;
       }
+      setShowVideoCall(false);
+
+      await completeInterviewTracking({
+        status: 'left_early',
+        feedback: 'Candidate left the interview early'
+      });
+
+      pushToastAlert('You have left the interview. Redirecting to dashboard...', 'warning', 2500);
+
+      socketRef.current?.emit('userLeave', {
+        roomId,
+        username: user?.username || 'Anonymous',
+        role
+      });
+
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
+
+    } catch (err) {
+      console.error('Failed to leave interview:', err);
+      navigate('/dashboard');
     }
   };
 
   const handleNotesChange = (notes) => {
     setInterviewNotes(notes);
     saveInterviewNotes(notes);
+  };
+
+  const handleEnableFullscreen = async () => {
+    try {
+      if (document.fullscreenElement) {
+        setShowFullscreenOverlay(false);
+        return;
+      }
+      await document.documentElement.requestFullscreen();
+      setShowFullscreenOverlay(false);
+    } catch (error) {
+      pushToastAlert('Fullscreen permission was blocked. Please allow fullscreen and retry.', 'warning', 4200);
+      setShowFullscreenOverlay(true);
+    }
+  };
+
+  const handleVideoModalCloseAttempt = () => {
+    setShowVideoCall(false);
+
+    if (role !== 'candidate' || ended || skipVideoReopenRef.current) {
+      return;
+    }
+
+    emitIntegritySignal({
+      rule: 'video_modal_closed',
+      message: 'Video call window was closed. It will reopen automatically during interview.',
+      metadata: { source: 'candidate_video_modal_close' },
+      cooldownMs: 1200
+    });
+
+    if (videoReopenTimeoutRef.current) {
+      clearTimeout(videoReopenTimeoutRef.current);
+    }
+
+    videoReopenTimeoutRef.current = setTimeout(() => {
+      if (!ended && !skipVideoReopenRef.current) {
+        setShowVideoCall(true);
+      }
+    }, 1800);
+  };
+
+  const handleVideoMediaStateChange = (state = {}) => {
+    if (role !== 'candidate' || ended) return;
+
+    if (state.reason === 'camera_unavailable' || state.cameraAvailable === false) {
+      emitIntegritySignal({
+        rule: 'camera_unavailable',
+        message: 'Camera access is unavailable. Interviewer has been notified.',
+        metadata: state,
+        cooldownMs: 2000
+      });
+    }
+
+    if (state.reason === 'camera_and_microphone_unavailable' || state.microphoneAvailable === false) {
+      emitIntegritySignal({
+        rule: 'microphone_unavailable',
+        message: 'Microphone access is unavailable. Interviewer has been notified.',
+        metadata: state,
+        cooldownMs: 2000
+      });
+    }
+
+    if (state.reason === 'camera_disabled') {
+      emitIntegritySignal({
+        rule: 'camera_disabled',
+        message: 'Camera was turned off. Please keep camera enabled during interview.',
+        metadata: state,
+        cooldownMs: 1500
+      });
+    }
+
+    if (state.reason === 'microphone_disabled') {
+      emitIntegritySignal({
+        rule: 'microphone_disabled',
+        message: 'Microphone was muted. Please keep microphone available during interview.',
+        metadata: state,
+        cooldownMs: 1500
+      });
+    }
   };
 
   const formatTime = (milliseconds) => {
@@ -514,6 +790,12 @@ export default function Room() {
       return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const getSeverityColor = (severity) => {
+    if (severity === 'HIGH') return 'hsl(0 84% 60%)';
+    if (severity === 'MEDIUM') return 'hsl(32 95% 44%)';
+    return 'hsl(142 76% 36%)';
   };
 
   const handleSelectQuestion = (formattedQuestion) => {
@@ -803,6 +1085,42 @@ export default function Room() {
         </div>
       </div>
 
+      {role === 'candidate' && !ended && showFullscreenOverlay && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 1200,
+          background: 'rgba(2, 6, 23, 0.82)',
+          backdropFilter: 'blur(3px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '1rem'
+        }}>
+          <div style={{
+            width: '100%',
+            maxWidth: '30rem',
+            border: '1px solid hsl(var(--border))',
+            borderRadius: 'var(--radius)',
+            background: 'hsl(var(--background))',
+            padding: '1.35rem',
+            boxShadow: '0 20px 38px rgb(0 0 0 / 0.45)'
+          }}>
+            <h3 style={{ margin: '0 0 0.5rem 0' }}>Fullscreen Required</h3>
+            <p style={{ margin: '0 0 1rem 0', fontSize: '0.86rem', color: 'hsl(var(--muted-foreground))' }}>
+              Please enable fullscreen to continue the interview. If you press Esc, this prompt will appear again.
+            </p>
+            <button
+              className="action-btn run-btn"
+              onClick={handleEnableFullscreen}
+              style={{ width: '100%' }}
+            >
+              Enable Fullscreen
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className={`room-action-buttons ${role === 'interviewer' ? 'interviewer' : ''}`}>
         {role === 'candidate' && (
           <>
@@ -1001,6 +1319,65 @@ export default function Room() {
                 Report
               </button>
             </div>
+
+            <div style={{
+              border: '1px solid hsl(var(--border))',
+              borderRadius: 'calc(var(--radius) - 2px)',
+              background: 'hsl(var(--muted) / 0.35)',
+              padding: '0.75rem',
+              marginBottom: '1rem'
+            }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '0.5rem',
+                marginBottom: '0.65rem'
+              }}>
+                <div style={{ fontSize: '0.82rem', fontWeight: 600 }}>Integrity Monitor</div>
+                <div style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  color: '#ffffff',
+                  borderRadius: '999px',
+                  padding: '0.2rem 0.45rem',
+                  background: getSeverityColor(getIntegritySeverity(interviewerIntegrityScore))
+                }}>
+                  Score {interviewerIntegrityScore} · {getIntegritySeverity(interviewerIntegrityScore)}
+                </div>
+              </div>
+
+              {interviewerIntegrityEvents.length === 0 ? (
+                <div style={{ fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))' }}>
+                  No integrity flags captured yet.
+                </div>
+              ) : (
+                <div style={{ maxHeight: '150px', overflowY: 'auto', display: 'grid', gap: '0.4rem' }}>
+                  {interviewerIntegrityEvents.slice(0, 10).map((eventItem) => (
+                    <div
+                      key={eventItem.id}
+                      style={{
+                        border: `1px solid ${getSeverityColor(eventItem.severity)}33`,
+                        borderRadius: 'calc(var(--radius) - 4px)',
+                        padding: '0.4rem 0.5rem',
+                        background: 'hsl(var(--background) / 0.55)'
+                      }}
+                    >
+                      <div style={{ fontSize: '0.7rem', color: 'hsl(var(--muted-foreground))', marginBottom: '0.2rem' }}>
+                        {eventItem.candidate?.username || 'Candidate'} · {new Date(eventItem.occurredAt || Date.now()).toLocaleTimeString()}
+                      </div>
+                      <div style={{ fontSize: '0.76rem', color: 'hsl(var(--foreground))', marginBottom: '0.2rem' }}>
+                        {eventItem.message || 'Integrity event detected'}
+                      </div>
+                      <div style={{ fontSize: '0.68rem', color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase' }}>
+                        {eventItem.rule || 'unknown_rule'} · {eventItem.severity || 'LOW'} · +{eventItem.weight ?? 0}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <textarea
               className="notes-textarea"
               value={interviewNotes}
@@ -1038,7 +1415,15 @@ export default function Room() {
           roomId={roomId}
           role={role}
           isOpen={showVideoCall}
-          onClose={() => setShowVideoCall(false)}
+          onClose={() => {
+            if (videoReopenTimeoutRef.current) {
+              clearTimeout(videoReopenTimeoutRef.current);
+              videoReopenTimeoutRef.current = null;
+            }
+            setShowVideoCall(false);
+          }}
+          onAttemptClose={handleVideoModalCloseAttempt}
+          onMediaStateChange={handleVideoMediaStateChange}
         />
       )}
 

@@ -1410,8 +1410,7 @@ html,
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px);
   transition: all 0.3s ease;
 }
 
@@ -1443,6 +1442,13 @@ html,
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(0, 0, 0, 0.4);
   min-height: 40px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.video-call-modal.dragging .video-call-header {
+  cursor: grabbing;
 }
 
 .video-call-header h3 {
@@ -1517,6 +1523,7 @@ html,
 .video-call-modal.maximized .video-call-header {
   padding: 1rem 1.5rem;
   min-height: 60px;
+  cursor: default;
 }
 
 .video-call-modal.maximized .video-call-header h3 {
@@ -1753,10 +1760,6 @@ html,
   .video-call-header h3 {
     font-size: 0.7rem;
   }
-}
-
-.video-call-modal:hover {
-  cursor: move;
 }
 
 .video-call-modal.dragging {

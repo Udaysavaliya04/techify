@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [copyFeedback, setCopyFeedback] = useState('');
   const [showReportModal, setShowReportModal] = useState(false);
   const [selectedReportRoomId, setSelectedReportRoomId] = useState('');
+  const [showIntegrityRulesModal, setShowIntegrityRulesModal] = useState(false);
   const navigate = useNavigate();
   const { user, logout, isAuthenticated } = useAuth();
 
@@ -234,6 +235,15 @@ export default function Dashboard() {
           >
             Profile
           </Link>
+          {dashboardData.user.role === 'candidate' && (
+            <button
+              onClick={() => setShowIntegrityRulesModal(true)}
+              className="action-btn save-btn"
+              style={{ height: '40px' }}
+            >
+              Interview Integrity Rules
+            </button>
+          )}
           {dashboardData.user.role === 'interviewer' ? (
             <button
               onClick={handleStartInterview}
@@ -687,6 +697,84 @@ export default function Dashboard() {
               roomId={selectedReportRoomId}
               onClose={closeInterviewReport}
             />
+          </div>
+        </div>
+      )}
+
+      {showIntegrityRulesModal && dashboardData.user.role === 'candidate' && (
+        <div className="modal-overlay" onClick={() => setShowIntegrityRulesModal(false)}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: '42rem' }}
+          >
+            <button
+              onClick={() => setShowIntegrityRulesModal(false)}
+              className="modal-close"
+              aria-label="Close integrity rules"
+            >
+              ×
+            </button>
+            <div className="modal-header" style={{ textAlign: 'left', marginBottom: '1rem' }}>
+              <h3 className="modal-title">Interview Integrity Rules</h3>
+              <p className="modal-description" style={{ marginTop: 0 }}>
+                These checks run during your live interview session to protect fairness and transparency.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gap: '0.9rem' }}>
+              {[
+                {
+                  title: 'Environment',
+                  points: [
+                    'Keep a stable internet connection throughout the interview.',
+                    'Allow camera and microphone access before joining the call.',
+                    'Use full-screen mode for better interview focus (recommended).'
+                  ]
+                },
+                {
+                  title: 'Behavior Rules',
+                  points: [
+                    'Do not switch tabs/windows during the interview session.',
+                    'Copy, cut, and paste actions are disabled for candidates.',
+                    'Keep the interview video call active during the session.'
+                  ]
+                },
+                {
+                  title: 'Detection Signals',
+                  points: [
+                    'Tab visibility and focus changes are monitored.',
+                    'Full-screen exits are tracked as integrity signals.',
+                    'Clipboard attempts, media availability, and network changes are tracked.'
+                  ]
+                },
+                {
+                  title: 'Consequences',
+                  points: [
+                    'You receive live warnings in the candidate room.',
+                    'Interviewers see real-time integrity alerts during the session.',
+                    'All integrity flags are saved in timeline/report evidence and may impact decisions.'
+                  ]
+                }
+              ].map((section) => (
+                <div
+                  key={section.title}
+                  style={{
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: 'calc(var(--radius) - 2px)',
+                    padding: '0.85rem',
+                    background: 'hsl(var(--muted) / 0.35)'
+                  }}
+                >
+                  <div style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.55rem' }}>{section.title}</div>
+                  <ul style={{ margin: 0, paddingLeft: '1.1rem', display: 'grid', gap: '0.35rem', fontSize: '0.84rem', color: 'hsl(var(--muted-foreground))' }}>
+                    {section.points.map((point) => (
+                      <li key={point}>{point}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

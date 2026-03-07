@@ -666,6 +666,28 @@ const InterviewReport = ({ roomId, onClose }) => {
                     Actor: {replayEvent.actor?.username || 'Unknown'} ({replayEvent.actor?.role || 'unknown'})
                   </div>
 
+                  {(replayEvent.type === 'integrity_flagged' || replayEvent.payload?.rule || replayEvent.payload?.message) && (
+                    <div style={{
+                      marginBottom: '0.75rem',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '0.5rem',
+                      background: 'hsl(var(--background))',
+                      padding: '0.65rem'
+                    }}>
+                      <div style={{ fontSize: '0.82rem', fontWeight: 600, marginBottom: '0.35rem', color: 'hsl(var(--foreground))' }}>
+                        Integrity Signal
+                      </div>
+                      {replayEvent.payload?.message && (
+                        <div style={{ fontSize: '0.8rem', color: 'hsl(var(--foreground))', marginBottom: '0.25rem' }}>
+                          {replayEvent.payload.message}
+                        </div>
+                      )}
+                      <div style={{ fontSize: '0.74rem', color: 'hsl(var(--muted-foreground))' }}>
+                        Rule: {replayEvent.payload?.rule || 'unknown'} · Severity: {replayEvent.payload?.severity || 'LOW'} · Score: {replayEvent.payload?.totalScore ?? 0}
+                      </div>
+                    </div>
+                  )}
+
                   {replayEvent.payload?.question && (
                     <div style={{
                       marginBottom: '0.75rem',

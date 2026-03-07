@@ -11,6 +11,8 @@ export const sanitizePayload = (payload = {}) => {
   if (typeof sanitized.code === 'string') sanitized.code = truncate(sanitized.code, 4000);
   if (typeof sanitized.output === 'string') sanitized.output = truncate(sanitized.output, 2000);
   if (typeof sanitized.notes === 'string') sanitized.notes = truncate(sanitized.notes, 2000);
+  if (typeof sanitized.message === 'string') sanitized.message = truncate(sanitized.message, 500);
+  if (typeof sanitized.rule === 'string') sanitized.rule = truncate(sanitized.rule, 100);
   return sanitized;
 };
 

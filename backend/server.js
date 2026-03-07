@@ -106,6 +106,13 @@ io.on('connection', (socket) => {
   const userRole = socket.user.role;
   let lastCodeEventAt = 0;
   let lastCodeSnapshot = '';
+  const normalizeIntegritySeverity = (value) => {
+    const normalized = String(value || '').toUpperCase();
+    if (normalized === 'HIGH' || normalized === 'MEDIUM' || normalized === 'LOW') {
+      return normalized;
+    }
+    return 'LOW';
+  };
 
   socket.on('joinRoom', async ({ roomId, inviteToken }) => {
     try {
@@ -259,6 +266,64 @@ io.on('connection', (socket) => {
       },
       payload: {}
     });
+  });
+
+  socket.on('integrity-event', async (payload = {}) => {
+    try {
+      if (!currentRoom || userRole !== 'candidate') return;
+      if (!socket.rooms.has(currentRoom)) return;
+
+      const rule = String(payload.rule || 'unknown_rule').trim().slice(0, 64);
+      if (['clipboard_blocked', 'fullscreen_exit', 'fullscreen_enter'].includes(rule)) {
+        return;
+      }
+      const message = String(payload.message || 'Integrity signal detected').trim().slice(0, 240);
+      const numericWeight = Number(payload.weight);
+      const numericTotal = Number(payload.totalScore);
+      const occurredAt = payload.occurredAt ? new Date(payload.occurredAt) : new Date();
+      const safeOccurredAt = Number.isNaN(occurredAt.getTime()) ? new Date() : occurredAt;
+      const metadata = payload.metadata && typeof payload.metadata === 'object' ? payload.metadata : {};
+
+      const integrityEvent = {
+        roomId: currentRoom,
+        rule,
+        message,
+        weight: Number.isFinite(numericWeight) ? Math.max(0, Math.min(10, numericWeight)) : 0,
+        severity: normalizeIntegritySeverity(payload.severity),
+        totalScore: Number.isFinite(numericTotal) ? Math.max(0, Math.min(999, Math.round(numericTotal))) : 0,
+        metadata,
+        occurredAt: safeOccurredAt.toISOString()
+      };
+
+      await logInterviewEvent({
+        roomId: currentRoom,
+        type: 'integrity_flagged',
+        actor: {
+          userId: socket.user._id,
+          username: socket.user.username,
+          role: userRole
+        },
+        payload: integrityEvent
+      });
+
+      const roomSocketIds = io.sockets.adapter.rooms.get(currentRoom) || new Set();
+      roomSocketIds.forEach((socketId) => {
+        if (socketId === socket.id) return;
+        const peerSocket = io.sockets.sockets.get(socketId);
+        if (!peerSocket?.user) return;
+        if (!['interviewer', 'admin'].includes(peerSocket.user.role)) return;
+        io.to(socketId).emit('candidate-integrity-event', {
+          ...integrityEvent,
+          candidate: {
+            userId: socket.user._id,
+            username: socket.user.username || 'Anonymous',
+            role: userRole
+          }
+        });
+      });
+    } catch (error) {
+      console.error('integrity-event error:', error);
+    }
   });
 
   socket.on('join-video-room', ({ roomId }) => {

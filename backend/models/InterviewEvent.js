@@ -14,7 +14,8 @@ const InterviewEventSchema = new mongoose.Schema(
         'question_set',
         'notes_updated',
         'rubric_saved',
-        'interview_ended'
+        'interview_ended',
+        'integrity_flagged'
       ]
     },
     actor: {
