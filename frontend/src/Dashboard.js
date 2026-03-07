@@ -205,6 +205,18 @@ export default function Dashboard() {
   }
 
   const { stats, recentInterviews } = dashboardData;
+  const interviewerExtraStats = [
+    {
+      label: 'Completed Interviews',
+      value: stats.completedInterviews || 0,
+      subLabel: `${stats.totalInterviews || 0} total`
+    },
+    {
+      label: 'Avg Candidate Score',
+      value: (stats.completedInterviews || 0) > 0 ? `${stats.averageScore || 0}/100` : 'N/A',
+      subLabel: (stats.completedInterviews || 0) > 0 ? 'From completed sessions' : 'No completed sessions yet'
+    }
+  ];
 
   return (
     <div className="app-root">
@@ -231,9 +243,31 @@ export default function Dashboard() {
           <Link
             to="/settings/profile"
             className="action-btn save-btn"
-            style={{ textDecoration: 'none', letterSpacing: '0.01em' }}
+            title="Profile Settings"
+            aria-label="Profile Settings"
+            style={{
+              textDecoration: 'none',
+              width: '40px',
+              height: '40px',
+              padding: 0
+            }}
           >
-            Profile
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#ffffff"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+              style={{ opacity: 1 }}
+            >
+              <path d="m14.305 19.53l.923-.382m0-2.296l-.923-.383m2.547-1.241l-.383-.923m.383 6.467l-.383.924m2.679-6.468l.383-.923m-.001 7.391l-.382-.924M2 21a8 8 0 0 1 10.434-7.62m8.338 3.472l.924-.383m-.924 2.679l.924.383" />
+              <circle cx="10" cy="8" r="5" />
+              <circle cx="18" cy="18" r="3" />
+            </svg>
           </Link>
           {dashboardData.user.role === 'candidate' && (
             <button
@@ -241,7 +275,7 @@ export default function Dashboard() {
               className="action-btn save-btn"
               style={{ height: '40px' }}
             >
-              Interview Integrity Rules
+              Important Instructions
             </button>
           )}
           {dashboardData.user.role === 'interviewer' ? (
@@ -250,7 +284,7 @@ export default function Dashboard() {
               className="action-btn run-btn"
               style={{height:'40px'}}
             >
-              Start Interview
+              Create Interview
             </button>
           ) : (
             <Link
@@ -274,17 +308,20 @@ export default function Dashboard() {
         width: '100%',
         maxWidth: '80rem',
         display: 'grid',
-        gridTemplateColumns: dashboardData.user.role === 'candidate' ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)',
-        gap: 0,
+        gridTemplateColumns: dashboardData.user.role === 'interviewer' ? 'repeat(3, minmax(0, 1fr))' : 'repeat(1, minmax(0, 1fr))',
+        gap: '0.75rem',
         marginBottom: '2rem'
       }}>
 
-        <div className="join-container" style={{ margin: 0, padding: '1.5rem', paddingLeft: '2rem' }}>
+        <div
+          className="join-container"
+          style={{ margin: 0, padding: '1.5rem', paddingLeft: '2rem', width: '100%', maxWidth: '100%' }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
 
             <div style={{ flex: 1 }}>
               <p style={{ fontSize: '0.875rem', color: 'hsl(var(--muted-foreground))', margin: 0, marginBottom: '0.25rem' }}>
-                {dashboardData.user.role === 'interviewer' ? 'Interviews Conducted' : 'Interviews Taken'}
+                {dashboardData.user.role === 'interviewer' ? 'Interviews Conducted' : 'Interviews Attended'}
               </p>
               <p style={{ fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))', margin: 0 }}>
                 +{stats.thisMonthInterviews} this month
@@ -295,6 +332,29 @@ export default function Dashboard() {
             {stats.totalInterviews}
           </p>
         </div>
+
+
+        {dashboardData.user.role === 'interviewer' && interviewerExtraStats.map((item) => (
+          <div
+            key={item.label}
+            className="join-container"
+            style={{ margin: 0, padding: '1.5rem', paddingLeft: '2rem', width: '100%', maxWidth: '100%' }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: '0.875rem', color: 'hsl(var(--muted-foreground))', margin: 0, marginBottom: '0.25rem' }}>
+                  {item.label}
+                </p>
+                <p style={{ fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))', margin: 0 }}>
+                  {item.subLabel}
+                </p>
+              </div>
+            </div>
+            <p style={{ fontSize: '2rem', fontWeight: '700', margin: 0, color: 'hsl(var(--foreground))', textAlign: 'center', gap: '0.5rem' }}>
+              {item.value}
+            </p>
+          </div>
+        ))}
       </div>
 
       {/* Recent Interviews */}
@@ -440,8 +500,8 @@ export default function Dashboard() {
                     }}>
                       <span>Room: {interview.roomId}</span>
                       {interview.language && <span>Language: {interview.language}</span>}
-                      {interview.score !== null && interview.score !== undefined && (
-                        <span>Score: {interview.score}/100</span>
+                      {dashboardData.user.role === 'interviewer' && interview.score !== null && interview.score !== undefined && (
+                        <span>Score Given: {interview.score}/100</span>
                       )}
                     </div>
                   </div>
@@ -562,7 +622,7 @@ export default function Dashboard() {
                 color: 'hsl(var(--muted-foreground))',
                 margin: '0'
               }}>
-                Share this signed invite with the candidate.
+                Share this Invite Link with the candidate.
               </p>
             </div>
 
@@ -644,7 +704,7 @@ export default function Dashboard() {
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)' }}>
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
-                      <span style={{ animation: 'fadeIn 0.2s ease-out' }}>Copied</span>
+                      <span style={{ animation: 'fadeIn 0.2s ease-out' }}>Invite Link Copied</span>
                     </>
                   ) : (
                     <>
@@ -652,7 +712,7 @@ export default function Dashboard() {
                         <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
                         <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
                       </svg>
-                      <span>Copy Code</span>
+                      <span>Copy Invite Link</span>
                     </>
                   )}
                 </div>
@@ -715,10 +775,10 @@ export default function Dashboard() {
             >
               ×
             </button>
-            <div className="modal-header" style={{ textAlign: 'left', marginBottom: '1rem' }}>
-              <h3 className="modal-title">Interview Integrity Rules</h3>
-              <p className="modal-description" style={{ marginTop: 0 }}>
-                These checks run during your live interview session to protect fairness and transparency.
+            <div className="modal-header" style={{ textAlign: 'Center', marginBottom: '1rem' }}>
+              <h3 className="modal-title">Interview Instructions and Important Rules</h3>
+              <p className="modal-description" style={{ marginTop: '0.3em' }}>
+                Please follow the below instructions strictly for a smooth interview experience <br></br>and to ensure the integrity of the process.
               </p>
             </div>
 
@@ -727,32 +787,33 @@ export default function Dashboard() {
                 {
                   title: 'Environment',
                   points: [
-                    'Keep a stable internet connection throughout the interview.',
-                    'Allow camera and microphone access before joining the call.',
-                    'Use full-screen mode for better interview focus (recommended).'
-                  ]
+                    'It is recommended to use a stable internet connection throughout the interview.',
+                    'Allowing camera and microphone access is required for the interview.',
+                    'Using full-screen mode is compulsory for the entire duration of the interview.'
+                  ] 
                 },
                 {
                   title: 'Behavior Rules',
                   points: [
-                    'Do not switch tabs/windows during the interview session.',
-                    'Copy, cut, and paste actions are disabled for candidates.',
-                    'Keep the interview video call active during the session.'
+                    'tabs/windows switching is strictly prohibited during the interview.',
+                    'Copy, cut, and paste actions are disabled.',
+                    'Keeping the video call active is compulsory during the interview.'
                   ]
                 },
                 {
-                  title: 'Detection Signals',
+                  title: 'Cheat Detection & Monitoring',
                   points: [
-                    'Tab visibility and focus changes are monitored.',
-                    'Full-screen exits are tracked as integrity signals.',
-                    'Clipboard attempts, media availability, and network changes are tracked.'
+                    'Tab visibility and focus changes are being monitored.',
+                    'Full-screen exits are logged and may raise integrity flags.',
+                    'Clipboard attempts, media availability, and network changes are tracked.',
+                    'Video and audio feeds are monitored for anomalies.'
                   ]
                 },
                 {
-                  title: 'Consequences',
+                  title: 'Consequences of Violations',
                   points: [
-                    'You receive live warnings in the candidate room.',
-                    'Interviewers see real-time integrity alerts during the session.',
+                    'You receive a few warnings while in the interview.',
+                    'If cheating persists, you will be disqualified and interview will be marked as failed.',
                     'All integrity flags are saved in timeline/report evidence and may impact decisions.'
                   ]
                 }

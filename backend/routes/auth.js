@@ -294,6 +294,18 @@ router.get('/dashboard', verifyToken, async (req, res) => {
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 10);
 
+    const sanitizedRecentInterviews = recentInterviews.map((interview) => {
+      const interviewObj = typeof interview.toObject === 'function'
+        ? interview.toObject()
+        : { ...interview };
+
+      if (user.role !== 'interviewer') {
+        delete interviewObj.score;
+      }
+
+      return interviewObj;
+    });
+
     // Calculate additional stats
     const thisMonth = new Date();
     thisMonth.setDate(1);
@@ -310,6 +322,16 @@ router.get('/dashboard', verifyToken, async (req, res) => {
       return acc;
     }, {});
 
+    const statsPayload = {
+      ...user.stats.toObject(),
+      thisMonthInterviews: thisMonthInterviews.length,
+      difficultyBreakdown: difficultyStats
+    };
+
+    if (user.role !== 'interviewer') {
+      delete statsPayload.averageScore;
+    }
+
     res.json({
       user: {
         id: user._id,
@@ -319,12 +341,8 @@ router.get('/dashboard', verifyToken, async (req, res) => {
         profileCompleted: user.profileCompleted,
         candidateProfile: user.candidateProfile
       },
-      stats: {
-        ...user.stats.toObject(),
-        thisMonthInterviews: thisMonthInterviews.length,
-        difficultyBreakdown: difficultyStats
-      },
-      recentInterviews,
+      stats: statsPayload,
+      recentInterviews: sanitizedRecentInterviews,
       preferences: user.preferences
     });
   } catch (error) {

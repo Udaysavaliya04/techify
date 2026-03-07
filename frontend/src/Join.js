@@ -12,6 +12,8 @@ export default function Join() {
   const [inviteToken, setInviteToken] = useState('');
   const [joinError, setJoinError] = useState('');
   const [joining, setJoining] = useState(false);
+  const [showCandidateInstructionsModal, setShowCandidateInstructionsModal] = useState(false);
+  const [instructionsAcknowledged, setInstructionsAcknowledged] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
   const featureSectionRef = useRef(null);
   const navigate = useNavigate();
@@ -35,6 +37,13 @@ export default function Join() {
       navigate('/profile-setup');
     }
   }, [isAuthenticated, user?.role, user?.profileCompleted, navigate]);
+
+  useEffect(() => {
+    if (isAuthenticated() && user?.role === 'candidate') {
+      setShowCandidateInstructionsModal(true);
+      setInstructionsAcknowledged(false);
+    }
+  }, [isAuthenticated, user?.role]);
 
   useEffect(() => {
     setRoom(otpValues.join(''));
@@ -120,6 +129,12 @@ export default function Join() {
     e.preventDefault();
     const normalizedRoom = room.trim().toUpperCase();
     if (!normalizedRoom) return;
+
+    if (user?.role === 'candidate' && !instructionsAcknowledged) {
+      setJoinError('Please read and accept the important interview instructions before joining.');
+      setShowCandidateInstructionsModal(true);
+      return;
+    }
 
     setJoinError('');
     setJoining(true);
@@ -259,7 +274,7 @@ export default function Join() {
     {
       id: 'share-invite',
       step: '02',
-      title: 'Share Signed Invite',
+      title: 'Share Invite Link',
       description:
         'Invite candidate with signed token links so only intended participants can join.',
       points: ['Token-based access', 'Time-limited invite links', 'One-click copy and share'],
@@ -287,6 +302,12 @@ export default function Join() {
 
   const getBentoDesktopSpan = (index) =>
     index % 4 === 0 || index % 4 === 3 ? 'span 4' : 'span 2';
+
+  const handleInstructionsAcknowledge = () => {
+    setInstructionsAcknowledged(true);
+    setJoinError('');
+    setShowCandidateInstructionsModal(false);
+  };
 
   const renderFeatureIcon = (featureId) => {
     switch (featureId) {
@@ -1010,6 +1031,7 @@ export default function Join() {
 
   const isMobileView = window.innerWidth <= 768;
   const isSmallMobileView = window.innerWidth <= 480;
+  const isUserAuthenticated = isAuthenticated();
   const headerShellWidth = "calc(100% - 2rem)";
   const headerShellRadius = "22px";
   const mainTopPadding = isMobileView ? "8rem" : "4rem";
@@ -1029,97 +1051,120 @@ export default function Join() {
         position: "relative",
       }}
     >
-      <header
-        className="top-nav-button"
-        style={{
-          position: "fixed",
-          top: isMobileView ? "0.55rem" : "0.85rem",
-          left: "49.8%",
-          right: "auto",
-          width: headerShellWidth,
-          maxWidth: "1280px",
-          transform: "translateX(-50%)",
-          zIndex: 9999,
-          backdropFilter: "blur(30px)",
-          WebkitBackdropFilter: "blur(30px)",
-          borderRadius: headerShellRadius,
-          border: "1px solid rgba(255, 255, 255, 0.11)",
-          background: "transparent",
-          padding: isMobileView
-            ? isSmallMobileView
-              ? "0.55rem 0.7rem"
-              : "0.75rem 1rem"
-            : "1rem 2rem",
-          display: "flex",
-          justifyContent: isMobileView ? "center" : "space-between",
-          alignItems: "center",
-          boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-          flexWrap: isSmallMobileView ? "wrap" : "nowrap",
-          rowGap: isSmallMobileView ? "0.45rem" : "0",
-          columnGap: isSmallMobileView ? "0.4rem" : "0.75rem",
-          animation: "slideDownFromTopCentered 0.8s ease-out",
-        }}
-      >
-        {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexShrink: 0 }}>
-          <img
-            src="/logo.webp"
-            alt="Techify Logo"
-            style={{
-              height: isMobileView ? "32px" : "40px",
-              width: "auto",
-              animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
-              opacity: 0,
-            }}
-          />
-        </div>
-
-        {/* Navigation Links */}
-        {!isMobileView && (
-          <nav
+      {isUserAuthenticated ? (
+        <div
+          style={{
+            position: "fixed",
+            top: isMobileView ? "0.9rem" : "1rem",
+            right: isMobileView ? "1rem" : "1.25rem",
+            display: "flex",
+            zIndex: 3,
+            alignItems: "center",
+            justifyContent: "flex-end",
+            gap: isMobileView ? "0.6rem" : "0.85rem",
+            minWidth: 0,
+            animation: "slideDown 0.4s ease-out",
+          }}
+        >
+          <div
             style={{
               display: "flex",
               alignItems: "center",
               justifyContent: "flex-end",
-              gap: "1rem",
-              flexWrap: "nowrap",
+              gap: isMobileView ? "0.6rem" : "0.85rem",
               minWidth: 0,
             }}
           >
-            {isAuthenticated() ? (
-              <>
-                <span
-                  style={{
-                    color: "hsl(var(--muted-foreground))",
-                    fontSize: "0.875rem",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    flexShrink: 1,
-                    animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards',
-                    opacity: 0,
-                  }}
-                >
-                  {user?.username}
-                </span>
-                <Link
-                  to="/dashboard"
-                  className="action-btn run-btn"
-                  style={{
-                    textDecoration: "none",
-                    fontSize: "0.875rem",
-                    padding: "0.5rem 1rem",
-                    whiteSpace: "nowrap",
-                    flexShrink: 0,
-                    animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards',
-                    opacity: 0,
-                  }}
-                >
-                  Dashboard
-                </Link>
-              </>
-            ) : (
-              <>
+            <span
+              style={{
+                color: "hsl(var(--muted-foreground))",
+                fontSize: "0.875rem",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                maxWidth: isMobileView ? "40vw" : "18rem",
+                animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards',
+                opacity: 0,
+              }}
+            >
+              {user?.username}
+            </span>
+            <Link
+              to="/dashboard"
+              className="action-btn run-btn"
+              style={{
+                textDecoration: "none",
+                fontSize: "0.875rem",
+                padding: "0.5rem 1rem",
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+                animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards',
+                opacity: 0,
+              }}
+            >
+              Dashboard
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <header
+          className="top-nav-button"
+          style={{
+            position: "fixed",
+            top: isMobileView ? "0.55rem" : "0.85rem",
+            left: "49.8%",
+            right: "auto",
+            width: headerShellWidth,
+            maxWidth: "1280px",
+            transform: "translateX(-50%)",
+            zIndex: 9999,
+            backdropFilter: "blur(30px)",
+            WebkitBackdropFilter: "blur(30px)",
+            borderRadius: headerShellRadius,
+            border: "1px solid rgba(255, 255, 255, 0.11)",
+            background: "transparent",
+            padding: isMobileView
+              ? isSmallMobileView
+                ? "0.55rem 0.7rem"
+                : "0.75rem 1rem"
+              : "1rem 2rem",
+            display: "flex",
+            justifyContent: isMobileView ? "center" : "space-between",
+            alignItems: "center",
+            boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+            flexWrap: isSmallMobileView ? "wrap" : "nowrap",
+            rowGap: isSmallMobileView ? "0.45rem" : "0",
+            columnGap: isSmallMobileView ? "0.4rem" : "0.75rem",
+            animation: "slideDownFromTopCentered 0.8s ease-out",
+          }}
+        >
+          <>
+            {/* Logo */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexShrink: 0 }}>
+              <img
+                src="/logo.webp"
+                alt="Techify Logo"
+                style={{
+                  height: isMobileView ? "32px" : "40px",
+                  width: "auto",
+                  animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+                  opacity: 0,
+                }}
+              />
+            </div>
+
+            {/* Navigation Links */}
+            {!isMobileView && (
+              <nav
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                  gap: "1rem",
+                  flexWrap: "nowrap",
+                  minWidth: 0,
+                }}
+              >
                 <Link
                   to="/login"
                   className="action-btn save-btn"
@@ -1161,43 +1206,43 @@ export default function Join() {
                     </svg>
                   </span>
                 </Link>
-              </>
+                <a
+                  href="https://github.com/Udaysavaliya04/techify"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    background: "transparent",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    transition: "all 0.3s ease",
+                    cursor: "pointer",
+                    flexShrink: 0,
+                    animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.6s forwards',
+                    opacity: 0,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
+                    e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent";
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ color: "hsl(var(--foreground))" }}>
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v 3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                  </svg>
+                </a>
+              </nav>
             )}
-            <a
-              href="https://github.com/Udaysavaliya04/techify"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "40px",
-                height: "40px",
-                borderRadius: "50%",
-                background: "transparent",
-                backdropFilter: "blur(10px)",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-                transition: "all 0.3s ease",
-                cursor: "pointer",
-                flexShrink: 0,
-                animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.6s forwards',
-                opacity: 0,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
-                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-              }}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ color: "hsl(var(--foreground))" }}>
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v 3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-              </svg>
-            </a>
-          </nav>
-        )}
-      </header>
+          </>
+        </header>
+      )}
 
       {/* Mobile Notice Banner */}
       <div
@@ -1270,7 +1315,6 @@ export default function Join() {
           zIndex: 1,
         }}
       >
-        {/* Show different content based on authentication and role */}
         {isAuthenticated() && user?.role === "candidate" ? (
           // Candidate Join Interface
           <div
@@ -1283,11 +1327,12 @@ export default function Join() {
               border: "1px solid hsl(var(--border) / 0.5)",
               borderRadius: "calc(var(--radius) * 1.5)",
               padding: window.innerWidth <= 768 ? "2rem 1.5rem" : "3rem",
-              marginTop: window.innerWidth <= 768 ? "2rem" : "5rem",
+              marginTop: window.innerWidth <= 768 ? "2rem" : "2rem",
               boxShadow:
                 "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)",
               animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
               opacity: 0,
+              marginBottom: window.innerWidth <= 768 ? "0rem" : "-1.7rem",
             }}
           >
             <h1
@@ -1302,11 +1347,6 @@ export default function Join() {
                 marginBottom: "1rem",
                 color: "hsl(var(--foreground))",
                 letterSpacing: "-0.07em",
-                background:
-                  "linear-gradient(135deg, #ffffff, #c7c7c7ff, #ffffffff)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
               }}
             >
               Join Interview
@@ -1357,16 +1397,38 @@ export default function Join() {
                   className="input"
                   value={inviteToken}
                   onChange={(e) => handleInviteInput(e.target.value)}
-                  placeholder="Paste Invite link"
+                  placeholder="paste invite link here..."
                   autoComplete="off"
                 />
                 
               </div>
 
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowCandidateInstructionsModal(true)}
+                  className="action-btn save-btn"
+                  style={{ width: "100%" }}
+                >
+                  {instructionsAcknowledged ? "Review Instructions" : "Read Important Instructions"}
+                </button>
+                <div
+                  style={{
+                    fontSize: "0.82rem",
+                    color: instructionsAcknowledged ? "hsl(142 76% 36%)" : "hsl(var(--muted-foreground))",
+                    textAlign: "left",
+                  }}
+                >
+                  {instructionsAcknowledged
+                    ? "Instructions acknowledged. You can join the interview."
+                    : "You must read and acknowledge instructions before joining."}
+                </div>
+              </div>
+
               <button
                 type="submit"
-                disabled={room.length !== 6 || joining || !inviteToken}
-                className={`action-btn run-btn ${room.length !== 6 || joining || !inviteToken ? "disabled" : ""
+                disabled={room.length !== 6 || joining || !inviteToken || !instructionsAcknowledged}
+                className={`action-btn run-btn ${room.length !== 6 || joining || !inviteToken || !instructionsAcknowledged ? "disabled" : ""
                   }`}
                 style={{ width: "100%" }}
               >
@@ -2337,18 +2399,9 @@ export default function Join() {
 
       {isAuthenticated() ? (
         <footer
-          className="footer-section"
+          
           style={{
-            position: "fixed",
-            zIndex: 1,
-            bottom: "1rem",
-            left: "1rem",
-            right: "1rem",
-            backdropFilter: "blur(30px)",
-            border: "1px solid hsl(var(--border))",
-            padding: window.innerWidth <= 768 ? "0.75rem 1rem" : "1rem 2rem",
             textAlign: "center",
-            borderRadius: "12px",
             animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.6s forwards',
             opacity: 0,
           }}
@@ -2369,20 +2422,7 @@ export default function Join() {
               letterSpacing: "-0.05em",
             }}
           >
-            Made with <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 18"
-              fill="red"
-              style={{
-                display: "inline-block",
-                filter: "drop-shadow(0 0 2px rgba(255, 0, 0, 0.6))",
-                transform: "scale(1.1)",
-                transition: "transform 0.3s ease-in-out infinite",
-              }}
-            >
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-            </svg> by <a href="https://github.com/Udaysavaliya04" target="_blank" rel="noopener noreferrer" style={{ color: "rgb(235, 235, 235)", textDecoration: "none", transition: "opacity 0.2s ease", cursor: "pointer" }} onMouseEnter={(e) => e.currentTarget.style.opacity = "1"} onMouseLeave={(e) => e.currentTarget.style.opacity = "0.7"}>Uday Savaliya</a>
+            Cooked by <a href="https://x.com/Uday_Code" target="_blank" rel="noopener noreferrer" style={{ color: "rgb(235, 235, 235)", textDecoration: "none", transition: "opacity 0.2s ease", cursor: "pointer" }} onMouseEnter={(e) => e.currentTarget.style.opacity = "1"} onMouseLeave={(e) => e.currentTarget.style.opacity = "0.7"}>Uday Savaliya</a>
           </p>
         </footer>
       ) : (
@@ -2498,7 +2538,7 @@ export default function Join() {
                   }}
                 >
                   <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#ff0000", animation: "badgeBlinkPulse 1s ease infinite" }} />
-                  Cooked by Uday Savaliya
+                  Cooked by <a href="https://x.com/Uday_Code" target="_blank" rel="noopener noreferrer" style={{ color: "rgb(235, 235, 235)", textDecoration: "none", transition: "opacity 0.2s ease", cursor: "pointer" }} onMouseEnter={(e) => e.currentTarget.style.opacity = "1"} onMouseLeave={(e) => e.currentTarget.style.opacity = "0.7"}>Uday Savaliya</a>
                 </motion.a>
               </div>
 
@@ -2728,6 +2768,115 @@ export default function Join() {
             </motion.div>
           </div>
         </motion.footer>
+      )}
+
+      {isAuthenticated() && user?.role === 'candidate' && showCandidateInstructionsModal && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowCandidateInstructionsModal(false)}
+        >
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: '42rem' }}
+          >
+            <button
+              onClick={() => setShowCandidateInstructionsModal(false)}
+              className="modal-close"
+              aria-label="Close important instructions"
+            >
+              x
+            </button>
+            <div className="modal-header" style={{ textAlign: 'center', marginBottom: '1rem' }}>
+              <h3 className="modal-title">Important Interview Instructions</h3>
+              <p className="modal-description" style={{ marginTop: '0.3em' }}>
+                Read and acknowledge these before joining the interview room.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gap: '0.9rem' }}>
+              {[
+                {
+                  title: 'Environment Setup',
+                  points: [
+                    'Use a stable internet connection for the full interview.',
+                    'Keep camera and microphone permissions enabled.',
+                    'Use desktop/laptop for the best interview experience.'
+                  ]
+                },
+                {
+                  title: 'Behavior Expectations',
+                  points: [
+                    'Stay in the interview tab and avoid switching windows.',
+                    'Copy, cut, and paste are disabled during the interview.',
+                    'Keep your video call active throughout the interview.'
+                  ]
+                },
+                {
+                  title: 'Integrity Checks',
+                  points: [
+                    'Tab visibility and focus changes are monitored.',
+                    'Media and network interruptions can be flagged.',
+                    'Repeated violations are visible to interviewer monitoring.'
+                  ]
+                },
+                {
+                  title: 'Consequences',
+                  points: [
+                    'Violations can trigger warnings and interviewer alerts.',
+                    'Flagged behavior appears in interview monitoring records.',
+                    'Repeated integrity violations can affect interview outcomes.'
+                  ]
+                }
+              ].map((section) => (
+                <div
+                  key={section.title}
+                  style={{
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: 'calc(var(--radius) - 2px)',
+                    padding: '0.85rem',
+                    background: 'hsl(var(--muted) / 0.35)'
+                  }}
+                >
+                  <div style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.55rem' }}>
+                    {section.title}
+                  </div>
+                  <ul
+                    style={{
+                      margin: 0,
+                      paddingLeft: '1.1rem',
+                      display: 'grid',
+                      gap: '0.35rem',
+                      fontSize: '0.84rem',
+                      color: 'hsl(var(--muted-foreground))'
+                    }}
+                  >
+                    {section.points.map((point) => (
+                      <li key={point}>{point}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+
+            <div className="modal-footer" style={{ marginTop: '1rem', justifyContent: 'space-between', gap: '0.75rem' }}>
+              <button
+                onClick={() => setShowCandidateInstructionsModal(false)}
+                className="action-btn save-btn"
+                style={{ minHeight: '40px' }}
+              >
+                Review Later
+              </button>
+              <button
+                onClick={handleInstructionsAcknowledge}
+                className="action-btn run-btn"
+                style={{ minHeight: '40px' }}
+              >
+                I Have Read And Agree
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

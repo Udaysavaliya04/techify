@@ -158,6 +158,16 @@ export default function ProfileSettings() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (isSetupMode || success !== 'Profile updated successfully.') return undefined;
+
+    const redirectTimer = setTimeout(() => {
+      navigate('/dashboard');
+    }, 1200);
+
+    return () => clearTimeout(redirectTimer);
+  }, [success, isSetupMode, navigate]);
+
   const filteredCountries = useMemo(() => {
     const search = countrySearch.trim().toLowerCase();
     if (!search) return countries;
@@ -281,7 +291,7 @@ export default function ProfileSettings() {
       if (isSetupMode) {
         navigate('/dashboard');
       } else {
-        setSuccess('Profile settings saved successfully.');
+        setSuccess('Profile updated successfully.');
         setForm((prev) => ({ ...prev, currentPassword: '', newPassword: '' }));
       }
     } catch (err) {
@@ -309,7 +319,7 @@ export default function ProfileSettings() {
           <p style={{ color: 'hsl(var(--muted-foreground))', marginTop: '0.5rem' }}>
             {isSetupMode
               ? 'Please complete this form to continue.'
-              : 'Keep your profile up to date.'}
+              : 'Update profile information or change credentials.'}
           </p>
         </div>
 
@@ -335,7 +345,7 @@ export default function ProfileSettings() {
                   className="dropdown-trigger"
                   aria-expanded={languageDropdownOpen}
                   onClick={() => setLanguageDropdownOpen((prev) => !prev)}
-                  style={{ width: '100%', minHeight: '2.75rem', height: 'auto', alignItems: 'flex-start' }}
+                  style={{ width: '100%', minHeight: '100%', height: 'auto', alignItems: 'flex-start' }}
                 >
                   <span style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', flex: 1 }}>
                     {form.comfortableLanguages.length === 0 ? (
@@ -346,9 +356,9 @@ export default function ProfileSettings() {
                           key={language}
                           style={{
                             background: 'hsl(var(--secondary))',
-                            border: '1px solid hsl(var(--border))',
+                            border: '1px solid rgba(255, 255, 255, 0.2)',
                             color: 'hsl(var(--foreground))',
-                            borderRadius: '999px',
+                            borderRadius: '6px',
                             padding: '0.125rem 0.5rem',
                             fontSize: '0.75rem',
                             fontWeight: '500'
@@ -410,25 +420,7 @@ export default function ProfileSettings() {
                         style={{ height: '2rem', fontSize: '0.8125rem' }}
                       />
                     </div>
-                    {countrySearch.trim() && (
-                      <button
-                        type="button"
-                        className={`dropdown-item ${form.country === countrySearch.trim() ? 'dropdown-item-active' : ''}`}
-                        onClick={() => {
-                          const manualCountry = countrySearch.trim();
-                          onChange('country', manualCountry);
-                          setCountrySearch(manualCountry);
-                          setCountryDropdownOpen(false);
-                        }}
-                      >
-                        <span>Use "{countrySearch.trim()}"</span>
-                        {form.country === countrySearch.trim() && (
-                          <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" className="dropdown-check">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                      </button>
-                    )}
+                    
                     {filteredCountries.slice(0, 150).map((country) => (
                       <button
                         key={country}
@@ -539,12 +531,12 @@ export default function ProfileSettings() {
                 )}
               </div>
 
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: 'hsl(var(--foreground))' }}>
+              <label style={{ display: 'flex', alignItems: 'center', marginLeft: '0.2rem', gap: '0.5rem', fontSize: '0.875rem', color: 'hsl(var(--foreground))' }}>
                 <input
                   type="checkbox"
                   checked={form.openToRemote}
                   onChange={(e) => onChange('openToRemote', e.target.checked)}
-                  style={{ accentColor: 'hsl(var(--primary))' }}
+                  style={{ accentColor: 'hsl(var(--primary))'  }}
                 />
                 Open to remote opportunities
               </label>
