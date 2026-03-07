@@ -221,9 +221,14 @@ export default function Dashboard() {
   return (
     <div className="app-root">
       <div className="editor-header" style={{
-        maxWidth: '80rem', letterSpacing: '-0.05em',
+        width: '100%',
+        maxWidth: '80rem',
+        minWidth: 0,
+        letterSpacing: '-0.05em',
+        flexWrap: 'wrap',
+        rowGap: '0.75rem',
       }}>
-        <div>
+        <div style={{ minWidth: 0 }}>
           <h2 style={{
             background: 'linear-gradient(135deg, #ffffff, #cacacaff, #ffffffff)',
             WebkitBackgroundClip: 'text',
@@ -239,7 +244,14 @@ export default function Dashboard() {
             Welcome back, {dashboardData.user.username}!
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <div style={{
+          display: 'flex',
+          gap: '0.5rem',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          justifyContent: 'flex-end',
+          marginLeft: 'auto'
+        }}>
           <Link
             to="/settings/profile"
             className="action-btn save-btn"
