@@ -283,6 +283,18 @@ export default function Join() {
     },
   ];
 
+  const landingCtaHighlights = [
+    'Setup interview rooms in minutes',
+    'Track integrity and coding flow live',
+    'Export decision-ready reports',
+  ];
+
+  const landingCtaStats = [
+    { label: 'Realtime Sync', value: '< 120ms', note: 'Live editor collaboration' },
+    { label: 'Invite Security', value: 'Signed + TTL', note: 'Controlled interview access' },
+    { label: 'Decision Reports', value: 'One-click export', note: 'Timeline-backed evidence' },
+  ];
+
   const howItWorksSteps = [
     {
       id: 'create-room',
@@ -2562,6 +2574,259 @@ export default function Join() {
                   );
                 })}
               </div>
+            </motion.section>
+
+            <motion.section
+              initial={{ opacity: 0, y: 34, filter: "blur(8px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true, amount: 0.25 }}
+              transition={{ duration: 0.82, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                width: "100%",
+                maxWidth: "1120px",
+                margin: window.innerWidth <= 768 ? "2.9rem auto 0" : "4.4rem auto 0",
+              }}
+            >
+              <motion.article
+                initial={{ opacity: 0, y: 24, scale: 0.985 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.35 }}
+                transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: 0.08 }}
+                style={{
+                  borderRadius: "28px",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  background:
+                    "linear-gradient(150deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.03) 45%, rgba(9, 18, 31, 0.55) 100%)",
+                  backdropFilter: "blur(26px) saturate(145%)",
+                  WebkitBackdropFilter: "blur(26px) saturate(145%)",
+                  boxShadow: "0 42px 94px -62px rgba(0, 0, 0, 0.96), inset 0 1px 0 rgba(255, 255, 255, 0.24)",
+                  padding:
+                    window.innerWidth <= 480
+                      ? "1.2rem 1rem"
+                      : window.innerWidth <= 768
+                        ? "1.45rem 1.2rem"
+                        : "1.9rem 1.8rem",
+                  position: "relative",
+                  overflow: "hidden",
+                  textAlign: "left",
+                }}
+              >
+                <motion.div
+                  aria-hidden="true"
+                  initial={{ x: "-50%", opacity: 0 }}
+                  whileInView={{ x: "140%", opacity: [0, 0.45, 0] }}
+                  viewport={{ once: true, amount: 0.5 }}
+                  transition={{ duration: 1.25, delay: 0.28, ease: "easeOut" }}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "42%",
+                    height: "2px",
+                    background: "linear-gradient(90deg, rgba(255,255,255,0), rgba(152, 220, 255, 0.9), rgba(255,255,255,0))",
+                    filter: "blur(0.2px)",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "-70px",
+                    right: "-56px",
+                    width: "176px",
+                    height: "176px",
+                    borderRadius: "999px",
+                    background: "radial-gradient(circle, rgba(89, 190, 255, 0.42), rgba(255,255,255,0))",
+                    filter: "blur(28px)",
+                    pointerEvents: "none",
+                  }}
+                />
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: window.innerWidth <= 960 ? "1fr" : "1.3fr 0.9fr",
+                    gap: window.innerWidth <= 960 ? "1rem" : "1.3rem",
+                    alignItems: "stretch",
+                  }}
+                >
+                  <div>
+                    <motion.span
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, amount: 0.4 }}
+                      transition={{ duration: 0.42, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "0.42rem",
+                        padding: "0.3rem 0.66rem",
+                        borderRadius: "999px",
+                        border: "1px solid rgba(255, 255, 255, 0.22)",
+                        background: "rgba(8, 13, 23, 0.52)",
+                        fontSize: "0.66rem",
+                        color: "rgba(240, 246, 255, 0.95)",
+                        letterSpacing: "0.05em",
+                        fontWeight: 600,
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      Interview Teams
+                    </motion.span>
+                    <motion.h3
+                      initial={{ opacity: 0, y: 14 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, amount: 0.4 }}
+                      transition={{ duration: 0.48, delay: 0.14, ease: [0.16, 1, 0.3, 1] }}
+                      style={{
+                        margin: "0.72rem 0 0.45rem 0",
+                        fontSize:
+                          window.innerWidth <= 480
+                            ? "clamp(1.22rem, 7vw, 1.55rem)"
+                            : window.innerWidth <= 768
+                              ? "clamp(1.35rem, 5vw, 1.85rem)"
+                              : "clamp(1.7rem, 3.4vw, 2.35rem)",
+                        lineHeight: 1.12,
+                        letterSpacing: "-0.04em",
+                        color: "rgba(246, 250, 255, 0.99)",
+                        fontWeight: 700,
+                      }}
+                    >
+                      Launch <span style={{ color: "rgba(151, 220, 255, 0.98)" }}>higher-signal</span> technical interviews this week.
+                    </motion.h3>
+                    <motion.p
+                      initial={{ opacity: 0, y: 12 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, amount: 0.4 }}
+                      transition={{ duration: 0.44, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                      style={{
+                        margin: "0 0 0.8rem 0",
+                        fontSize: window.innerWidth <= 768 ? "0.84rem" : "0.92rem",
+                        lineHeight: 1.62,
+                        color: "rgba(214, 227, 248, 0.92)",
+                        letterSpacing: "-0.01em",
+                        maxWidth: "740px",
+                      }}
+                    >
+                      Move from ad-hoc sessions to a structured interview workflow with realtime collaboration, integrity signals, and replayable decision evidence.
+                    </motion.p>
+
+                    <div style={{ display: "grid", gap: "0.32rem" }}>
+                      {landingCtaHighlights.map((highlight, idx) => (
+                        <motion.div
+                          key={highlight}
+                          initial={{ opacity: 0, x: -8 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true, amount: 0.55 }}
+                          transition={{ duration: 0.32, delay: 0.24 + idx * 0.07, ease: [0.16, 1, 0.3, 1] }}
+                          style={{ display: "flex", alignItems: "center", gap: "0.38rem" }}
+                        >
+                          <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "rgba(162, 226, 255, 0.95)" }} />
+                          <span style={{ fontSize: "0.75rem", color: "rgba(220, 231, 252, 0.92)" }}>{highlight}</span>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 14 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.45 }}
+                    transition={{ duration: 0.48, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    style={{
+                      display: "grid",
+                      gap: "0.7rem",
+                      justifyItems: "stretch",
+                      alignContent: "center",
+                      background: "rgba(5, 12, 21, 0.42)",
+                      border: "1px solid rgba(255, 255, 255, 0.16)",
+                      borderRadius: "18px",
+                      padding: window.innerWidth <= 960 ? "0.9rem" : "1rem",
+                    }}
+                  >
+                    <Link
+                      to="/register"
+                      className="action-btn run-btn"
+                      style={{
+                        textDecoration: "none",
+                        fontSize: "0.82rem",
+                        padding: "0.68rem 1.06rem",
+                        minHeight: "unset",
+                        width: "100%",
+                        justifyContent: "center",
+                      }}
+                    >
+                      Get Started for Free
+                    </Link>
+                    <Link
+                      to="/login"
+                      className="action-btn save-btn"
+                      style={{
+                        textDecoration: "none",
+                        fontSize: "0.82rem",
+                        padding: "0.68rem 1.06rem",
+                        minHeight: "unset",
+                        width: "100%",
+                        textAlign: "center",
+                        color: "rgba(240, 246, 255, 0.95)",
+                        background: "rgba(255, 255, 255, 0.04)",
+                        border: "1px solid rgba(255, 255, 255, 0.12)",
+                      }}
+                    >
+                      Log in to Dashboard
+                    </Link>
+                    <span
+                      style={{
+                        fontSize: "0.7rem",
+                        color: "rgba(196, 214, 242, 0.86)",
+                        textAlign: "center",
+                        letterSpacing: "-0.01em",
+                      }}
+                    >
+                      No setup overhead. Start with your first room instantly.
+                    </span>
+                  </motion.div>
+                </div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.45 }}
+                  transition={{ duration: 0.5, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  style={{
+                    marginTop: "1rem",
+                    display: "grid",
+                    gridTemplateColumns:
+                      window.innerWidth <= 768
+                        ? "1fr"
+                        : "repeat(3, minmax(0, 1fr))",
+                    gap: "0.58rem",
+                  }}
+                >
+                  {landingCtaStats.map((stat, statIndex) => (
+                    <motion.div
+                      key={stat.label}
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, amount: 0.65 }}
+                      transition={{ duration: 0.36, delay: 0.36 + statIndex * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                      style={{
+                        borderRadius: "12px",
+                        border: "1px solid rgba(255, 255, 255, 0.14)",
+                        background: "rgba(255, 255, 255, 0.04)",
+                        padding: "0.6rem 0.7rem",
+                        display: "grid",
+                        gap: "0.18rem",
+                      }}
+                    >
+                      <span style={{ fontSize: "0.66rem", color: "rgba(186, 206, 238, 0.92)" }}>{stat.label}</span>
+                      <span style={{ fontSize: "0.78rem", color: "rgba(240, 247, 255, 0.99)", fontWeight: 620 }}>
+                        {stat.value}
+                      </span>
+                      <span style={{ fontSize: "0.64rem", color: "rgba(178, 200, 234, 0.86)" }}>{stat.note}</span>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.article>
             </motion.section>
 
           </div>
