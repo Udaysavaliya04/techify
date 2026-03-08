@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { AnimatePresence, motion, transform, useScroll, useTransform } from 'framer-motion';
+import { AnimatePresence, motion, transform, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { useAuth } from './components/AuthWrapper';
 import config from './config';
 import './App.css';
@@ -16,11 +16,27 @@ export default function Join() {
   const [showFeedbackIssuesModal, setShowFeedbackIssuesModal] = useState(false);
   const [instructionsAcknowledged, setInstructionsAcknowledged] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
+  const [isHeroVideoUnavailable, setIsHeroVideoUnavailable] = useState(false);
+  const heroVideoSectionRef = useRef(null);
   const featureSectionRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const inputRefs = useRef([]);
   const { isAuthenticated, user } = useAuth();
+  const isMobileView = window.innerWidth <= 768;
+  const isSmallMobileView = window.innerWidth <= 480;
+  const prefersReducedMotion = useReducedMotion();
+  const landingHeroVideoSrc = '/video.mp4';
+
+  const { scrollYProgress: heroVideoScrollProgress } = useScroll({
+    target: heroVideoSectionRef,
+    offset: ['start end', 'end center'],
+  });
+  const heroVideoOpacity = useTransform(
+    heroVideoScrollProgress,
+    [0, 1],
+    prefersReducedMotion ? [1, 1] : [0.75, 1]
+  );
 
   const { scrollYProgress: featureScrollProgress } = useScroll({
     target: featureSectionRef,
@@ -1385,8 +1401,6 @@ export default function Join() {
     }
   };
 
-  const isMobileView = window.innerWidth <= 768;
-  const isSmallMobileView = window.innerWidth <= 480;
   const isUserAuthenticated = isAuthenticated();
   const headerShellWidth = "calc(100% - 2rem)";
   const headerShellRadius = "22px";
@@ -2056,6 +2070,51 @@ export default function Join() {
                 Sign In
               </Link>
             </div>
+
+            <motion.section
+              ref={heroVideoSectionRef}
+              className="hero-video-showcase"
+              initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <motion.div
+                className="hero-video-showcase__card"
+                style={{
+                  opacity: heroVideoOpacity,
+                }}
+              >
+                <span className="hero-video-showcase__aura" aria-hidden="true" />
+                <div className="hero-video-showcase__frame">
+                  <span className="hero-video-showcase__liquid-border" aria-hidden="true" />
+                  <div className="hero-video-showcase__screen">
+                    {!isHeroVideoUnavailable ? (
+                      <video
+                        src={landingHeroVideoSrc}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                        className="hero-video-showcase__video"
+                        onError={() => setIsHeroVideoUnavailable(true)}
+                      />
+                    ) : (
+                      <div
+                        className="hero-video-showcase__fallback"
+                        role="img"
+                        aria-label="Techify video preview unavailable"
+                      >
+                        <p className="hero-video-showcase__fallback-kicker">Techify Demo Preview</p>
+                        <h3>Drop video.mp4 in frontend/public to enable this video.</h3>
+                      </div>
+                    )}
+                    <span className="hero-video-showcase__overlay" aria-hidden="true" />
+                  </div>
+                </div>
+              </motion.div>
+            </motion.section>
 
             <motion.section
               ref={featureSectionRef}
