@@ -2385,7 +2385,7 @@ export default function Join() {
                   color: "rgba(246, 250, 255, 0.99)",
                 }}
               >
-                How <span style={{ background: "linear-gradient(90deg, #002fff 0%, rgb(0, 213, 255) 50%,  #7b00ff 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Techify</span> Works?
+                How <span style={{  fontFamily: "Google Sans" , letterSpacing:"-0.05em"}}>Techify</span> Works?
               </motion.h3>
 
               <motion.p
