@@ -390,7 +390,7 @@ export default function Room() {
       if (document.hidden) {
         emitIntegritySignal({
           rule: 'tab_switch',
-          message: 'Tab/window switch detected during interview. Please stay on the interview screen.',
+          message: 'Tab/window switch detected.',
           metadata: { source: 'visibilitychange' },
           cooldownKey: 'tab_switch_visibility',
           cooldownMs: 2500
@@ -401,7 +401,7 @@ export default function Room() {
     const handleWindowBlur = () => {
       emitIntegritySignal({
         rule: 'tab_switch',
-        message: 'Window focus changed. Stay focused on the interview tab.',
+        message: 'Window focus changed.',
         metadata: { source: 'window_blur' },
         cooldownKey: 'tab_switch_blur',
         cooldownMs: 2500
@@ -423,7 +423,7 @@ export default function Room() {
     const handleOffline = () => {
       emitIntegritySignal({
         rule: 'network_offline',
-        message: 'Network connection lost. Reconnect quickly to continue the interview safely.',
+        message: 'Network connection lost. Reconnect quickly.',
         metadata: { online: false },
         cooldownMs: 1000
       });
@@ -1106,16 +1106,16 @@ export default function Room() {
             padding: '1.35rem',
             boxShadow: '0 20px 38px rgb(0 0 0 / 0.45)'
           }}>
-            <h3 style={{ margin: '0 0 0.5rem 0' }}>Fullscreen Required</h3>
+            <h3 style={{ margin: '0 0 0.5rem 0' }}>Full-screen Required</h3>
             <p style={{ margin: '0 0 1rem 0', fontSize: '0.86rem', color: 'hsl(var(--muted-foreground))' }}>
-              Please enable fullscreen to continue the interview. If you press Esc, this prompt will appear again.
+              Enabling full-screen is strictly required to continue the interview.
             </p>
             <button
               className="action-btn run-btn"
               onClick={handleEnableFullscreen}
               style={{ width: '100%' }}
             >
-              Enable Fullscreen
+              Enable Full-screen
             </button>
           </div>
         </div>
@@ -1352,7 +1352,7 @@ export default function Room() {
                   No integrity flags captured yet.
                 </div>
               ) : (
-                <div style={{ maxHeight: '150px', overflowY: 'auto', display: 'grid', gap: '0.4rem' }}>
+                <div style={{ maxHeight: '180px', overflowY: 'auto', display: 'grid', gap: '0.4rem' }}>
                   {interviewerIntegrityEvents.slice(0, 10).map((eventItem) => (
                     <div
                       key={eventItem.id}
@@ -1383,7 +1383,6 @@ export default function Room() {
               value={interviewNotes}
               onChange={(e) => handleNotesChange(e.target.value)}
               placeholder="Enter your interview notes here..."
-              style={{ minHeight: '270px' }}
             />
           </div>
         )}

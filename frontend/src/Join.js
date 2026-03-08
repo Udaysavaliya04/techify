@@ -13,6 +13,7 @@ export default function Join() {
   const [joinError, setJoinError] = useState('');
   const [joining, setJoining] = useState(false);
   const [showCandidateInstructionsModal, setShowCandidateInstructionsModal] = useState(false);
+  const [showFeedbackIssuesModal, setShowFeedbackIssuesModal] = useState(false);
   const [instructionsAcknowledged, setInstructionsAcknowledged] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
   const featureSectionRef = useRef(null);
@@ -228,11 +229,11 @@ export default function Join() {
     },
     {
       id: 'integrity',
-      badge: 'Interview Integrity',
-      title: 'Candidate Integrity Layer With Live Signals',
+      badge: 'Proctoring Intelligence',
+      title: 'Built-In Integrity. Zero Tolerance for Cheating.',
       description:
-        'Tab focus, media health, and network behavior are tracked in-session so interviewers get real-time visibility.',
-      points: ['Soft-warning policy', 'Realtime interviewer monitor', 'Session-level event evidence'],
+        'From copy-paste alerts and plagiarism scans to camera checks and suspicious activity flags.',
+      points: ['Catch call plagiarism instantly', 'track every copy-paste action', 'Replay Every Line, Click by Click'],
       glow: 'rgba(94, 196, 255, 0.52)',
       gradient: 'transparent',
       meta: 'Cheat Detection',
@@ -252,9 +253,18 @@ export default function Join() {
 
   const faqItems = [
     {
-      question: 'Can I run a full interview without switching tools?',
+      question: 'What is Techify?',
       answer:
-        'Yes. Techify keeps coding editor, video, question flow, AI assistance, rubric scoring, and report generation inside one interview room.',
+        'Techify is a remote technical interview platform designed for tech teams. We help you assess and interview developers faster, with advanced tools in one tab, AI proctoring, and detailed performance insights.',
+    },
+    {
+      question: 'Do i need to install anything?',
+      answer:
+        'No installation required. Techify is fully browser based for both interviewers and candidates, ensuring seemless experience without any setup.',
+    },
+    {
+      question: 'Do i have to switch between multiple tabs & tools?',
+      answer: 'No need to switch between tabs, Techify is an all in one interview platform consisting all advanced tools in one single tab.',
     },
     {
       question: 'How does candidate joining work securely?',
@@ -292,7 +302,7 @@ export default function Join() {
   const landingCtaStats = [
     { label: 'Realtime Sync', value: '< 120ms', note: 'Live editor collaboration' },
     { label: 'Invite Security', value: 'Signed + TTL', note: 'Controlled interview access' },
-    { label: 'Decision Reports', value: 'One-click export', note: 'Timeline-backed evidence' },
+    { label: 'Decision Reports', value: 'One-click export', note: 'Exportable final report' },
   ];
 
   const featuredCompanyLogos = [
@@ -330,16 +340,16 @@ export default function Join() {
     {
       id: 'conduct-interview',
       step: '03',
-      title: 'Run Live Interview',
+      title: 'Live Assessment Experience',
       description:
-        'Collaborate in real-time with editor sync, video, AI support, and guided evaluation.',
-      points: ['Realtime coding + output sync', 'Integrated video controls', 'AI-assisted probing questions'],
+        'Collaborate in real-time with editor,screen sharing, video call, AI support, with advanced cheat detection.',
+      points: ['Realtime code execution + output sync', 'Integrated video controls', 'Live Monitoring + AI assistance'],
       accent: 'rgba(119, 212, 191, 0.9)',
     },
     {
       id: 'decide-share',
       step: '04',
-      title: 'Score, Decide, Export',
+      title: 'Smart Assessment And Proctoring',
       description:
         'Finalize rubric scores and generate decision-ready reports for your hiring panel.',
       points: ['Weighted rubric scoring', 'Timeline + notes replay', 'Exportable final report'],
@@ -1293,7 +1303,7 @@ export default function Join() {
           >
             <div style={{ fontSize: "0.64rem", color: "rgba(218, 231, 252, 0.92)" }}>Invite Link</div>
             <div style={{ borderRadius: "8px", border: "1px solid rgba(255,255,255,0.14)", padding: "0.34rem 0.4rem", fontSize: "0.58rem", color: "rgba(170, 194, 235, 0.88)", background: "rgba(255,255,255,0.04)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-              techify.ai/join?room=AB12CD&invite=...
+              techify.com/join?room=P2N1ZA&invite=...
             </div>
             <div style={{ display: "grid", gap: "0.26rem" }}>
               {["Copied to clipboard", "Signed token active", "TTL: 30 min"].map((label, idx) => (
@@ -2375,7 +2385,7 @@ export default function Join() {
                   color: "rgba(246, 250, 255, 0.99)",
                 }}
               >
-                How It Works?
+                How <span style={{ background: "linear-gradient(90deg, #002fff 0%, rgb(0, 213, 255) 50%,  #7b00ff 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Techify</span> Works?
               </motion.h3>
 
               <motion.p
@@ -2393,7 +2403,7 @@ export default function Join() {
                   letterSpacing: "-0.01em",
                 }}
               >
-                A clean 4-step interview flow from room creation to final decision, with full visibility at every stage.
+                A clean 4-step flow from room creation to final decision.
               </motion.p>
 
               <div style={{ display: "grid", gap: window.innerWidth <= 768 ? "0.95rem" : "1.15rem" }}>
@@ -2618,7 +2628,6 @@ export default function Join() {
                       key={`faq-${faqIndex}`}
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
-                      whileHover={{ y: -2 }}
                       viewport={{ once: true, amount: 0.35 }}
                       transition={{
                         duration: 0.55,
@@ -2987,7 +2996,7 @@ export default function Join() {
                         fontWeight: 700,
                       }}
                     >
-                      Launch <span style={{ color: "rgba(151, 220, 255, 0.98)" }}>higher-signal</span> technical interviews this week.
+                      Empower your hiring process with structured technical interviews now.
                     </motion.h3>
                     <motion.p
                       initial={{ opacity: 0, y: 12 }}
@@ -3003,7 +3012,7 @@ export default function Join() {
                         maxWidth: "740px",
                       }}
                     >
-                      Move from ad-hoc sessions to a structured interview workflow with realtime collaboration, integrity signals, and replayable decision evidence.
+                      Move from messed up hiring systems to a structured interview workflow with techify.
                     </motion.p>
 
                     <div style={{ display: "grid", gap: "0.32rem" }}>
@@ -3255,39 +3264,33 @@ export default function Join() {
                   viewport={{ once: true, amount: 0.35 }}
                   transition={{ duration: 0.46, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
                 >
-                  Build faster interviews.
+                  Accelerate your interview process.
                   <br />
-                  Decide with confidence.
+                  Hire with confidence.
                 </motion.h3>
                 <motion.a
-                  href="https://github.com/Udaysavaliya04"
+                  href="https://x.com/Uday_Code"
                   target="_blank"
                   rel="noopener noreferrer"
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  whileHover={{ transform: "translateY(-1.5px)" }}
+                  whileHover={{ y: -2, scale: 1.01 }}
                   viewport={{ once: true, amount: 0.5 }}
                   transition={{ duration: 0.34, ease: [0.16, 1, 0.3, 1], delay: 0.22 }}
-                  style={{
-                    marginTop: "0.75rem",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "0.45rem",
-                    padding: "0.36rem 0.74rem",
-                    borderRadius: "10px",
-                    border: "1px solid rgba(255, 255, 255, 0.78)",
-                    background: "rgba(255, 255, 255, 0.1)",
-                    color: "rgb(255, 255, 255)",
-                    fontSize: "0.75rem",
-                    fontWeight: 600,
-                    letterSpacing: "0.03em",
-                    textDecoration: "none",
-                    boxShadow: "0 10px 28px -24px rgba(0, 0, 0, 0.72)",
-                    width: "fit-content",
-                  }}
+                  className="chef-signature-link"
+                  style={{ marginTop: "0.78rem" }}
                 >
-                  <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#ff0000", animation: "badgeBlinkPulse 1s ease infinite" }} />
-                  Cooked by<a href="https://x.com/Uday_Code" target="_blank" rel="noopener noreferrer" style={{color:"black", textDecoration: "none", cursor: "pointer" }}>Uday Savaliya</a>
+                  <span className="chef-signature-flame" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 3c.8 2.6-.4 4.4-1.7 5.7C9.1 9.8 8 11.2 8 13a4 4 0 0 0 8 0c0-1.7-1-3-2.1-4.1-.9-.9-1.9-2-1.9-3.9z" />
+                      <path d="M12 14.2c.4 1-.1 1.9-.8 2.4a1.8 1.8 0 0 0 3-.9c0-.9-.5-1.4-1.1-1.9-.3-.3-.7-.6-1.1-1.3z" />
+                    </svg>
+                  </span>
+                  <span className="chef-signature-copy">
+                    <span className="chef-signature-kicker">Cooked by</span>
+                    <span className="chef-signature-name">Uday Savaliya</span>
+                  </span>
+                  <span className="chef-signature-spark" aria-hidden="true" />
                 </motion.a>
               </div>
 
@@ -3344,9 +3347,6 @@ export default function Join() {
                 <p style={{ margin: 0, color: "rgba(236, 243, 255, 0.95)", fontSize: "0.82rem", fontWeight: 600 }}>
                   Product
                 </p>
-                <Link to="/join" style={{ color: "rgba(205, 220, 247, 0.92)", textDecoration: "none", fontSize: "0.78rem" }}>
-                  Home
-                </Link>
                 <Link to="/register" style={{ color: "rgba(205, 220, 247, 0.92)", textDecoration: "none", fontSize: "0.78rem" }}>
                   Create Account
                 </Link>
@@ -3394,16 +3394,25 @@ export default function Join() {
                 >
                   GitHub
                 </a>
-                <a
-                  href="https://github.com/Udaysavaliya04/techify/issues"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: "rgba(205, 220, 247, 0.92)", textDecoration: "none", fontSize: "0.78rem" }}
+                <button
+                  type="button"
+                  onClick={() => setShowFeedbackIssuesModal(true)}
+                  style={{
+                    color: "rgba(205, 220, 247, 0.92)",
+                    textDecoration: "none",
+                    fontSize: "0.78rem",
+                    background: "transparent",
+                    border: "none",
+                    padding: 0,
+                    textAlign: "left",
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                  }}
                   onMouseEnter={(e) => e.currentTarget.style.color = "white"}
                   onMouseLeave={(e) => e.currentTarget.style.color = "rgba(205, 220, 247, 0.92)"}
                 >
                   Feedback & Issues
-                </a>
+                </button>
               </motion.div>
 
               <motion.div
@@ -3461,7 +3470,7 @@ export default function Join() {
                 viewport={{ once: true, amount: 0.4 }}
                 transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1], delay: 0.36 }}
               >
-                © {new Date().getFullYear()} Techify. All rights reserved.
+                © {new Date().getFullYear()} Techify | All rights reserved.
               </motion.p>
 
               <motion.div
@@ -3504,6 +3513,98 @@ export default function Join() {
             </motion.div>
           </div>
         </motion.footer>
+      )}
+
+      {!isAuthenticated() && showFeedbackIssuesModal && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowFeedbackIssuesModal(false)}
+        >
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: "36rem", marginTop: "3rem" }}
+          >
+            <button
+              onClick={() => setShowFeedbackIssuesModal(false)}
+              className="modal-close"
+              aria-label="Close feedback and issues modal"
+            >
+              x
+            </button>
+
+            <div className="modal-header" style={{ textAlign: "center", marginBottom: "0.9rem" }}>
+              <h3 className="modal-title">Feedback & Issues</h3>
+              <p className="modal-description" style={{ marginTop: "0.35rem" }}>
+                Share bugs, feature ideas, or product feedback with the Techify team.
+              </p>
+            </div>
+
+            <div style={{ display: "grid", gap: "0.72rem" }}>
+              {[
+                {
+                  title: "Report a Bug",
+                  description: "Found something broken? Create a detailed issue so it can be fixed quickly.",
+                  href: "https://github.com/Udaysavaliya04/techify/issues/new?template=bug_report.md",
+                  cta: "Open Bug Report"
+                },
+                {
+                  title: "Request a Feature",
+                  description: "Suggest a workflow, UI, or interview feature you want in upcoming updates.",
+                  href: "https://github.com/Udaysavaliya04/techify/issues/new?template=feature_request.md",
+                  cta: "Open Feature Request"
+                },
+                {
+                  title: "View All Feedback",
+                  description: "Browse open issues, roadmap discussions, and status of submitted requests.",
+                  href: "https://github.com/Udaysavaliya04/techify/issues",
+                  cta: "Open Issues Board"
+                }
+              ].map((item) => (
+                <div
+                  key={item.title}
+                  style={{
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: "calc(var(--radius) - 2px)",
+                    background: "hsl(var(--muted) / 0.32)",
+                    padding: "0.8rem",
+                    display: "grid",
+                    gap: "0.44rem",
+                  }}
+                >
+                  <div style={{ fontSize: "0.9rem", fontWeight: 600 }}>{item.title}</div>
+                  <div style={{ fontSize: "0.82rem", color: "hsl(var(--muted-foreground))", lineHeight: 1.5 }}>
+                    {item.description}
+                  </div>
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="action-btn save-btn"
+                    style={{
+                      width: "fit-content",
+                      minHeight: "36px",
+                      fontSize: "0.76rem",
+                      textDecoration: "none",
+                    }}
+                  >
+                    {item.cta}
+                  </a>
+                </div>
+              ))}
+            </div>
+
+            <div className="modal-footer" style={{ marginTop: "1rem", justifyContent: "flex-end" }}>
+              <button
+                onClick={() => setShowFeedbackIssuesModal(false)}
+                className="action-btn run-btn"
+                style={{ minHeight: "40px" }}
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {isAuthenticated() && user?.role === 'candidate' && showCandidateInstructionsModal && (
