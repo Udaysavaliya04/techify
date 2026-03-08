@@ -1263,7 +1263,7 @@ export default function Room() {
               paddingBottom: '0.75rem',
               borderBottom: '1px solid hsl(var(--border))'
             }}>
-              <h3 style={{ margin: 0 }}>Interview Notes</h3>
+              <h3 style={{ margin: 0 }}>Quick Assessment</h3>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
                 <button
                   className="action-btn save-btn"
@@ -1382,8 +1382,8 @@ export default function Room() {
               className="notes-textarea"
               value={interviewNotes}
               onChange={(e) => handleNotesChange(e.target.value)}
-              placeholder="Enter your interview notes here... Saved as you type..."
-              style={{ minHeight: '290px' }}
+              placeholder="Enter your interview notes here..."
+              style={{ minHeight: '270px' }}
             />
           </div>
         )}
@@ -1478,8 +1478,7 @@ export default function Room() {
                     padding: '40px',
                     letterSpacing: '-0.5px',
                   }}>
-                    No execution history yet. 
-                    <br></br>Run some code to see it here!
+                    No execution history yet.
                   </div>
                 ) : (
                   executionHistory.map((entry) => (
