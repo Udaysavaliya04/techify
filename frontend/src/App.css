@@ -1876,7 +1876,6 @@ html,
   }
 }
 
-/* Unauth footer signature */
 .chef-signature-link {
   --chef-ember: rgba(255, 146, 74, 0.92);
   position: relative;
@@ -1887,7 +1886,7 @@ html,
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.28);
   background:
-    linear-gradient(120deg, rgba(9, 13, 21, 0.9), rgba(20, 14, 10, 0.86) 55%, rgba(34, 16, 7, 0.88));
+    linear-gradient(0deg, rgba(0, 0, 0, 0.336), rgba(20, 14, 10, 0.314) 55%, rgba(34, 16, 7, 0.21));
   color: rgba(244, 248, 255, 0.96);
   text-decoration: none;
   box-shadow:
@@ -1905,7 +1904,7 @@ html,
   height: 420%;
   background: linear-gradient(90deg, transparent, rgba(255, 223, 188, 0.24), transparent);
   transform: rotate(18deg);
-  animation: chef-shine-sweep 3.8s ease-in-out infinite;
+  animation: chef-shine-sweep 5s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
 }
@@ -1918,21 +1917,20 @@ html,
 }
 
 .chef-signature-flame {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 191, 123, 0.98);
-  background: radial-gradient(circle, rgba(255, 161, 82, 0.34), rgba(255, 94, 58, 0.08));
-  filter: drop-shadow(0 0 8px rgba(255, 127, 53, 0.45));
-  animation: chef-flame-flicker 1.35s ease-in-out infinite;
+  background: rgba(0, 0, 0, 0.204);
+  filter: drop-shadow(0 0 10px rgba(255, 127, 53, 0.5));
+  flex-shrink: 0;
 }
 
 .chef-signature-flame svg {
-  width: 14px;
-  height: 14px;
+  width: 30px;
+  height: 30px;
 }
 
 .chef-signature-copy {
@@ -1950,9 +1948,9 @@ html,
 }
 
 .chef-signature-name {
-  font-size: 0.83rem;
+  font-size: 0.88rem;
   font-weight: 800;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
   background: linear-gradient(90deg, #ffffff 0%, #ffe2bf 46%, #ffbd80 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -1967,17 +1965,6 @@ html,
   background: var(--chef-ember);
   box-shadow: 0 0 12px rgba(255, 143, 64, 0.9);
   animation: chef-spark-pulse 1.7s ease-in-out infinite;
-}
-
-@keyframes chef-flame-flicker {
-  0%, 100% { transform: translateY(0) scale(1); }
-  35% { transform: translateY(-1px) scale(1.06); }
-  60% { transform: translateY(0.5px) scale(0.97); }
-}
-
-@keyframes chef-spark-pulse {
-  0%, 100% { opacity: 0.45; transform: scale(0.9); }
-  50% { opacity: 1; transform: scale(1.2); }
 }
 
 @keyframes chef-shine-sweep {
