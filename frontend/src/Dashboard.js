@@ -818,7 +818,8 @@ export default function Dashboard() {
                     'Tab visibility and focus changes are being monitored.',
                     'Full-screen exits are logged and may raise integrity flags.',
                     'Clipboard attempts, media availability, and network changes are tracked.',
-                    'Video and audio feeds are monitored for anomalies.'
+                    'Video and audio feeds are monitored for anomalies.',
+                    'Use of developer tools is strictly prohibited during the interview.'
                   ]
                 },
                 {
@@ -826,7 +827,7 @@ export default function Dashboard() {
                   points: [
                     'You receive a few warnings while in the interview.',
                     'If cheating persists, you will be disqualified and interview will be marked as failed.',
-                    'All integrity flags are saved in timeline/report evidence and may impact decisions.'
+                    'All integrity flags are reported to the interviewer and may impact decisions.'
                   ]
                 }
               ].map((section) => (

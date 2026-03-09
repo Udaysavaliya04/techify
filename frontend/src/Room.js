@@ -398,16 +398,6 @@ export default function Room() {
       }
     };
 
-    const handleWindowBlur = () => {
-      emitIntegritySignal({
-        rule: 'tab_switch',
-        message: 'Window focus changed.',
-        metadata: { source: 'window_blur' },
-        cooldownKey: 'tab_switch_blur',
-        cooldownMs: 2500
-      });
-    };
-
     const handleFullscreenChange = () => {
       const isFullscreen = !!document.fullscreenElement;
       setShowFullscreenOverlay(!isFullscreen);
@@ -455,7 +445,6 @@ export default function Room() {
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('blur', handleWindowBlur);
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     window.addEventListener('offline', handleOffline);
     window.addEventListener('online', handleOnline);
@@ -466,7 +455,6 @@ export default function Room() {
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('blur', handleWindowBlur);
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
       window.removeEventListener('offline', handleOffline);
       window.removeEventListener('online', handleOnline);
@@ -641,7 +629,7 @@ export default function Room() {
   };
 
   const handleEndInterview = async () => {
-    if (window.confirm('Are you sure you want to end the interview?')) {
+    if (window.confirm('Are you sure you want to end this interview?')) {
       try {
         await axios.put(`${config.API_BASE_URL}/api/room/${roomId}/end`);
 
@@ -678,7 +666,7 @@ export default function Room() {
         feedback: 'Candidate left the interview early'
       });
 
-      pushToastAlert('You have left the interview. Redirecting to dashboard...', 'warning', 2500);
+      pushToastAlert('You have left the interview early. Redirecting to dashboard...', 'warning', 2500);
 
       socketRef.current?.emit('userLeave', {
         roomId,
@@ -710,7 +698,7 @@ export default function Room() {
       await document.documentElement.requestFullscreen();
       setShowFullscreenOverlay(false);
     } catch (error) {
-      pushToastAlert('Fullscreen permission was blocked. Please allow fullscreen and retry.', 'warning', 4200);
+      pushToastAlert('Fullscreen permission was blocked.', 'warning', 4200);
       setShowFullscreenOverlay(true);
     }
   };
@@ -724,7 +712,7 @@ export default function Room() {
 
     emitIntegritySignal({
       rule: 'video_modal_closed',
-      message: 'Video call window was closed. It will reopen automatically during interview.',
+      message: 'Video call leave has been detected.',
       metadata: { source: 'candidate_video_modal_close' },
       cooldownMs: 1200
     });
@@ -764,7 +752,7 @@ export default function Room() {
     if (state.reason === 'camera_disabled') {
       emitIntegritySignal({
         rule: 'camera_disabled',
-        message: 'Camera was turned off. Please keep camera enabled during interview.',
+        message: 'Camera turn off has been detected.',
         metadata: state,
         cooldownMs: 1500
       });
@@ -773,7 +761,7 @@ export default function Room() {
     if (state.reason === 'microphone_disabled') {
       emitIntegritySignal({
         rule: 'microphone_disabled',
-        message: 'Microphone was muted. Please keep microphone available during interview.',
+        message: 'Microphone turn off has been detected.',
         metadata: state,
         cooldownMs: 1500
       });
@@ -1578,7 +1566,7 @@ export default function Room() {
               className="user-join-alert"
               style={{
                 background: alert.type === 'success' ? 'hsl(142 76% 36%)' :
-                  alert.type === 'warning' ? 'hsl(32 95% 44%)' :
+                  alert.type === 'warning' ? 'hsla(32, 100%, 46%, 1)' :
                     'hsl(var(--primary))',
                 color: '#ffffff',
                 padding: '0.75rem 1rem',
