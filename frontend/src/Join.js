@@ -3023,28 +3023,6 @@ export default function Join() {
                   }}
                 >
                   <div>
-                    <motion.span
-                      initial={{ opacity: 0, y: 10 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, amount: 0.4 }}
-                      transition={{ duration: 0.42, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "0.42rem",
-                        padding: "0.3rem 0.66rem",
-                        borderRadius: "999px",
-                        border: "1px solid rgba(255, 255, 255, 0.22)",
-                        background: "rgba(8, 13, 23, 0.52)",
-                        fontSize: "0.66rem",
-                        color: "rgba(240, 246, 255, 0.95)",
-                        letterSpacing: "0.05em",
-                        fontWeight: 600,
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      Interview Teams
-                    </motion.span>
                     <motion.h3
                       initial={{ opacity: 0, y: 14 }}
                       whileInView={{ opacity: 1, y: 0 }}
@@ -3597,7 +3575,7 @@ export default function Join() {
           <div
             className="modal-content"
             onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: "36rem", marginTop: "3rem" }}
+            style={{ maxWidth: "36rem", marginTop: "4rem"}}
           >
             <button
               onClick={() => setShowFeedbackIssuesModal(false)}

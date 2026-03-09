@@ -11,7 +11,7 @@ export default function Register() {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'candidate'
+    role: 'interviewer'
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -319,7 +319,6 @@ export default function Register() {
                 backdropFilter: "blur(10px)",
               }}
             >
-              {/* Sliding Background Pill */}
               <div
                 style={{
                   position: "absolute",
