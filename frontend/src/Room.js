@@ -816,14 +816,7 @@ export default function Room() {
                       <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M16 19h4a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-2m-2.236-4a3 3 0 1 0 0-4M3 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                       </svg>
-
-                      <span style={{
-                        fontSize: '0.875rem',
-                        fontWeight: '500',
-                        color: 'hsl(var(--foreground))'
-                      }}>
-                        Participants:
-                      </span>
+                      
                     </div>
                     <div style={{
                       display: 'flex',
@@ -1566,13 +1559,14 @@ export default function Room() {
               className="user-join-alert"
               style={{
                 background: alert.type === 'success' ? 'hsl(142 76% 36%)' :
-                  alert.type === 'warning' ? 'hsla(32, 100%, 46%, 1)' :
+                  alert.type === 'warning' ? 'hsl(0 0% 14.9%)' :
                     'hsl(var(--primary))',
                 color: '#ffffff',
                 padding: '0.75rem 1rem',
                 borderRadius: 'var(--radius)',
-                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
                 fontSize: '0.875rem',
+                borderTop: '2px solid rgba(255, 255, 255, 0.1)',
+                borderLeft: '2px solid rgba(255, 255, 255, 0.1)',
                 fontWeight: '500',
                 maxWidth: '300px',
                 display: 'flex',

@@ -294,6 +294,7 @@ export default function Dashboard() {
             <button
               onClick={handleStartInterview}
               className="action-btn run-btn"
+              title="Create Interview"
               style={{height:'40px'}}
             >
               Create Interview
