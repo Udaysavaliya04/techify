@@ -1383,6 +1383,9 @@ export default function Join() {
   const headerShellWidth = "calc(100% - 2rem)";
   const headerShellRadius = "22px";
   const mainTopPadding = isMobileView ? "8rem" : "4rem";
+  const landingSectionGap = isMobileView ? "3rem" : "5rem";
+  const landingTitleToSubtitleGap = isMobileView ? "0.65rem" : "0.7rem";
+  const landingSubtitleToContentGap = isMobileView ? "1.8rem" : "4rem";
 
   return (
     <div
@@ -2151,8 +2154,27 @@ export default function Join() {
                     marginBottom: "1rem",
                   }}
                 >
-                  <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#7ad6ff" , animation: "badgeBlinkPulse 1.5s ease infinite" }} />
-                  <span
+                <div style={{ position: "relative", width: "14px", height: "14px", display: "inline-block" }}>
+                <span
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    borderRadius: "50%",
+                    background: "radial-gradient(circle, #00b7ff 0%, transparent 70%)",
+                    animation: "ringExpand 1s cubic-bezier(0.4, 0, 0.2, 1) infinite",
+                  }}
+              />
+                <span
+                  style={{
+                   position: "absolute",
+                   inset: "3px",
+                   borderRadius: "50%",
+                   background: "#0099ff",
+                   boxShadow: "0 0 10px rgba(0, 26, 255, 0.6)",
+                  }}
+              />
+                </div>                  
+                  <span 
                     style={{
                       fontSize: "0.72rem",
                       letterSpacing: "0.12em",
@@ -2180,7 +2202,7 @@ export default function Join() {
                     fontWeight: 700,
                     lineHeight: 1.06,
                     letterSpacing: "-0.06em",
-                    margin: "0 0 0.85rem 0",
+                    margin: `0 0 ${landingTitleToSubtitleGap} 0`,
                     color: "rgb(250, 252, 255)",
                     fontFamily: "'Familjen Grotesk', sans-serif",
                   }}
@@ -2195,7 +2217,7 @@ export default function Join() {
                   transition={{ duration: 0.7, delay: 0.18 }}
                   style={{
                     maxWidth: "920px",
-                    margin: "0 auto 1.75rem auto",
+                    margin: `0 auto ${landingSubtitleToContentGap} auto`,
                     fontSize:
                       window.innerWidth <= 480
                         ? "0.86rem"
@@ -2207,8 +2229,7 @@ export default function Join() {
                     letterSpacing: "-0.03em",
                   }}
                 >
-                  Built for technical interviews from first prompt to hiring decision, with realtime coding, AI support, video,
-                  structured scoring, and exportable reports.
+                  Equipped with most advanced features, Techify is designed to make technical interviews more efficient, engaging, and insightful for both interviewers and candidates.
                 </motion.p>
 
                 <div
@@ -2397,9 +2418,9 @@ export default function Join() {
               style={{
                 width: "100%",
                 maxWidth: "1160px",
-                margin: window.innerWidth <= 768 ? "2.8rem auto 0" : "4.2rem auto 0",
+                margin: `${landingSectionGap} auto 0`,
                 textAlign: "left",
-                paddingTop: window.innerWidth <= 480 ? "1.5rem" : "2.5rem",
+                paddingTop: "0",
               }}
             >
               <motion.h3
@@ -2408,7 +2429,7 @@ export default function Join() {
                 viewport={{ once: true, amount: 0.4 }}
                 transition={{ duration: 0.62, ease: [0.16, 1, 0.3, 1] }}
                 style={{
-                  margin: "0 0 0.5rem 0",
+                  margin: `0 0 ${landingTitleToSubtitleGap} 0`,
                   textAlign: "center",
                   fontSize:
                     window.innerWidth <= 480
@@ -2431,7 +2452,7 @@ export default function Join() {
                 viewport={{ once: true, amount: 0.4 }}
                 transition={{ duration: 0.55, delay: 0.06, ease: [0.16, 1, 0.3, 1] }}
                 style={{
-                  margin: "0 auto 4rem auto",
+                  margin: `0 auto ${landingSubtitleToContentGap} auto`,
                   maxWidth: "760px",
                   textAlign: "center",
                   fontSize: window.innerWidth <= 768 ? "0.88rem" : "0.96rem",
@@ -2623,8 +2644,8 @@ export default function Join() {
               style={{
                 width: "100%",
                 maxWidth: "1040px",
-                margin: window.innerWidth <= 768 ? "2.8rem auto 0" : "4.6rem auto 0",
-                paddingTop: window.innerWidth <= 768 ? "0.65rem" : "1.1rem",
+                margin: `${landingSectionGap} auto 0`,
+                paddingTop: "0",
                 textAlign: "center",
               }}
             >
@@ -2634,8 +2655,8 @@ export default function Join() {
                 viewport={{ once: true, amount: 0.4 }}
                 transition={{ duration: 0.62, delay: 0.04, ease: [0.16, 1, 0.3, 1] }}
                 style={{
-                  margin: "0 0 2rem 0",
-                  paddingBottom: window.innerWidth <= 768 ? "0.35rem" : "2.5rem",
+                  margin: `0 0 ${landingSubtitleToContentGap} 0`,
+                  paddingBottom: "0",
                   fontSize:
                     window.innerWidth <= 480
                       ? "clamp(1.6rem, 8vw, 2.25rem)"
@@ -2794,11 +2815,10 @@ export default function Join() {
               style={{
                 width: "100%",
                 maxWidth: "1120px",
-                margin: window.innerWidth <= 768 ? "2.7rem auto 0" : "4.1rem auto 0",
+                margin: `${landingSectionGap} auto 0`,
                 textAlign: "center",
                 alignItems: "center",
                 alignContent: "center",
-                marginTop: window.innerWidth <= 480 ? "1.8rem" : "6rem",
 
               }}
             >
@@ -2812,7 +2832,7 @@ export default function Join() {
                   justifyItems: "center",
                   textAlign: "center",
                   gap: "0.6rem",
-                  marginBottom: window.innerWidth <= 768 ? "1.2rem" : "1.6rem",
+                  marginBottom: landingSubtitleToContentGap,
                 }}
               >
                 <div>
@@ -2844,7 +2864,6 @@ export default function Join() {
                       color: "rgba(214, 227, 248, 0.9)",
                       letterSpacing: "-0.01em",
                       maxWidth: "760px",
-                      marginBottom: window.innerWidth <= 768 ? "1.4rem" : "2rem",
                     }}
                   >
                     Real interviewers. Real teams. Real outcomes.
@@ -2938,7 +2957,7 @@ export default function Join() {
               style={{
                 width: "100%",
                 maxWidth: "1120px",
-                margin: window.innerWidth <= 768 ? "2.9rem auto 0" : "4.4rem auto 0",
+                margin: `${landingSectionGap} auto 0`,
               }}
             >
               <motion.article
@@ -3235,7 +3254,7 @@ export default function Join() {
             width: "100%",
             position: "relative",
             zIndex: 2,
-            marginTop: window.innerWidth <= 768 ? "2.2rem" : "3.5rem",
+            marginTop: landingSectionGap,
             padding: window.innerWidth <= 768 ? "0 0.9rem 1rem" : "0 1.2rem 1.2rem",
           }}
         >
