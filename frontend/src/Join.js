@@ -2824,7 +2824,7 @@ export default function Join() {
                           ? "clamp(1.35rem, 7vw, 1.75rem)"
                           : window.innerWidth <= 768
                             ? "clamp(1.55rem, 5vw, 2.05rem)"
-                            : "clamp(1.9rem, 3.6vw, 2.5rem)",
+                            : "clamp(1.9rem, 3.6vw, 3rem)",
                       lineHeight: 1.14,
                       letterSpacing: "-0.04em",
                       color: "rgba(246, 250, 255, 0.98)",
@@ -2844,6 +2844,7 @@ export default function Join() {
                       color: "rgba(214, 227, 248, 0.9)",
                       letterSpacing: "-0.01em",
                       maxWidth: "760px",
+                      marginBottom: window.innerWidth <= 768 ? "1.4rem" : "2rem",
                     }}
                   >
                     Real interviewers. Real teams. Real outcomes.
@@ -2898,11 +2899,11 @@ export default function Join() {
                       <div
                         key={`${company.id}-${index}`}
                         style={{
-                          minWidth: window.innerWidth <= 768 ? "184px" : "204px",
-                          height: window.innerWidth <= 768 ? "84px" : "96px",
+                          minWidth: window.innerWidth <= 768 ? "184px" : "224px",
+                          height: window.innerWidth <= 768 ? "84px" : "106px",
                           borderRadius: "16px",
                           border: "1px solid rgba(255, 255, 255, 0.18)",
-                          background: "rgba(255, 255, 255, 0.9)",
+                          background: "rgba(255, 255, 255, 0.2)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -2916,7 +2917,7 @@ export default function Join() {
                             transform: window.innerWidth <= 768 ? "scale(1.24)" : "scale(1.34)",
                             transformOrigin: "center",
                             filter: "grayscale(1) brightness(0)",
-                            opacity: 0.92,
+                            opacity: 1,
                           }}
                         >
                           {renderCompanyWordmark(company.id)}

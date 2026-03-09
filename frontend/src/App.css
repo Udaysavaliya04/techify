@@ -453,7 +453,7 @@ html,
   height: 1.1rem;
   border-radius: 999px;
   border: 1px solid transparent;
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--primary);
   transition: background 0.28s ease, border-color 0.28s ease, transform 0.28s ease;
 }
 
@@ -465,7 +465,7 @@ html,
 }
 
 .premium-arrow-btn:hover .premium-arrow-btn__icon-wrap {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(227, 227, 227, 0.784);
   border-color: rgba(255, 255, 255, 0.45);
   transform: translateX(1px);
 }
