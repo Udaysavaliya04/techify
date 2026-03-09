@@ -171,10 +171,11 @@ export default function Questions({ onSelect, onClose }) {
           disabled={loading}
         />
 
-        <div className="dropdown-menu" style={{ width: '100%', minWidth: '100px' }}>
+        <div className="dropdown-menu" style={{}}>
           <button
             type="button"
             className="dropdown-trigger"
+            style={{minWidth:"100%"}}
             aria-expanded={addDropdownOpen}
             disabled={loading}
             onClick={() => setAddDropdownOpen(!addDropdownOpen)}
@@ -185,7 +186,7 @@ export default function Questions({ onSelect, onClose }) {
             </svg>
           </button>
           {addDropdownOpen && (
-            <div className="dropdown-content" style={{ display: 'block' }}>
+            <div className="dropdown-content" style={{ display: 'block',minWidth:'100%' }}>
               <div className="dropdown-label">Select Difficulty</div>
               <button
                 type="button"
@@ -243,7 +244,7 @@ export default function Questions({ onSelect, onClose }) {
             className="dropdown-trigger"
             aria-expanded={filterDropdownOpen}
             disabled={loading}
-            style={{ width: '100%' }}
+            style={{ minWidth: '100%' }}
             onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
           >
             <span>{difficulty ? difficulty.charAt(0).toUpperCase() + difficulty.slice(1) : 'All Difficulties'}</span>
@@ -252,7 +253,7 @@ export default function Questions({ onSelect, onClose }) {
             </svg>
           </button>
           {filterDropdownOpen && (
-            <div className="dropdown-content" style={{ display: 'block' }}>
+            <div className="dropdown-content" style={{ display: 'block', minWidth: '100%' }}>
               <div className="dropdown-label">Filter by Difficulty</div>
               <button
                 className={`dropdown-item ${difficulty === '' ? 'dropdown-item-active' : ''}`}
@@ -380,7 +381,7 @@ export default function Questions({ onSelect, onClose }) {
                         </svg>
                       </button>
                       {editDropdownOpen && (
-                        <div className="dropdown-content" style={{ display: 'block' }}>
+                        <div className="dropdown-content" style={{ display: 'block',minWidth:'100%' }}>
                           <div className="dropdown-label">Select Difficulty</div>
                           <button
                             type="button"

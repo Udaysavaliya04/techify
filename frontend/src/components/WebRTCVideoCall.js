@@ -427,17 +427,19 @@ const WebRTCVideoCall = ({
             >
               {isMaximized ? (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
+                  <path fill="none" d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3m8 0v-3a2 2 0 0 1 2-2h3" />
                 </svg>
               ) : (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+                  <path fill="none" d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3" />
                 </svg>
               )}
             </button>
             {role !== 'candidate' && (
               <button onClick={handleModalClose} className="video-close-btn">
-                ×
+                <svg width="12" height="12" viewBox="0 0 15 15" fill="currentColor">
+                  <path d="M12.225 2.082a.5.5 0 0 1 .693.694l-.064.078L8.207 7.5l4.647 4.647l.064.078a.5.5 0 0 1-.693.693l-.078-.064L7.5 8.207l-4.646 4.647a.5.5 0 1 1-.707-.707L6.793 7.5L2.147 2.854l-.065-.078a.5.5 0 0 1 .694-.694l.078.065L7.5 6.793l4.647-4.646z" />
+                </svg>
               </button>
             )}
           </div>
@@ -468,7 +470,7 @@ const WebRTCVideoCall = ({
               muted
               className="local-video"
             />
-            <div className="video-label">You </div>
+            <div className="video-label" style={{ fontFamily: 'Bricolage Grotesque' }}>You </div>
           </div>
         </div>
 
@@ -481,20 +483,13 @@ const WebRTCVideoCall = ({
           >
             {isAudioEnabled ? (
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                <line x1="12" y1="19" x2="12" y2="23" />
-                <line x1="8" y1="23" x2="16" y2="23" />
+                <path d="M12 19v3m7-12v2a7 7 0 0 1-14 0v-2" />
+                <rect width="6" height="13" x="9" y="2" rx="3" />
               </svg>
             ) : (
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="2" y1="2" x2="22" y2="22" />
-                <path d="M18.89 13.23A7.12 7.12 0 0 0 19 12v-2" />
-                <path d="M5 10v2a7 7 0 0 0 12 5" />
-                <path d="M15 9.34V5a3 3 0 0 0-5.68-1.33" />
+                <path d="M12 19v3m3-12.66V5a3 3 0 0 0-5.68-1.33m7.63 13.28A7 7 0 0 1 5 12v-2m13.89 3.23A7 7 0 0 0 19 12v-2M2 2l20 20" />
                 <path d="M9 9v3a3 3 0 0 0 5.12 2.12" />
-                <line x1="12" y1="19" x2="12" y2="23" />
-                <line x1="8" y1="23" x2="16" y2="23" />
               </svg>
             )}
           </button>
@@ -506,16 +501,12 @@ const WebRTCVideoCall = ({
           >
             {isVideoEnabled ? (
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="23 7 16 12 23 17 23 7" />
-                <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                <path d="m16 13l5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" />
+                <rect width="14" height="12" x="2" y="6" rx="2" />
               </svg>
             ) : (
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m2 2 20 20" />
-                <path d="M10.68 5.68A2 2 0 0 1 12 5h2a2 2 0 0 1 2 2v2" />
-                <path d="m7 7-4 4v6a2 2 0 0 0 2 2h11" />
-                <path d="M16 16a2 2 0 0 1-2 2H9" />
-                <path d="m23 7-6 5 6 5z" />
+                <path d="M10.66 6H14a2 2 0 0 1 2 2v2.5l5.248-3.062A.5.5 0 0 1 22 7.87v8.196M16 16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2M2 2l20 20" />
               </svg>
             )}
           </button>
@@ -527,8 +518,7 @@ const WebRTCVideoCall = ({
               title="End call"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                <line x1="18" y1="6" x2="6" y2="18" />
+                <path fill="none" d="M10.1 13.9a14 14 0 0 0 3.732 2.668a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2a18 18 0 0 1-12.728-5.272M22 2L2 22m2.76-8.418A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233a14 14 0 0 0 .244.473" />
               </svg>
             </button>
           )}
@@ -546,7 +536,7 @@ const WebRTCVideoCall = ({
           )}
           {isConnected && !isCallStarted && (
             <p>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px', animation: 'spin 1s linear infinite' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px', animation: 'spin 1s linear infinite' }}>
                 <path d="M21 12a9 9 0 11-6.219-8.56" />
               </svg>
               Setting up call...

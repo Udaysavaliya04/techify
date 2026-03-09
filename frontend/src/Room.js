@@ -226,7 +226,7 @@ export default function Room() {
 
     socketRef.current.on('init', ({ code }) => {
       setCode(code || `/* 
-- Hey! Friendly request from your dev buddy...
+- Hi there! A friendly request from your dev buddy...
 - JDoodle(API that I am using to execute code) credits are super limited (Just 22 per day for a free plan)
 - Please stick to just 1 to 2 runs, so other curious souls can also test out the platform.
 - If the code is not running, that means the daily limit is reached.
@@ -613,7 +613,7 @@ export default function Room() {
         executionTime: Math.round(executionTime)
       };
 
-      setExecutionHistory(prev => [historyEntry, ...prev.slice(0, 19)]); // Keep last 20 runs
+      setExecutionHistory(prev => [historyEntry, ...prev.slice(0, 19)]);
 
       if (!socketRef.current?.connected) {
         setOutput(`[${role}] ${res.data.output || res.data.error || 'Code executed successfully.'}`);
@@ -942,10 +942,10 @@ export default function Room() {
                 onClick={() => setShowVideoCall(true)}
                 title="Start Video Call"
                 >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="m22 8-6 4 6 4V8Z" />
-                  <rect width="14" height="12" x="2" y="6" rx="2" ry="2" />
-                </svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m16 13l5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" />
+                <rect width="14" height="12" x="2" y="6" rx="2" />
+              </svg>
                 Video Call
               </button>
 
@@ -986,10 +986,10 @@ export default function Room() {
                 onClick={() => setShowVideoCall(true)}
                 title="Join Video Call"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="m22 8-6 4 6 4V8Z" />
-                  <rect width="14" height="12" x="2" y="6" rx="2" ry="2" />
-                </svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m16 13l5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" />
+                <rect width="14" height="12" x="2" y="6" rx="2" />
+              </svg>
                 Join Call
               </button>
             </>
@@ -1248,7 +1248,7 @@ export default function Room() {
 
           <div className="output-container">
             <span className="output-label">Output</span>
-            <pre className="output-area">{output || 'No output yet. Run your code to see results here.'}</pre>
+            <pre className="output-area">{output || 'No output yet.'}</pre>
           </div>
         </div>
 
@@ -1275,10 +1275,9 @@ export default function Room() {
                     minHeight: '1.75rem'
                   }}
                 >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                    <path d="M3 3v5h5" />
-                    <path d="M12 7v5l4 2" />
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9a9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5m4-1v5l4 2" />
                   </svg>
                   {executionHistory.length}
                 </button>

@@ -310,13 +310,14 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
                         style={{
                           width: '1.5rem',
                           height: '1.5rem',
-                          borderRadius: '0.25rem',
+                          borderRadius: '0.35rem',
                           border: '1px solid hsl(var(--border))',
                           background: currentScore === score ? getScoreColor(score) : 'transparent',
                           color: currentScore === score ? '#fff' : 'hsl(var(--foreground))',
                           fontSize: '0.625rem',
                           cursor: 'pointer',
-                          transition: 'all 0.15s ease'
+                          transition: 'all 0.15s ease',
+                          fontFamily:"Inter, sans-serif"
                         }}
                       >
                         {score}
@@ -395,7 +396,6 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
                   width: '100%',
                   justifyContent: 'space-between',
                   background: 'hsl(var(--background))',
-                  border: '1px solid hsl(var(--border))'
                 }}
               >
                 <span style={{ 
@@ -453,7 +453,7 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
           <textarea
             value={overallNotes}
             onChange={(e) => setOverallNotes(e.target.value)}
-            placeholder="Overall interview notes, strengths, areas for improvement..."
+            placeholder="Overall Recommendation..."
             style={{
               width: '100%',
               minHeight: '100px',
@@ -492,18 +492,26 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
               onChange={(e) => setStrengths(e.target.value)}
               placeholder="Candidate strengths observed..."
               style={{
-                width: '100%',
-                minHeight: '80px',
-                padding: '0.75rem',
-                border: '1px solid hsl(var(--border))',
-                borderRadius: 'calc(var(--radius) - 2px)',
-                background: 'hsl(var(--background))',
-                color: 'hsl(var(--foreground))',
-                fontSize: '0.875rem',
-                fontFamily: 'inherit',
-                resize: 'vertical',
-                outline: 'none'
-              }}
+              width: '100%',
+              minHeight: '80px',
+              padding: '0.75rem',
+              border: '1px solid hsl(var(--border))',
+              borderRadius: 'calc(var(--radius) - 2px)',
+              background: 'hsl(var(--background))',
+              color: 'hsl(var(--foreground))',
+              fontSize: '0.875rem',
+              fontFamily: 'inherit',
+              resize: 'vertical',
+              outline: 'none'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = 'hsl(var(--ring))';
+              e.target.style.boxShadow = '0 0 0 2px hsl(var(--ring) / 0.2)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = 'hsl(var(--border))';
+              e.target.style.boxShadow = 'none';
+            }}
             />
           </div>
 
@@ -522,18 +530,26 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
               onChange={(e) => setAreasForImprovement(e.target.value)}
               placeholder="Specific areas candidate should improve..."
               style={{
-                width: '100%',
-                minHeight: '80px',
-                padding: '0.75rem',
-                border: '1px solid hsl(var(--border))',
-                borderRadius: 'calc(var(--radius) - 2px)',
-                background: 'hsl(var(--background))',
-                color: 'hsl(var(--foreground))',
-                fontSize: '0.875rem',
-                fontFamily: 'inherit',
-                resize: 'vertical',
-                outline: 'none'
-              }}
+              width: '100%',
+              minHeight: '80px',
+              padding: '0.75rem',
+              border: '1px solid hsl(var(--border))',
+              borderRadius: 'calc(var(--radius) - 2px)',
+              background: 'hsl(var(--background))',
+              color: 'hsl(var(--foreground))',
+              fontSize: '0.875rem',
+              fontFamily: 'inherit',
+              resize: 'vertical',
+              outline: 'none'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = 'hsl(var(--ring))';
+              e.target.style.boxShadow = '0 0 0 2px hsl(var(--ring) / 0.2)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = 'hsl(var(--border))';
+              e.target.style.boxShadow = 'none';
+            }}
             />
           </div>
         </div>
