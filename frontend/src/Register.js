@@ -163,7 +163,8 @@ export default function Register() {
         className="logo-section"
         style={{
           textAlign: "center",
-          marginBottom: "2rem",
+          marginTop: "1rem",
+          marginBottom: "1rem",
         }}
       >
         <img
@@ -183,7 +184,7 @@ export default function Register() {
           width: "100%",
           maxWidth: "400px",
           backdropFilter: "blur(30px)",
-          border: "1px solid hsl(var(--border))",
+          border: "1px rgba(103, 103, 103, 0.3) solid",
           borderRadius: "var(--radius)",
           padding: "2rem",
           boxShadow:
@@ -554,7 +555,7 @@ export default function Register() {
             marginTop: "1.5rem",
             textAlign: "center",
             paddingTop: "1.5rem",
-            borderTop: "1px solid hsl(var(--border))",
+            borderTop: "1px solid rgba(103, 103, 103, 0.3)",
           }}
         >
           <p

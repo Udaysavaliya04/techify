@@ -142,7 +142,7 @@ export default function Login() {
       {/* Logo Section */}
       <div className="logo-section" style={{
         textAlign: 'center',
-        marginBottom: '2rem'
+        marginBottom: '1rem'
       }}>
         <img
           src="/logo.webp"
@@ -158,9 +158,8 @@ export default function Login() {
       <div className="auth-card" style={{
         width: '100%',
         maxWidth: '400px',
-
         backdropFilter: 'blur(30px)',
-        border: '1px solid hsl(var(--border))',
+        border: "1px rgba(103, 103, 103, 0.3) solid",
         borderRadius: 'var(--radius)',
         padding: '2rem',
         boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)'
@@ -335,7 +334,7 @@ export default function Login() {
           marginTop: '1.5rem',
           textAlign: 'center',
           paddingTop: '1.5rem',
-          borderTop: '1px solid hsl(var(--border))'
+          borderTop: '1px solid rgba(103, 103, 103, 0.3)'
         }}>
           <p style={{
             color: 'hsl(var(--muted-foreground))',
@@ -351,7 +350,7 @@ export default function Login() {
                 fontWeight: '500'
               }}
             >
-              Sign Up
+              Create one
             </Link>
           </p>
         </div>
