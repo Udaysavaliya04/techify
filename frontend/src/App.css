@@ -2131,6 +2131,10 @@ html,
   z-index: 0;
 }
 
+.footer-outline-word {
+  -webkit-text-stroke: 1px rgba(156, 194, 255, 0.32);
+}
+
 .chef-signature-flame,
 .chef-signature-copy,
 .chef-signature-spark {

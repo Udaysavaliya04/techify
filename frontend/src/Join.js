@@ -16,7 +16,6 @@ export default function Join() {
   const [showFeedbackIssuesModal, setShowFeedbackIssuesModal] = useState(false);
   const [instructionsAcknowledged, setInstructionsAcknowledged] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
-  const [isHeroVideoUnavailable, setIsHeroVideoUnavailable] = useState(false);
   const heroVideoSectionRef = useRef(null);
   const featureSectionRef = useRef(null);
   const navigate = useNavigate();
@@ -26,7 +25,7 @@ export default function Join() {
   const isMobileView = window.innerWidth <= 768;
   const isSmallMobileView = window.innerWidth <= 480;
   const prefersReducedMotion = useReducedMotion();
-  const landingHeroVideoSrc = '/video.mp4';
+  const landingHeroVideoSrc = '/room.png';
 
   const { scrollYProgress: heroVideoScrollProgress } = useScroll({
     target: heroVideoSectionRef,
@@ -2070,27 +2069,12 @@ export default function Join() {
                 <div className="hero-video-showcase__frame">
                   <span className="hero-video-showcase__liquid-border" aria-hidden="true" />
                   <div className="hero-video-showcase__screen">
-                    {!isHeroVideoUnavailable ? (
-                      <video
-                        src={landingHeroVideoSrc}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="metadata"
-                        className="hero-video-showcase__video"
-                        onError={() => setIsHeroVideoUnavailable(true)}
-                      />
-                    ) : (
-                      <div
-                        className="hero-video-showcase__fallback"
-                        role="img"
-                        aria-label="Techify video preview unavailable"
-                      >
-                        <p className="hero-video-showcase__fallback-kicker">Techify Demo Preview</p>
-                        <h3>Drop video.mp4 in frontend/public to enable this video.</h3>
-                      </div>
-                    )}
+                    <img
+                      src={landingHeroVideoSrc}
+                      alt="Techify room preview"
+                      className="hero-video-showcase__video"
+                      loading="lazy"
+                    />
                     <span className="hero-video-showcase__overlay" aria-hidden="true" />
                   </div>
                 </div>
@@ -3266,7 +3250,6 @@ export default function Join() {
                   alignItems: "center",
                   border: "1px solid rgba(255, 255, 255, 0.14)",
                   borderRadius: "18px",
-                  background: "rgba(255, 255, 255, 0.04)",
                   backdropFilter: "blur(18px) saturate(140%)",
                   WebkitBackdropFilter: "blur(18px) saturate(140%)",
                   padding: window.innerWidth <= 768 ? "0.8rem" : "0.95rem",
@@ -3544,7 +3527,7 @@ export default function Join() {
                         : "0.75em",
                   fontWeight: 800,
                   textTransform: "uppercase",
-                  color: "rgba(200, 200, 200, 0.09)",
+                  color: "transparent",
                   textAlign: "center",
                   width: "100%",
                   display: "block",
@@ -3555,6 +3538,7 @@ export default function Join() {
                   whiteSpace: "nowrap",
                   fontFamily: "Inter, sans-serif",
                 }}
+                className="footer-outline-word"
                 initial={{ opacity: 0, y: 18, filter: "blur(7px)" }}
                 whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 viewport={{ once: true, amount: 0.3 }}
