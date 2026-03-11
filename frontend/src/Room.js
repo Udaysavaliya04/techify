@@ -124,6 +124,10 @@ export default function Room() {
   const [showHistory, setShowHistory] = useState(false);
   const [showRubricScoring, setShowRubricScoring] = useState(false);
   const [showInterviewReport, setShowInterviewReport] = useState(false);
+  const [showReportProblem, setShowReportProblem] = useState(false);
+  const [reportProblemText, setReportProblemText] = useState('');
+  const [reportProblemStatus, setReportProblemStatus] = useState('');
+  const [reportProblemSubmitting, setReportProblemSubmitting] = useState(false);
   const [activeInterviewerTab, setActiveInterviewerTab] = useState('notes');
   const [joinedUsers, setJoinedUsers] = useState([]);
   const [userAlerts, setUserAlerts] = useState([]);
@@ -230,7 +234,7 @@ export default function Room() {
 - JDoodle(API that I am using to execute code) credits are super limited (Just 22 per day for a free plan)
 - Please stick to just 1 to 2 runs, so other curious souls can also test out the platform.
 - If the code is not running, that means the daily limit is reached.
-- Thanks for trying out Techify... XOXO
+- Thanks for trying out Techify...
 */
 
 // Start coding below this line
@@ -563,6 +567,45 @@ export default function Room() {
       console.error('Failed to save notes:', err);
     } finally {
       setNotesSaving(false);
+    }
+  };
+
+  const openReportProblem = () => {
+    setReportProblemStatus('');
+    setShowReportProblem(true);
+  };
+
+  const closeReportProblem = () => {
+    if (reportProblemSubmitting) return;
+    setShowReportProblem(false);
+    setReportProblemStatus('');
+  };
+
+  const submitProblemReport = async (e) => {
+    e.preventDefault();
+    const message = String(reportProblemText || '').trim();
+    if (!message) {
+      setReportProblemStatus('Please describe the problem.');
+      return;
+    }
+
+    setReportProblemSubmitting(true);
+    setReportProblemStatus('');
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `${config.API_BASE_URL}/api/room/${roomId}/report-problem`,
+        { message },
+        token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
+      );
+      setReportProblemText('');
+      setReportProblemStatus('Report submitted. Thank you.');
+      setTimeout(() => setShowReportProblem(false), 900);
+    } catch (error) {
+      console.error('Problem report error:', error);
+      setReportProblemStatus(error.response?.data?.error || 'Failed to submit report. Please try again.');
+    } finally {
+      setReportProblemSubmitting(false);
     }
   };
 
@@ -1606,6 +1649,74 @@ export default function Room() {
         </div>
       )}
 
+      <button
+        type="button"
+        className="report-problem-button"
+        onClick={openReportProblem}
+        aria-label="Report a problem"
+      >
+        Report a Problem
+      </button>
+
+      {showReportProblem && (
+        <div className="modal-overlay" onClick={closeReportProblem}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '32rem' }}>
+            <button
+              onClick={closeReportProblem}
+              className="modal-close"
+              aria-label="Close report problem"
+            >
+              ×
+            </button>
+            <div className="modal-header">
+              <h3 className="modal-title">Report a Problem</h3>
+              <p className="modal-description">
+                Share any issue you faced during the interview.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gap: '0.75rem' }}>
+              <form onSubmit={submitProblemReport} style={{ display: 'grid', gap: '0.75rem' }}>
+                <textarea
+                  className="input"
+                  placeholder="Describe the problem clearly here..."
+                  value={reportProblemText}
+                  onChange={(e) => setReportProblemText(e.target.value)}
+                  style={{ minHeight: '120px', resize: 'vertical' }}
+                />
+
+                {reportProblemStatus && (
+                  <div style={{
+                    fontSize: '0.875rem',
+                    color: reportProblemStatus.includes('submitted') ? 'hsl(142 76% 36%)' : 'hsl(var(--destructive))'
+                  }}>
+                    {reportProblemStatus}
+                  </div>
+                )}
+
+                <div className="modal-footer" style={{ marginTop: '0.5rem' }}>
+                  <button
+                    type="button"
+                    className="action-btn save-btn"
+                    onClick={closeReportProblem}
+                    disabled={reportProblemSubmitting}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="action-btn run-btn"
+                    disabled={reportProblemSubmitting}
+                  >
+                    {reportProblemSubmitting ? 'Submitting...' : 'Submit'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
-} 
+}

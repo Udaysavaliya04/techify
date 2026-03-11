@@ -5,6 +5,7 @@ import User from '../models/User.js';
 import { verifyToken, requireRole, requireRoomAccess } from './auth.js';
 import InterviewEvent from '../models/InterviewEvent.js';
 import { logInterviewEvent } from '../utils/interviewEvents.js';
+import ReportedProblem from '../models/ReportedProblem.js';
 
 const router = express.Router();
 
@@ -188,6 +189,37 @@ router.put('/:roomId/rubric', verifyToken, requireRole('interviewer', 'admin'), 
     res.json({ message: 'Rubric scores saved successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to save rubric scores' });
+  }
+});
+
+// Report a problem (candidate or interviewer)
+router.post('/:roomId/report-problem', verifyToken, requireRoomAccess(), async (req, res) => {
+  const { roomId } = req.params;
+  const message = String(req.body?.message || '').trim();
+
+  if (!message) {
+    return res.status(400).json({ error: 'Problem description is required' });
+  }
+
+  if (message.length > 2000) {
+    return res.status(400).json({ error: 'Problem description is too long (max 2000 characters)' });
+  }
+
+  try {
+    await ReportedProblem.create({
+      roomId,
+      reporter: {
+        userId: req.user._id,
+        username: req.user.username || 'Unknown',
+        email: req.user.email || 'unknown@example.com'
+      },
+      message
+    });
+
+    return res.json({ message: 'Problem reported successfully' });
+  } catch (err) {
+    console.error('Problem report error:', err);
+    return res.status(500).json({ error: 'Failed to report problem' });
   }
 });
 

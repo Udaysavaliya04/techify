@@ -307,7 +307,7 @@ html,
   padding: 1.5rem;
   position: sticky;
   top: 1rem;
-  max-height: 687px;
+  max-height: 674px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -394,6 +394,27 @@ html,
   font-size: 0.75rem;
   padding: 0.4rem 0.8rem;
   min-height: 28px;
+}
+
+.report-problem-button {
+  bottom: 1rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border: none;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  background: transparent;
+  font-family: Bricolage Grotesque;
+  color: rgba(128, 128, 128, 0.6);
+  transition: all 0.15s ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .report-problem-button {
+    bottom: 0.6rem;
+    font-size: 0.7rem;
+    padding: 0.35rem 0.8rem;
+  }
 }
 
 /* Button styles */

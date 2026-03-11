@@ -13,6 +13,7 @@ const InterviewEventSchema = new mongoose.Schema(
         'code_executed',
         'question_set',
         'notes_updated',
+        'problem_reported',
         'rubric_saved',
         'interview_ended',
         'integrity_flagged'
