@@ -950,7 +950,6 @@ html,
   inset: 1px 1px auto 1px;
   height: 25%;
   border-radius: inherit;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0));
   pointer-events: none;
 }
 
@@ -960,8 +959,7 @@ html,
   min-height: 260px;
   border-radius: clamp(12px, 1.8vw, 22px);
   overflow: hidden;
-  border: 1px solid rgba(154, 169, 235, 0.3);
-  background: #040811;
+  border: 2px solid rgba(170, 186, 255, 0.3);
   transform-style: preserve-3d;
   backface-visibility: hidden;
 }
@@ -971,6 +969,7 @@ html,
   height: 100%;
   object-fit: cover;
   display: block;
+  opacity: 1;
 }
 
 .hero-video-showcase__aura {
@@ -988,9 +987,6 @@ html,
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
-    linear-gradient(165deg, rgba(255, 255, 255, 0.17) 0%, rgba(255, 255, 255, 0) 36%),
-    linear-gradient(180deg, rgba(5, 8, 20, 0) 55%, rgba(5, 8, 20, 0.26) 100%);
   z-index: 2;
 }
 
@@ -1047,6 +1043,7 @@ html,
   .hero-video-showcase__screen {
     min-height: 210px;
     border-radius: 11px;
+    width: 100%;
   }
 
   .hero-video-showcase__aura {
