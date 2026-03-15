@@ -972,17 +972,6 @@ html,
   opacity: 1;
 }
 
-.hero-video-showcase__aura {
-  position: absolute;
-  inset: -16% 8% auto;
-  height: 52%;
-  border-radius: 999px;
-  background: radial-gradient(circle, rgba(132, 156, 255, 0.42), rgba(132, 156, 255, 0));
-  filter: blur(52px);
-  pointer-events: none;
-  z-index: 1;
-}
-
 .hero-video-showcase__overlay {
   position: absolute;
   inset: 0;

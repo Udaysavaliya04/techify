@@ -2057,7 +2057,7 @@ export default function Join() {
               initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
             >
               <motion.div
                 className="hero-video-showcase__card"
@@ -2065,7 +2065,6 @@ export default function Join() {
                   opacity: heroVideoOpacity,
                 }}
               >
-                <span className="hero-video-showcase__aura" aria-hidden="true" />
                 <div className="hero-video-showcase__frame">
                   <span className="hero-video-showcase__liquid-border" aria-hidden="true" />
                   <div className="hero-video-showcase__screen">
