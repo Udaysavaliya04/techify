@@ -2739,12 +2739,12 @@ export default function Join() {
                       </button>
 
                       <motion.div
-                        animate={{ width: isOpen ? "100%" : "0%" }}
+                        animate={{ width: isOpen ? "96.5%" : "0%" }}
                         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                         style={{
-                          height: "1px",
-                          background: "linear-gradient(90deg, rgba(136, 210, 255, 0.05),rgba(94, 193, 255, 0.49), rgba(136, 210, 255, 0.05))",
-                          marginLeft: "1.05rem",
+                          height: "0.5px",
+                          background: 'rgba(255, 255, 255, 0.2)',
+                          marginLeft: "1.05rem"
                         }}
                       />
 
