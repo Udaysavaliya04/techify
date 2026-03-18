@@ -3,7 +3,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 * {
   margin: 0;
   padding: 0;
@@ -492,6 +495,122 @@ html,
 
 .premium-arrow-btn:hover .premium-arrow-btn__icon {
   transform: translateX(2px);
+}
+
+.liquid-sweep-btn {
+  --liquid-sweep-fill: linear-gradient(135deg, rgb(0, 38, 255) 33%, rgb(0, 81, 255) 66%, rgba(0, 110, 255, 0.685) 100%);
+  --liquid-sweep-base: rgba(237, 239, 245, 0.96);
+  --liquid-sweep-text: rgba(18, 24, 38, 0.95);
+  --liquid-sweep-inset: 0.25rem;
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 2.25rem;
+  padding: 0.5rem 2.55rem 0.5rem 0.9rem;
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid var(--liquid-sweep-base);
+  background: var(--liquid-sweep-base);
+  color: var(--liquid-sweep-text);
+  box-shadow: 0 12px 26px -22px rgba(0, 7, 40, 0.95);
+  overflow: hidden;
+}
+
+.liquid-sweep-btn__label,
+.liquid-sweep-btn__icon-wrap {
+  position: relative;
+}
+
+.liquid-sweep-btn__label {
+  z-index: 2;
+}
+
+.liquid-sweep-btn__label {
+  white-space: nowrap;
+  transition: color 0.95s ease;
+}
+
+.liquid-sweep-btn__icon-wrap {
+  display: flex;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  top: var(--liquid-sweep-inset);
+  right: var(--liquid-sweep-inset);
+  bottom: var(--liquid-sweep-inset);
+  width: auto;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  z-index: 1;
+  color: #fff;
+  border: 1px solid transparent;
+  background: transparent;
+  overflow: visible;
+  transition: border-color 0.95s ease, transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.liquid-sweep-btn__icon-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--liquid-sweep-fill);
+  transform: scale(1);
+  transform-origin: center;
+  transition: transform 1.18s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.liquid-sweep-btn__icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  position: relative;
+  z-index: 1;
+  transform: rotate(-45deg);
+  transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.liquid-sweep-btn:hover .liquid-sweep-btn__icon-wrap::before,
+.liquid-sweep-btn:focus-visible .liquid-sweep-btn__icon-wrap::before {
+  transform: scale(42);
+  transition-duration: 1.75s;
+}
+
+.liquid-sweep-btn:hover,
+.liquid-sweep-btn:focus-visible {
+  color: rgba(245, 249, 255, 0.98);
+  border-color: rgba(114, 138, 255, 0.65);
+}
+
+.liquid-sweep-btn:hover .liquid-sweep-btn__icon-wrap,
+.liquid-sweep-btn:focus-visible .liquid-sweep-btn__icon-wrap {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.36);
+  transform: translateX(1px);
+  transition-duration: 1.25s;
+}
+
+.liquid-sweep-btn:hover .liquid-sweep-btn__icon,
+.liquid-sweep-btn:focus-visible .liquid-sweep-btn__icon {
+  transform: rotate(0deg) translateX(1px);
+  transition-duration: 1.25s;
+}
+
+.liquid-sweep-btn:hover .liquid-sweep-btn__label,
+.liquid-sweep-btn:focus-visible .liquid-sweep-btn__label {
+  transition-duration: 1.2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-sweep-btn,
+  .liquid-sweep-btn__label,
+  .liquid-sweep-btn__icon-wrap,
+  .liquid-sweep-btn__icon-wrap::before,
+  .liquid-sweep-btn__icon {
+    transition: none !important;
+  }
 }
 
 .run-btn {
