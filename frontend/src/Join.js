@@ -1461,7 +1461,7 @@ export default function Join() {
           className="top-nav-button"
           style={{
             position: "fixed",
-            top: isMobileView ? "0.55rem" : "0.55rem",
+            top: isMobileView ? "0.55rem" : "0.65rem",
             left: "49.8%",
             right: "auto",
             width: headerShellWidth,
@@ -1868,12 +1868,12 @@ export default function Join() {
                           : "8.9rem",
                   WebkitBackgroundClip: "text",
                   letterSpacing:
-                    window.innerWidth <= 480 ? "-0.03em" : "-0.08em",
+                    window.innerWidth <= 480 ? "-0.03em" : "-0.04em",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
                   display: "block",
-                  fontWeight: "700",
-                  fontFamily: "'Familjen Grotesk', sans-serif",
+                  fontWeight: "600",
+                  fontFamily: "'DM Sans', 'Familjen Grotesk', sans-serif",
                   animation: "gradientShift 1s ease-in-out infinite",
                   WebkitFontSmoothing: "antialiased",
                   MozOsxFontSmoothing: "grayscale",
@@ -1889,7 +1889,7 @@ export default function Join() {
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
                   display: "block",
-                  fontWeight: "900",
+                  fontWeight: "700",
                   fontSize:
                     window.innerWidth <= 360
                       ? "3.5rem"
@@ -1898,9 +1898,9 @@ export default function Join() {
                         : window.innerWidth <= 768
                           ? "6.5rem"
                           : "10.5rem", 
-                  fontFamily: " 'Familjen Grotesk', sans-serif",
+                  fontFamily: " 'DM Sans', 'Familjen Grotesk', sans-serif",
                   letterSpacing:
-                    window.innerWidth <= 480 ? "-0.03em" : "-0.08em",
+                    window.innerWidth <= 480 ? "-0.03em" : "-0.05em",
                   WebkitFontSmoothing: "antialiased",
                   MozOsxFontSmoothing: "grayscale",
                 }}
