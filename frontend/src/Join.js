@@ -1510,7 +1510,7 @@ export default function Join() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "flex-end",
-                  gap: "1rem",
+                  gap: "0.5rem",
                   flexWrap: "nowrap",
                   minWidth: 0,
                 }}
