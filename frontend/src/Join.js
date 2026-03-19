@@ -1392,7 +1392,7 @@ export default function Join() {
         minHeight: "100vh",
         background: `
         linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.56)),
-        url('/backgroundhd.webp')
+        url('/bg.webp')
       `,
         backgroundSize: "150%",
         backgroundPosition: "center",
@@ -3175,9 +3175,9 @@ export default function Join() {
               margin: "0 auto",
               border: "1px solid rgba(255, 255, 255, 0.18)",
               borderRadius: "24px",
-              background:
-                "linear-gradient(150deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03) 45%, rgba(8, 15, 28, 0.55) 100%)",
               backdropFilter: "blur(26px) saturate(145%)",
+                                background:
+                    "linear-gradient(150deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.03) 45%, rgba(9, 18, 31, 0.55) 100%)",
               WebkitBackdropFilter: "blur(26px) saturate(145%)",
               boxShadow:
                 "0 30px 90px -56px rgba(0, 0, 0, 0.92), inset 0 1px 0 rgba(255, 255, 255, 0.15)",

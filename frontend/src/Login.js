@@ -91,7 +91,7 @@ export default function Login() {
       minHeight: '100vh',
       background: `
                 linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.56)),
-        url('/backgroundhd.webp')
+        url('/bg.webp')
       `,
       backgroundSize: '150%',
       backgroundPosition: 'center',
