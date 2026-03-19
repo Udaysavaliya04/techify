@@ -1873,7 +1873,7 @@ export default function Join() {
                   backgroundClip: "text",
                   display: "block",
                   fontWeight: "600",
-                  fontFamily: "'DM Sans', 'Familjen Grotesk', sans-serif",
+                  fontFamily: "'Bricolage Grotesque', 'DM Sans', 'Familjen Grotesk', sans-serif",
                   animation: "gradientShift 1s ease-in-out infinite",
                   WebkitFontSmoothing: "antialiased",
                   MozOsxFontSmoothing: "grayscale",
@@ -1898,9 +1898,9 @@ export default function Join() {
                         : window.innerWidth <= 768
                           ? "6.5rem"
                           : "10.5rem", 
-                  fontFamily: " 'DM Sans', 'Familjen Grotesk', sans-serif",
+                  fontFamily: "'Bricolage Grotesque', 'DM Sans', 'Familjen Grotesk', sans-serif",
                   letterSpacing:
-                    window.innerWidth <= 480 ? "-0.03em" : "-0.05em",
+                    window.innerWidth <= 480 ? "-0.03em" : "-0.04em",
                   WebkitFontSmoothing: "antialiased",
                   MozOsxFontSmoothing: "grayscale",
                 }}
