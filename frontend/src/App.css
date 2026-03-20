@@ -3,11 +3,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -2238,7 +2237,7 @@ html,
 }
 
 .footer-outline-word {
-  -webkit-text-stroke: 1px rgba(156, 194, 255, 0.32);
+  -webkit-text-stroke: 0.7px rgba(103, 189, 255, 0.5);
 }
 
 .chef-signature-flame,
@@ -2280,13 +2279,13 @@ html,
 }
 
 .chef-signature-name {
-  font-size: 0.88rem;
+  font-size: 0.98rem;
   font-weight: 800;
-  letter-spacing: 0.02em;
   background: linear-gradient(90deg, #ffffff 0%, #ffe2bf 46%, #ffbd80 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  font-family: 'Space Grotesk', sans-serif;
   text-shadow: 0 0 16px rgba(255, 163, 85, 0.2);
 }
 
