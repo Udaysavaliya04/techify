@@ -1523,14 +1523,15 @@ export default function Join() {
                     fontSize: "0.875rem",
                     fontWeight: "500",
                     transition: "color 0.2s ease",
-                    background: "rgba(255, 255, 255, 0.1)",
                     backdropFilter: "blur(10px)",
+                    background: "rgba(55, 55, 55, 0.4)",
                     padding: "0.5rem 1rem",
                     whiteSpace: "nowrap",
                     flexShrink: 0,
                     animation: 'blurIn 2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards',
                     opacity: 0,
-                    border: "1px solid rgba(255, 255, 255, 0.18)",
+                    border: "1px solid rgba(55, 55, 55, 0.9)",
+                    boxShadow: " 2px 2px 5px 0 rgba(78, 78, 78, 0.3) inset"
                   }}
                 >
                   Sign In
@@ -3059,9 +3060,9 @@ export default function Join() {
                         minHeight: "unset",
                         width: "100%",
                         textAlign: "center",
-                        color: "rgba(240, 246, 255, 0.95)",
-                        background: "rgba(255, 255, 255, 0.04)",
-                        border: "1px solid rgba(255, 255, 255, 0.12)",
+                        background: "rgba(55, 55, 55, 0.4)",
+                        border: "1px solid rgba(55, 55, 55, 0.9)",
+                        boxShadow: " 2px 2px 5px 0 rgba(78, 78, 78, 0.3) inset"
                       }}
                     >
                       Login to Dashboard
