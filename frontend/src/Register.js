@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './components/AuthWrapper';
+import AuthWakeNotice from './components/AuthWakeNotice';
 import axios from 'axios';
 import config from './config';
 import './App.css';
@@ -546,6 +547,7 @@ export default function Register() {
           >
             {loading ? "Creating Account..." : "Create Account"}
           </button>
+          <AuthWakeNotice active={loading} />
         </form>
 
         {/* Login Link */}

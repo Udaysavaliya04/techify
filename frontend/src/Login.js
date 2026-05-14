@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from './components/AuthWrapper';
+import AuthWakeNotice from './components/AuthWakeNotice';
 import axios from 'axios';
 import config from './config';
 import './App.css';
@@ -327,6 +328,7 @@ export default function Login() {
           >
             {loading ? 'Signing In...' : 'Sign In'}
           </button>
+          <AuthWakeNotice active={loading} />
         </form>
 
         {/* Register Link */}
