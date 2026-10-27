@@ -363,7 +363,7 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
           border: '1px solid hsl(var(--border))',
           borderRadius: 'var(--radius)',
           padding: '1.5rem',
-          marginBottom: '1.5rem',
+          marginBottom: '0.2rem',
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)'
         }}>
@@ -540,7 +540,10 @@ const RubricScoring = ({ roomId, onClose, candidateInfo }) => {
               fontSize: '0.875rem',
               fontFamily: 'inherit',
               resize: 'vertical',
-              outline: 'none'
+              outline: 'none',
+              paddingBottom: "1px",
+              marginBottom: "1px",
+
             }}
             onFocus={(e) => {
               e.target.style.borderColor = 'hsl(var(--ring))';

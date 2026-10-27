@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './components/AuthWrapper';
 import MonacoEditor from '@monaco-editor/react';
@@ -1340,7 +1340,8 @@ export default function Room() {
               borderRadius: 'calc(var(--radius) - 2px)',
               background: 'hsl(var(--muted) / 0.35)',
               padding: '0.75rem',
-              marginBottom: '1rem'
+              marginBottom: '1rem',
+              boxShadow: '2px 2px 16px 0 rgba(255, 255, 255, 0.05) inset'
             }}>
               <div style={{
                 display: 'flex',
