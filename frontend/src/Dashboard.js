@@ -790,7 +790,7 @@ export default function Dashboard() {
             </button>
             <div className="modal-header" style={{ textAlign: 'Center', marginBottom: '1rem' }}>
               <h3 className="modal-title">Interview Instructions and Important Rules</h3>
-              <p className="modal-description" style={{ marginTop: '0.3em' }}>
+              <p className="modal-description" style={{ marginTop: '0.3em', lineHeight: '1.2' }}>
                 Please follow the below instructions strictly for a smooth interview experience <br></br>and to ensure the integrity of the process.
               </p>
             </div>
@@ -801,9 +801,9 @@ export default function Dashboard() {
                   title: 'Environment',
                   points: [
                     'It is recommended to use a stable internet connection throughout the interview.',
-                    'Allowing camera and microphone access is required for the interview.',
+                    'Allowing camera and microphone access is strictly required for the interview.',
                     'Using full-screen mode is compulsory for the entire duration of the interview.'
-                  ] 
+                  ]
                 },
                 {
                   title: 'Behavior Rules',

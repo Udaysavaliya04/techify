@@ -1643,7 +1643,7 @@ export default function Join() {
               maxWidth: "500px",
               width: "100%",
               backdropFilter: "blur(30px)",
-              border: "1px solid hsl(var(--border) / 0.5)",
+              border: "1.2px solid hsl(var(--border))",
               borderRadius: "calc(var(--radius) * 1.5)",
               padding: window.innerWidth <= 768 ? "2rem 1.5rem" : "3rem",
               marginTop: window.innerWidth <= 768 ? "2rem" : "2rem",
