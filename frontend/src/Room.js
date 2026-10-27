@@ -1406,7 +1406,7 @@ export default function Room() {
 
       {showQuestions && role === 'interviewer' && (
         <div className="modal-overlay" onClick={() => setShowQuestions(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '36rem' }}>
             <Questions onSelect={handleSelectQuestion} onClose={() => setShowQuestions(false)} />
           </div>
         </div>
@@ -1460,8 +1460,12 @@ export default function Room() {
                 onClick={() => setShowHistory(false)}
                 className="modal-close"
                 aria-label="Close History"
+                title="Close"
               >
-                ×
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
               </button>
 
               <div style={{
@@ -1658,8 +1662,12 @@ export default function Room() {
               onClick={closeReportProblem}
               className="modal-close"
               aria-label="Close report problem"
+              title="Close"
             >
-              ×
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
             </button>
             <div className="modal-header">
               <h3 className="modal-title">Report a Problem</h3>

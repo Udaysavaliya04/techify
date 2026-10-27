@@ -1632,27 +1632,68 @@ html,
   margin-top: 0.5rem;
 }
 
+.modal-header-close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.125rem;
+  height: 2.125rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 2px 2px 16px 0 rgba(255, 255, 255, 0.05) inset;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.modal-header-close-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+.modal-header-close-btn:active {
+  transform: scale(0.95);
+}
+
+.modal-header-close-btn:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
 .modal-close {
   position: absolute;
-  right: 1rem;
-  top: 1rem;
-  border-radius: calc(var(--radius) - 2px);
-  border: none;
-  background: transparent;
-  color: hsl(var(--muted-foreground));
+  right: 1.125rem;
+  top: 1.125rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 2px 2px 16px 0 rgba(255, 255, 255, 0.05) inset;
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
-  padding: 0.25rem;
-  transition: all 0.15s ease-in-out;
+  padding: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 2rem;
+  height: 2rem;
+  z-index: 10;
 }
 
 .modal-close:hover {
-  background: hsl(var(--accent));
-  color: hsl(var(--accent-foreground));
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+.modal-close:active {
+  transform: scale(0.95);
 }
 
 .modal-close:focus-visible {

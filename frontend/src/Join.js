@@ -3515,8 +3515,12 @@ export default function Join() {
               onClick={() => setShowFeedbackIssuesModal(false)}
               className="modal-close"
               aria-label="Close feedback and issues modal"
+              title="Close"
             >
-              x
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
             </button>
 
             <div className="modal-header" style={{ textAlign: "center", marginBottom: "0.9rem" }}>
@@ -3607,8 +3611,12 @@ export default function Join() {
               onClick={() => setShowCandidateInstructionsModal(false)}
               className="modal-close"
               aria-label="Close important instructions"
+              title="Close"
             >
-              x
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
             </button>
             <div className="modal-header" style={{ textAlign: 'center', marginBottom: '1rem' }}>
               <h3 className="modal-title">Important Interview Instructions</h3>
